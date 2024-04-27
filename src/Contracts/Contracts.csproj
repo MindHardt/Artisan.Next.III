@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Update="IFileClient.cs">
+        <DependentUpon>FileEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="IAuthClient.cs">
+        <DependentUpon>AuthEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="CustomClaims.cs">
+        <DependentUpon>AuthEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="DeleteFile.cs">
+        <DependentUpon>FileEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="GetLoginSchemes.cs">
+        <DependentUpon>AuthEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SearchFiles.cs">
+        <DependentUpon>FileEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UploadFile.cs">
+        <DependentUpon>FileEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Login.cs">
+        <DependentUpon>AuthEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Logout.cs">
+        <DependentUpon>AuthEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="RoleNames.cs">
+        <DependentUpon>AuthEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="CreateBook.cs">
+        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="IWikiClient.cs">
+        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="GetBook.cs">
+        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UpdateBook.cs">
+        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SearchBooks.cs">
+        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="LinkLogin.cs">
+        <DependentUpon>AuthEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="GetFile.cs">
+        <DependentUpon>FileEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UpdateProfile.cs">
+        <DependentUpon>AuthEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UserModel.cs">
+        <DependentUpon>AuthEndpoints.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Vogen" Version="4.0.0" />
+    </ItemGroup>
+
+</Project>

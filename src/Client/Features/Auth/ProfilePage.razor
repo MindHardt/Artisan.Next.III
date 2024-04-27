@@ -1,0 +1,135 @@
+﻿@page "/profile"
+@using System.Net.Mime
+@using System.Security.Claims
+@using Client.Features.Files
+@using Client.Features.Shared
+@using Microsoft.AspNetCore.Authorization
+@using Client.Features.Shared.Components
+@using Contracts
+@using Microsoft.Extensions.Caching.Memory
+@attribute [Authorize]
+@inject BackendClient Backend
+@inject NavigationManager Navigation
+@inject IServiceProvider Services
+
+<PageTitle>Профиль</PageTitle>
+@if (_user is null)
+{
+    <Spinner />
+}
+else
+{
+    <h1>@_user.GetUserName()</h1>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xxl-2 col-md-6 col-12">
+                <h2>Роли</h2>
+                <ul class="list-group">
+                    @foreach (var role in _user.FindAll(ClaimTypes.Role))
+                    {
+                        <li class="list-group-item">@role.Value</li>
+                    }
+                </ul>
+                <h2>Логины</h2>
+                @if (_loginSchemes is null)
+                {
+                    <Spinner />
+                }
+                else
+                {
+                    <ul class="list-group">
+                        @foreach (var scheme in _loginSchemes)
+                        {
+                            <li class="list-group-item ">
+                                @if (_user.Claims.Any(claim => (claim.Type, claim.Value) == (CustomClaims.LoginScheme, scheme)))
+                                {
+                                    <i class="bi bi-check-lg text-success"></i>
+                                }
+                                else
+                                {
+                                    <a href="@Backend.Auth.BuildLinkLoginUrl(new LinkLogin.Request(scheme, Navigation.Uri))">
+                                        <i class="bi bi-link-45deg text-primary"></i>
+                                    </a>
+                                }
+                                <span class="ms-2">@scheme</span>
+                            </li>   
+                        }
+                    </ul>   
+                }
+            </div>
+            <div class="col-xxl-4 col-md-6 col-12">
+                <h3>Данные</h3>
+                <div class="card">
+                    <div class="avatar-container">
+                        <img src="@(_newAvatarUrl ?? _user.GetAvatarUrl())"
+                             class="card-img-top img-thumbnail" alt="Avatar" id="avatar">
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary w-100" onclick="document.getElementById('AvatarUpload').click()">
+                            <i class="bi bi-file-arrow-up"></i>
+                            Загрузить аватар
+                        </button>
+                        <input type="text" class="form-control mt-1" @bind="@_newUserName" placeholder="@_user.GetUserName()"/>
+                        <button class="btn btn-success w-100 mt-1" disabled="@SaveDisabled" @onclick="@SaveProfile">
+                            <i class="bi bi-floppy"></i>
+                            Сохранить
+                        </button>
+                    </div>
+                </div>
+                <InputFile accept="image/*" hidden id="AvatarUpload" OnChange="@HandleAvatarFile"/>
+            </div>
+            <div class="col-xxl-6 col-12">
+                
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationStateTask { get; set; } = null!;
+
+    private string[]? _loginSchemes;
+    private ClaimsPrincipal? _user;
+
+    private string? _newAvatarUrl;
+    private string _newUserName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _user = (await AuthenticationStateTask).User;
+        if (BlazorEnv.IsWasm)
+        {
+            _loginSchemes = Services
+                .GetRequiredService<IMemoryCache>()
+                .Get<LoginSchemeModel[]>(nameof(LoginSchemeModel))?
+                .Select(x => x.Name)
+                .ToArray();
+        }
+    }
+
+    private bool SaveDisabled => _newAvatarUrl is null && string.IsNullOrWhiteSpace(_newUserName);
+    
+    private async Task HandleAvatarFile(InputFileChangeEventArgs e)
+    {
+        var newAvatar = await e.File.RequestImageFileAsync(MediaTypeNames.Image.Jpeg, 1024, 1024);
+        
+        var avatarModel = await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
+            newAvatar, 
+            FileScope.Avatar));
+        _newAvatarUrl = avatarModel.Path;
+    }
+
+    private async Task SaveProfile()
+    {
+        var username = string.IsNullOrWhiteSpace(_newUserName)
+            ? null
+            : _newUserName;
+        var request = new UpdateProfile.Request(_newAvatarUrl, username);
+        await Backend.Auth.UpdateProfile(request);
+        Navigation.Refresh(forceReload: true);
+    }
+
+}

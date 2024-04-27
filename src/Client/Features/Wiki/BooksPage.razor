@@ -1,0 +1,93 @@
+﻿@page "/wiki/books"
+@layout WikiLayout
+@using Client.Features.Shared
+@using Contracts
+@using Microsoft.Extensions.Caching.Memory
+@inject PersistentComponentState Persistence
+@inject BackendClient Backend
+@inject IServiceProvider Services
+
+<PageTitle>Книги</PageTitle>
+<AuthorizeView Roles="@RoleNames.Admin">
+    <NotAuthorized>
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-square-fill text-primary"></i>
+            </div>
+            <div class="card-body">
+                Поиск книг недоступен пользователям. Вы можете перейти на них
+                только по прямой ссылке от администратора.
+            </div>
+        </div>
+    </NotAuthorized>
+    <Authorized>
+        <div class="input-group input-group-lg mb-2">
+            <span class="input-group-text bi bi-regex"></span>
+            <input class="form-control" type="text" placeholder="[Ии]стория.*" @onchange="@(e => SearchBooks(e.Value as string))" value="@_regex"/>
+            <a class="btn btn-outline-success" href="wiki/books/new">
+                <i class="bi bi-plus"></i>
+            </a>
+        </div>
+        
+        <ul class="list-group list-group-numbered list-group-flush">
+            @foreach (var book in _books ?? [])
+            {
+                <li class="list-group-item">
+                    <a class="text-truncate" href="wiki/books/read/@book.UrlName.Value">@book.Name</a>
+                </li>
+            }
+        </ul>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationStateTask { get; set; } = null!;
+
+    private BookModel[]? _books = [];
+    private string? _regex;
+
+    private async Task SearchBooks(string? regex)
+    {
+        _regex = regex;
+        _books = await Backend.Wiki.SearchBooks(new SearchBooks.Request(regex));
+        if (BlazorEnv.IsWasm)
+        {
+            var cache = Services.GetRequiredService<IMemoryCache>();
+            cache.Set(nameof(_books), _books);
+            cache.Set(nameof(_regex), _regex);
+        }
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateTask;
+        if (authState.User.IsInRole(RoleNames.Admin) is false)
+        {
+            return;
+        }
+        if (Persistence.TryTakeFromJson(nameof(_books), out _books))
+        {
+            return;
+        }
+
+        if (BlazorEnv.IsWasm)
+        {
+            var cache = Services.GetRequiredService<IMemoryCache>();
+            _books = cache.Get<BookModel[]>(nameof(_books));
+            _regex = cache.Get<string>(nameof(_regex));
+        }
+        await SearchBooks(_regex);
+        if (BlazorEnv.IsServer)
+        {
+            Persistence.RegisterOnPersisting(() =>
+            {
+                Persistence.PersistAsJson(nameof(_books), _books);
+                return Task.CompletedTask;
+            });
+        }
+    }
+
+}

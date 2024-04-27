@@ -1,0 +1,100 @@
+﻿@attribute [Route($"/wiki/books/read/{{{nameof(UrlName)}}}")]
+@layout WikiLayout
+@using Client.Features.Shared
+@using Contracts
+@using Client.Features.Shared.Components
+@using Microsoft.Extensions.Caching.Memory
+@inject PersistentComponentState Persistence
+@inject BackendClient Backend
+@inject NavigationManager Navigation
+@inject IServiceProvider Services
+
+@if (_book is null)
+{
+    <PlaceholderText />
+}
+else
+{
+    <AuthorizeView Roles="@RoleNames.Admin">
+        <Authorized>
+            <a href="/wiki/books/edit/@UrlName" class="btn btn-lg btn-warning w-100 mb-2">
+                <i class="bi bi-pencil"></i>
+                Редактировать
+            </a>
+        </Authorized>
+    </AuthorizeView>
+    
+    var imageUrl = _book.ImageUrl ?? $"{Navigation.BaseUri}/icon-1024.png";
+    <HeadContent>
+        <meta property="og:title" content="@_book.Name"/>
+        <meta property="og:description" content="@_book.Description"/>
+        <meta property="og:image" content="@imageUrl"/>
+        <meta property="og:type" content="title"/>
+        <meta property="og:url" content= "@Navigation.Uri"/>
+    </HeadContent>
+    <PageTitle>@_book.Name</PageTitle>
+    
+    @if (_book.ImageUrl is null)
+    {
+        <h1>@_book.Name</h1>
+        <h2 class="text-secondary">@_book.Author</h2>
+        <h3>@_book.Description</h3>
+    }
+    else
+    {
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8 d-flex vstack">
+                    <h1>@_book.Name</h1>
+                    <h2 class="text-secondary">@_book.Author</h2>
+                    <div class="flex-fill"></div>
+                    <h3>@_book.Description</h3>
+                </div>
+                <div class="col-md-4">
+                    <img class="w-100 img-thumbnail" src="@_book.ImageUrl" alt="Аватар" />
+                </div>
+            </div>
+        </div>
+    }
+    <hr/>
+    @if (BlazorEnv.IsServer)
+    {
+        <PlaceholderText/>
+    }
+    else
+    {
+        <RenderedMd Markdown="@_book.Text"/>
+    }
+}
+
+@code {
+
+    private GetBook.Response? _book;
+
+    [Parameter] public string UrlName { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (BlazorEnv.IsServer)
+        {
+            _book = await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)));
+            Persistence.RegisterOnPersisting(() =>
+            {
+                Persistence.PersistAsJson(nameof(_book), _book);
+                return Task.CompletedTask;
+            });
+        }
+        else
+        {
+            var cache = Services.GetRequiredService<IMemoryCache>();
+            if (Persistence.TryTakeFromJson(nameof(_book), out _book) is false)
+            {
+                _book = 
+                    cache.Get<GetBook.Response>(nameof(_book)) ??
+                    await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)));
+            }
+
+            cache.Set(nameof(_book), _book, TimeSpan.FromMinutes(30));
+        }
+    }
+}

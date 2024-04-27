@@ -1,0 +1,117 @@
+﻿@using Client.Features.Shared
+@using Contracts
+@using Microsoft.Extensions.Caching.Memory
+@inject BackendClient Backend
+@inject PersistentComponentState Persistence
+@inject NavigationManager Navigation
+@inject IServiceProvider Services
+
+<AuthorizeView>
+    <NotAuthorized>
+        @if (_schemes is null)
+        {
+            <button class="btn btn-lg btn-secondary" disabled>
+                <i class="bi bi-clock-history"></i>
+                Загрузка...
+            </button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-lg btn-outline-light" onclick="showModal('#LoginModal')">
+                <i class="bi bi-key-fill"></i>
+                Авторизация
+            </button>
+            <div class="modal fade" id="LoginModal" tabindex="-1" aria-hidden="true" aria-labelledby="LoginModalName" data-bs-theme="dark">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title text-light fs-5" id="LoginModalName">Выберите способ авторизации</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="d-flex gap-1">
+                                @foreach (var scheme in _schemes)
+                                {
+                                    <a class="btn btn-lg btn-primary flex-fill" href="@Backend.Auth.BuildLoginUrl(new Login.Request(scheme.Name, Navigation.Uri))">
+                                        <i class="bi @LoginIconClasses[scheme.Name]"></i>
+                                        @(scheme.DisplayName)
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </NotAuthorized>
+    <Authorized>
+        <img src="@context.User.GetAvatarUrl()" alt="avatar" class="rounded" style="height: 48px; width: 48px;" />
+        <button type="button" class="btn btn-lg btn-outline-light" onclick="showModal('#UserInfoModal')">
+            Обо мне
+        </button>
+        <div class="modal fade" id="UserInfoModal" tabindex="-1" aria-hidden="true" aria-labelledby="UserInfoModalName" data-bs-theme="dark">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title text-light fs-5" id="UserInfoModalName">Информация о пользователе</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card border-0">
+                            <div class="avatar-container">
+                                <img src="@context.User.GetAvatarUrl()"
+                                     class="card-img-top rounded" alt="Avatar" id="avatar">
+                            </div>
+                            <div class="card-body">
+                                <h1 class="card-title text-center">@context.User.GetUserName()</h1>
+                                <a class="btn btn-lg btn-primary w-100 mt-1" href="/profile" onclick="document.getElementById('closeModal').click()">
+                                    <i class="bi bi-person"></i>
+                                    Профиль
+                                </a>
+                            </div>
+                            <div class="card-footer bg-dark">
+                                <a class="btn btn-lg btn-secondary w-100" href="@Backend.Auth.BuildLogoutUrl(new Logout.Request(Navigation.Uri))">
+                                    <i class="bi bi-door-open"></i>
+                                    Выйти
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <Authorizing>
+        <button class="btn btn-lg btn-secondary" disabled>
+            <i class="bi bi-clock-history"></i>
+            Загрузка...
+        </button>
+    </Authorizing>
+</AuthorizeView>
+
+@code {
+    private LoginSchemeModel[]? _schemes;
+
+    private static readonly IReadOnlyDictionary<string, string> LoginIconClasses = new Dictionary<string, string>
+    {
+        ["Yandex"] = "bi-sign-intersection-y",
+        ["Google"] = "bi-google"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Persistence.TryTakeFromJson(nameof(GetLoginSchemes), out _schemes))
+        {
+            Services.GetRequiredService<IMemoryCache>().Set(nameof(LoginSchemeModel), _schemes);
+            return;
+        }
+        
+        _schemes = await Backend.Auth.GetLoginSchemes();
+        Persistence.RegisterOnPersisting(() =>
+        {
+            Persistence.PersistAsJson(nameof(GetLoginSchemes), _schemes);
+            return Task.CompletedTask;
+        });
+    }
+
+}

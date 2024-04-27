@@ -1,0 +1,58 @@
+﻿@using System.Diagnostics
+@inject ToastSender ToastSender
+@inject IJSRuntime Js   
+@implements IDisposable
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+    <!-- example -->
+    <div id="exampleToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" hidden>
+        <div class="toast-header">
+            <i class="me-2 bi "></i>
+            <strong class="me-auto">Информация</strong>
+        </div>
+        <div class="toast-body text-truncate"></div>
+    </div>
+    
+    <script>
+        function createToast(iconClass, text) {
+            const reference = document.querySelector('#exampleToast');
+            const element = reference.cloneNode(true);
+            
+            element.hidden = false;
+            element.firstChild.firstChild.className += iconClass;
+            element.childNodes[2].textContent = text;
+            
+            reference.parentNode.append(element);
+            
+            const toast = bootstrap.Toast.getOrCreateInstance(element);
+            toast.show();
+            element.addEventListener('hidden.bs.toast', () => {
+                reference.parentNode.removeChild(element);
+            });
+        }
+    </script>
+</div>
+
+@code {
+
+    protected override void OnInitialized()
+        => ToastSender.ToastShown += ShowToastSender;
+
+    public void Dispose()
+        => ToastSender.ToastShown -= ShowToastSender;
+
+    private async Task ShowToastSender(ToastMessage toast)
+    {
+        var iconClass = toast.Type switch
+        {
+            ToastType.Info => "bi-info-circle-fill text-primary",
+            ToastType.Warning => "bi-exclamation-triangle-fill text-warning",
+            ToastType.Error => "bi-exclamation-octagon-fill text-danger",
+            _ => throw new UnreachableException()
+        };
+
+        await Js.InvokeVoidAsync("createToast", iconClass, toast.Text);
+    }
+
+}

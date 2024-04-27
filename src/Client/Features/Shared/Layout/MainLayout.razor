@@ -1,0 +1,58 @@
+﻿@using Client.Features.Shared.Toasts
+@using Client.Features.Auth
+@inherits LayoutComponentBase
+@layout ErrorHandlingLayout
+
+<nav class="navbar navbar-expand-lg bg-dark sticky-top" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex" href="" style="height: 46px; width: 46px;">
+            @if (BlazorEnv.IsServer)
+            {
+                <div class="spinner-border text-light" role="status" >
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            }
+            else
+            {
+                <img src="icon-192.png" alt="Logo" class="flex-fill">
+            }
+        </a>
+        <form class="justify-content-start m-1">
+            <LoginControl/>
+        </form>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="navbar-nav">
+                <NavLink href="" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1" Match="NavLinkMatch.All">
+                    <i class="bi bi-house-door-fill"></i>
+                    Главная
+                </NavLink>
+                <NavLink href="wiki" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1">
+                    <i class="bi bi-database-fill"></i>
+                    Wiki
+                </NavLink>
+                <NavLink href="charsheet" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1">
+                    <i class="bi bi-file-person-fill"></i>
+                    Персонажи
+                </NavLink>
+                
+                <a href="swagger" class="btn btn-success fw-bold btn-lg m-1">
+                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                    Swagger
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+<main class="container-xxl mt-3 my-md-4">
+    <article class="content px-4">
+        @Body
+    </article>
+    
+    @if (BlazorEnv.IsWasm)
+    {
+        <ToastDisplay />
+    }
+</main>

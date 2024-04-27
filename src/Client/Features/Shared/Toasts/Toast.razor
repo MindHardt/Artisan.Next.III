@@ -1,0 +1,9 @@
+﻿@inject ToastSender Toasts
+@code {
+    
+    [Parameter, EditorRequired]
+    public ToastMessage Message { get; set; }
+
+    protected override Task OnParametersSetAsync()
+        => Toasts.ShowToast(Message);
+}

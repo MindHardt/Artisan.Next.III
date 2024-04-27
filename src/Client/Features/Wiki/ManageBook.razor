@@ -1,0 +1,169 @@
+﻿@page "/wiki/books/new"
+@using Client.Features.Files
+@using Client.Features.Shared
+@using Contracts
+@using Client.Features.Shared.Components
+@using Client.Features.Shared.Toasts
+@using Microsoft.AspNetCore.Authorization
+@attribute [Route($"/wiki/books/edit/{{{nameof(UrlName)}}}")]
+@attribute [Authorize(Roles = RoleNames.Admin)]
+@layout WikiLayout
+@inject BackendClient Backend
+@inject PersistentComponentState Persistence
+@inject IServiceProvider Services
+
+<PageTitle>Редактор книг</PageTitle>
+<div class="input-group mb-2">
+    <span class="input-group-text bi bi-tag"></span>
+    <input type="text" class="form-control" @bind="@_bookName" disabled="@Editing" placeholder="Название"/>
+</div>
+<div class="input-group mb-2">
+    <span class="input-group-text bi bi-person"></span>
+    <input type="text" class="form-control" @bind="@_authorName" placeholder="Автор"/>
+</div>
+<div class="input-group mb-2">
+    <span class="input-group-text bi bi-card-text"></span>
+    <input type="text" class="form-control form-control-lg" @bind="@_description" placeholder="Описание"/>
+</div>
+<div class="input-group mb-2">
+    <span class="input-group-text bi bi-image"></span>
+    <input type="text" class="form-control" @bind="@_imageUrl" placeholder="URL изображения"/>
+</div>
+@if (BlazorEnv.IsServer)
+{
+    <PlaceholderText />
+}
+else
+{
+    <div class="input-group" hidden="@_isPreview">
+        <textarea class="form-control" id="bookTextArea" @onchange="@(e => UpdateText((string)e.Value!))">@_text</textarea>
+    </div>
+    <script>
+        function adjustInputSize(selector) {
+            const element = document.querySelector(selector);
+            element.style.height = 'auto';
+            element.style.height = `${element.scrollHeight + 30}px`;
+        }
+        document.getElementById('bookTextArea').addEventListener('keyup', () => adjustInputSize('#bookTextArea'));
+    </script>
+    <div hidden="@(!_isPreview)">
+        <RenderedMd Markdown="@_text" />
+    </div>
+
+    <div class="sticky-bottom mt-2 d-flex justify-content-end">
+        <div class="card shadow-sm" id="controls">
+            <div class="p-1 hstack gap-2">
+                <div class="input-group">
+                    <button class="btn btn-lg @(!_isPreview ? "btn-dark" : "btn-light")"
+                            @onclick="@(() => _isPreview = false)">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-lg @(_isPreview ? "btn-dark" : "btn-light")"
+                            @onclick="@(() => _isPreview = true)">
+                        <i class="bi bi-body-text"></i>
+                    </button>
+                </div>
+                <button class="btn btn-lg btn-light" onclick="document.getElementById('uploadBookFile').click()">
+                    <i class="bi bi-file-earmark-image"></i>
+                </button>
+                <InputFile hidden id="uploadBookFile" OnChange="@HandleFile"/>
+                <button class="btn btn-lg btn-success" @onclick="@SaveBook">
+                    <i class="bi bi-floppy"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+
+    private GetBook.Response? _book;
+
+    private GetBook.Response? Book
+    {
+        set => 
+            (_book, _text, _authorName, _bookName, _imageUrl) = 
+            (value, value!.Text, value.Author, value.Name, value.ImageUrl ?? string.Empty);
+    }
+
+    private string _bookName = string.Empty;
+    private string _description = string.Empty;
+    private string _authorName = string.Empty;
+    private string _text = string.Empty;
+    private string _imageUrl = string.Empty;
+
+    private bool _isPreview;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (UrlName is null)
+        {
+            return;
+        }
+        
+        if (Persistence.TryTakeFromJson(nameof(_book), out _book))
+        {
+            Book = _book;
+        }
+        else
+        {
+            Book = await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)));
+            Persistence.RegisterOnPersisting(() =>
+            {
+                Persistence.PersistAsJson(nameof(_book), _book);
+                return Task.CompletedTask;
+            });
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Services.GetRequiredService<IJSRuntime>().InvokeVoidAsync("adjustInputSize", "#bookTextArea");
+    }
+
+    private async Task HandleFile(InputFileChangeEventArgs e)
+    {
+        var result = await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
+            e.File,
+            FileScope.Attachment));
+
+        await Services.GetRequiredService<ClipboardJsInterop>().Copy(result.Path);
+        await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована");
+    }
+
+    private async Task SaveBook()
+    {
+        var imageUrl = string.IsNullOrWhiteSpace(_imageUrl)
+            ? null
+            : _imageUrl;
+        if (Editing)
+        {
+            var request = new UpdateBook.Request(
+                BookUrlName.From(UrlName),
+                _authorName,
+                _description,
+                _text,
+                imageUrl);
+            await Backend.Wiki.UpdateBook(request);
+        }
+        else
+        {
+            var request = new CreateBook.Request(
+                _bookName,
+                _description,
+                _authorName,
+                _text,
+                imageUrl);
+            var result = await Backend.Wiki.CreateBook(request);
+            UrlName = result.UrlName.Value;
+        }
+        Services.GetRequiredService<NavigationManager>().NavigateTo(
+            $"/wiki/books/read/{UrlName}");
+    }
+
+    [Parameter]
+    public string? UrlName { get; set; }
+
+    public bool Editing => UrlName is not null;
+}

@@ -1,0 +1,30 @@
+﻿@using Client.Features.Shared.Toasts
+@using Client.Features.Shared.Components
+@inherits LayoutComponentBase
+
+<ErrorBoundary MaximumErrorCount="10">
+    <ChildContent>
+        @Body
+    </ChildContent>
+    <ErrorContent>
+        @if (BlazorEnv.IsWasm)
+        {
+            <PageTitle>Что-то пошло не так</PageTitle>
+            <div class="card position-absolute top-50 start-50 translate-middle shadow-lg" style="width: 18rem;">
+                <div class="card-body text-center">
+                    <h5 class="card-title bi bi-heartbreak-fill text-danger"></h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Произошла ошибка!</h6>
+                    <p class="card-text font-monospace text">@context.Message</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <RedirectToError/>
+        }
+    </ErrorContent>
+</ErrorBoundary>
+@if (BlazorEnv.IsWasm)
+{
+    <ToastDisplay />
+}

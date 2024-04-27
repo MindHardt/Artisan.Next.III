@@ -1,0 +1,10 @@
+﻿services:
+  server:
+    image: un1ver5e/artisan.next.iii:latest-arm
+    environment:
+      Serilog__WriteTo__3__serverUrl: $SeqUrl
+      ConnectionStrings__Postgres: $PostgresConnStr
+      OAuth__Google__ClientId: $GoogleID
+      OAuth__Google__ClientSecret: $GoogleSecret
+      OAuth__Yandex__ClientId: $YandexID
+      OAuth__Yandex__ClientSecret: $YandexSecret
