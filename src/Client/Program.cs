@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-var backendUri = new Uri(builder.HostEnvironment.BaseAddress);
+builder.Services.AddHttpClient(string.Empty, http =>
+    {
+        http.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+    })
+    .AddHttpMessageHandler<HttpErrorHandler>();
+builder.Services.AddScoped<HttpErrorHandler>();
 
-builder.Services.AddScoped(_ => new HttpClient { BaseAddress = backendUri });
 builder.Services.AddScoped<BackendClient>();
 builder.Services.AutoRegisterFromClient();
 
