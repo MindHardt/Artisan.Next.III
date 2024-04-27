@@ -62,6 +62,8 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
+app.MapGet("health", () => TypedResults.Ok());
+
 if (app.Configuration["ExternalHost"] is { } host)
 {
     var hostUrl = new Uri(host);
