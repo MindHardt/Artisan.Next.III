@@ -11,8 +11,7 @@ namespace Client.Features.Auth;
 public class ClientAuthStateProvider(
     PersistentComponentState state,
     ILogger<ClientAuthStateProvider> logger,
-    IOptions<JsonSerializerOptions> jsonOptions,
-    IMemoryCache cache) : AuthenticationStateProvider
+    IOptions<JsonSerializerOptions> jsonOptions) : AuthenticationStateProvider
 {
     public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
