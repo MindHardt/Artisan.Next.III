@@ -3,6 +3,7 @@ using Client.Features.Auth;
 using Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
 
@@ -11,6 +12,7 @@ namespace Server.Features.Auth;
 public class ServerAuthStateProvider(
     ClaimsPrincipal principal,
     PersistentComponentState persistence,
+    SignInManager<User> signInManager,
     IDbContextFactory<DataContext> dbContextFactory) : AuthenticationStateProvider
 {
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -24,12 +26,11 @@ public class ServerAuthStateProvider(
 
         var userId = principal.GetUserId()!.Value;
         // ReSharper disable AccessToDisposedClosure
-        var dbUser = await dataContext.Users
+        var queryResult = await dataContext.Users
+            .Where(user => user.Id == userId)
             .Select(user => new
             { 
-                user.Id,
-                user.UserName,
-                user.AvatarUrl,
+                User = user,
                 
                 Roles = dataContext.UserRoles
                     .Where(ur => ur.UserId == user.Id)
@@ -43,15 +44,21 @@ public class ServerAuthStateProvider(
                     .ToArray()
                 
             })
-            .FirstAsync(user => user.Id == userId);
+            .FirstAsync();
 
+        await signInManager.SignInWithClaimsAsync(queryResult.User, isPersistent: true,
+        [
+            new Claim(CustomClaims.AvatarUrl, queryResult.User.AvatarUrl),
+            ..queryResult.Logins.Select(login => new Claim(CustomClaims.LoginScheme, login))
+        ]);
+        
         var user = new UserModel(
-            dbUser.Id,
-            dbUser.UserName!,
-            dbUser.AvatarUrl,
-            dbUser.Roles,
-            dbUser.Logins);
-
+            queryResult.User.Id,
+            queryResult.User.UserName!,
+            queryResult.User.AvatarUrl,
+            queryResult.Roles,
+            queryResult.Logins);
+        
         persistence.RegisterOnPersisting(() =>
         {
             persistence.PersistAsJson(nameof(UserModel), user);

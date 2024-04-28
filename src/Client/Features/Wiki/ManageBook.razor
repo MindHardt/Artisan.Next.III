@@ -41,17 +41,22 @@ else
     </div>
     
     <div hidden="@_isPreview">
-        <div contenteditable="true" class="preserve-space" id="bookTextArea" @oninput="@(e => UpdateText((string)e.Value!))">
-            @_text
-        </div>
+        <textarea class="form-control" id="bookTextArea" @onchange="@(e => UpdateText((string)e.Value!))">@_text</textarea>
+    
         <script>
             function adjustHeight() {
                 const element = document.getElementById('bookTextArea');
-                const scrollTop = window.scrollY;
+                let scrollTop = window.scrollY;
+                
+                element.previousHeight = parseInt(element.style.height.replace('px', ''));
 
                 element.style.height = '1px';
                 element.style.height = element.scrollHeight + 5 + 'px';
+                
+                const heightDiff = element.previousHeight - parseInt(element.style.height.replace('px', ''));
+                scrollTop -= heightDiff;
 
+                console.log('scrollTop', scrollTop);
                 window.scrollTo({
                     top: scrollTop,
                     left: document.body.scrollLeft,
