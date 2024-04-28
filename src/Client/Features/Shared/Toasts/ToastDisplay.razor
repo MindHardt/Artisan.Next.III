@@ -37,12 +37,12 @@
 @code {
 
     protected override void OnInitialized()
-        => ToastSender.ToastShown += ShowToastSender;
+        => ToastSender.ToastShown += ShowToast;
 
     public void Dispose()
-        => ToastSender.ToastShown -= ShowToastSender;
+        => ToastSender.ToastShown -= ShowToast;
 
-    private async Task ShowToastSender(ToastMessage toast)
+    private async Task ShowToast(ToastMessage toast)
     {
         var iconClass = toast.Type switch
         {

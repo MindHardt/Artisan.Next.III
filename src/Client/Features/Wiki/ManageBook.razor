@@ -5,6 +5,7 @@
 @using Client.Features.Shared.Components
 @using Client.Features.Shared.Toasts
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Caching.Memory
 @attribute [Route($"/wiki/books/edit/{{{nameof(UrlName)}}}")]
 @attribute [Authorize(Roles = RoleNames.Admin)]
 @layout WikiLayout
@@ -35,19 +36,30 @@
 }
 else
 {
-    <div class="input-group" hidden="@_isPreview">
-        <textarea class="form-control" id="bookTextArea" @onchange="@(e => UpdateText((string)e.Value!))">@_text</textarea>
-    </div>
-    <script>
-        function adjustInputSize(selector) {
-            const element = document.querySelector(selector);
-            element.style.height = 'auto';
-            element.style.height = `${element.scrollHeight + 30}px`;
-        }
-        document.getElementById('bookTextArea').addEventListener('keyup', () => adjustInputSize('#bookTextArea'));
-    </script>
     <div hidden="@(!_isPreview)">
         <RenderedMd Markdown="@_text" />
+    </div>
+    
+    <div hidden="@_isPreview">
+        <div contenteditable="true" class="preserve-space" id="bookTextArea" @oninput="@(e => UpdateText((string)e.Value!))">
+            @_text
+        </div>
+        <script>
+            function adjustHeight() {
+                const element = document.getElementById('bookTextArea');
+                const scrollTop = window.scrollY;
+
+                element.style.height = '1px';
+                element.style.height = element.scrollHeight + 5 + 'px';
+
+                window.scrollTo({
+                    top: scrollTop,
+                    left: document.body.scrollLeft,
+                    behavior: 'instant'
+                });
+            }
+            document.getElementById('bookTextArea').addEventListener('input', () => adjustHeight());
+        </script>
     </div>
 
     <div class="sticky-bottom mt-2 d-flex justify-content-end">
@@ -119,7 +131,7 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Services.GetRequiredService<IJSRuntime>().InvokeVoidAsync("adjustInputSize", "#bookTextArea");
+        await Services.GetRequiredService<IJSRuntime>().InvokeVoidAsync("adjustHeight");
     }
 
     private async Task HandleFile(InputFileChangeEventArgs e)
@@ -158,6 +170,7 @@ else
             var result = await Backend.Wiki.CreateBook(request);
             UrlName = result.UrlName.Value;
         }
+        Services.GetRequiredService<IMemoryCache>().Remove($"book_{UrlName}");
         Services.GetRequiredService<NavigationManager>().NavigateTo(
             $"/wiki/books/read/{UrlName}");
     }
