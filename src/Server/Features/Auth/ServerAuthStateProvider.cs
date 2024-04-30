@@ -3,68 +3,79 @@ using Client.Features.Auth;
 using Contracts;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
 
 namespace Server.Features.Auth;
 
-public class ServerAuthStateProvider(
-    ClaimsPrincipal principal,
-    PersistentComponentState persistence,
-    SignInManager<User> signInManager,
-    IDbContextFactory<DataContext> dbContextFactory) : AuthenticationStateProvider
+public class ServerAuthStateProvider : ServerAuthenticationStateProvider, IDisposable
 {
-    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    private readonly PersistentComponentState _persistence;
+    private readonly DataContext _dataContext;
+
+    private readonly PersistingComponentStateSubscription _sub;
+    private Task<AuthenticationState>? _authenticationStateTask;    
+    
+    public ServerAuthStateProvider(
+        PersistentComponentState persistence,
+        DataContext dataContext)
     {
+        _persistence = persistence;
+        _dataContext = dataContext;
+
+        AuthenticationStateChanged += OnAuthenticationStateChanged;
+        _sub = _persistence.RegisterOnPersisting(OnPersistingAsync, RenderMode.InteractiveWebAssembly);
+    }
+
+    private void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+        => _authenticationStateTask = task;
+
+    private async Task OnPersistingAsync()
+    {
+        ArgumentNullException.ThrowIfNull(_authenticationStateTask);
+
+        var principal = (await _authenticationStateTask).User;
         if (principal.Identity?.IsAuthenticated is not true)
         {
-            return new AuthenticationState(new ClaimsPrincipal());
+            return;
         }
-
-        await using var dataContext = await dbContextFactory.CreateDbContextAsync();
-
+        
         var userId = principal.GetUserId()!.Value;
-        // ReSharper disable AccessToDisposedClosure
-        var queryResult = await dataContext.Users
+        var queryResult = await _dataContext.Users
             .Where(user => user.Id == userId)
             .Select(user => new
             { 
                 User = user,
                 
-                Roles = dataContext.UserRoles
+                Roles = _dataContext.UserRoles
                     .Where(ur => ur.UserId == user.Id)
-                    .Select(ur => dataContext.Roles
+                    .Select(ur => _dataContext.Roles
                         .First(role => role.Id == ur.RoleId).Name!)
                     .ToArray(),
                 
-                Logins = dataContext.UserLogins
+                Logins = _dataContext.UserLogins
                     .Where(login => login.UserId == user.Id)
                     .Select(login => login.LoginProvider)
                     .ToArray()
                 
             })
             .FirstAsync();
-
-        await signInManager.SignInWithClaimsAsync(queryResult.User, isPersistent: true,
-        [
-            new Claim(CustomClaims.AvatarUrl, queryResult.User.AvatarUrl),
-            ..queryResult.Logins.Select(login => new Claim(CustomClaims.LoginScheme, login))
-        ]);
         
-        var user = new UserModel(
+        _persistence.PersistAsJson(nameof(UserModel), new UserModel(
             queryResult.User.Id,
             queryResult.User.UserName!,
             queryResult.User.AvatarUrl,
             queryResult.Roles,
-            queryResult.Logins);
-        
-        persistence.RegisterOnPersisting(() =>
-        {
-            persistence.PersistAsJson(nameof(UserModel), user);
-            return Task.CompletedTask;
-        });
+            queryResult.Logins));
+    }
 
-        return new AuthenticationState(user.AsPrincipal());
+    public void Dispose()
+    {
+        _sub.Dispose();
+        AuthenticationStateChanged -= OnAuthenticationStateChanged;
+        GC.SuppressFinalize(this);
     }
 }
