@@ -186,7 +186,9 @@ else
                 _isPublic);
             var result = await Backend.Wiki.CreateBook(request);
             UrlName = result.UrlName.Value;
+            Services.GetRequiredService<IMemoryCache>().Remove("_books");
         }
+        
         Services.GetRequiredService<IMemoryCache>().Remove($"book_{UrlName}");
         Services.GetRequiredService<NavigationManager>().NavigateTo(
             $"/wiki/books/read/{UrlName}");
