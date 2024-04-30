@@ -1,0 +1,29 @@
+﻿@inject NavigationManager Navigation
+
+<HeadContent>
+    @if (Title is not null)
+    {
+        <meta property="og:title" content="@Title"/>
+    }
+    @if (Description is not null)
+    {
+        <meta property="og:description" content="@Description"/>
+    }
+    @if (Title is not null)
+    {
+        <meta property="og:type" content="@Title"/>
+    }
+    <meta property="og:image" content="@(Image ?? $"{Navigation.BaseUri}/icon-1024.png")"/>
+    <meta property="og:url" content= "@Navigation.Uri"/>
+</HeadContent>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+    [Parameter]
+    public string? Description { get; set; }
+    [Parameter]
+    public string? Image { get; set; }
+    [Parameter]
+    public string? Type { get; set; }
+}
