@@ -28,9 +28,13 @@
 <div class="input-group input-group-lg mb-2">
     <span class="input-group-text bi bi-regex"></span>
     <input class="form-control" type="text" placeholder="[Ии]стория.*" @onchange="@(e => SearchBooks(e.Value as string))" value="@_regex"/>
-    <a class="btn btn-outline-success" href="wiki/books/new">
-        <i class="bi bi-plus"></i>
-    </a>
+    <AuthorizeView Roles="@RoleNames.Admin">
+        <Authorized>
+            <a class="btn btn-outline-success" href="wiki/books/new">
+                <i class="bi bi-plus"></i>
+            </a>
+        </Authorized>
+    </AuthorizeView>
 </div>
 
 <ul class="list-group list-group-numbered">
