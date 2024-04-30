@@ -13,6 +13,7 @@ public class GetBook
         string Description,
         string Author,
         string Text,
-        string? ImageUrl)
-        : BookModel(UrlName, Name, Description, ImageUrl, Author);
+        string? ImageUrl,
+        bool IsPublic)
+        : BookModel(UrlName, Name, Description, ImageUrl, Author, IsPublic);
 }

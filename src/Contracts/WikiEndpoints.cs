@@ -15,7 +15,8 @@ public record BookModel(
     string Name,
     string Description,
     string? ImageUrl,
-    string Author);
+    string Author,
+    bool IsPublic);
 
 [ValueObject<string>]
 public readonly partial struct BookUrlName

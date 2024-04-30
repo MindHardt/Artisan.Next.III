@@ -12,5 +12,6 @@ public static class UpdateBook
         string Author,
         string Description,
         string Text,
-        string? ImageUrl);
+        string? ImageUrl,
+        bool IsPublic);
 }

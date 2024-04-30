@@ -46,12 +46,19 @@ public partial class CreateBook
             Author = request.Author,
             ImageUrl = request.ImageUrl,
             Text = request.Text,
-            LastUpdated = DateTimeOffset.UtcNow
+            LastUpdated = DateTimeOffset.UtcNow,
+            IsPublic = request.IsPublic
         };
         dataContext.Books.Add(book);
         await dataContext.SaveChangesAsync(ct);
 
-        return TypedResults.Ok(new BookModel(book.UrlName, book.Name, book.Description, book.ImageUrl, book.Author));
+        return TypedResults.Ok(new BookModel(
+            book.UrlName, 
+            book.Name, 
+            book.Description, 
+            book.ImageUrl, 
+            book.Author,
+            book.IsPublic));
     }
 
     private static BookUrlName CreateUrlName(string name)

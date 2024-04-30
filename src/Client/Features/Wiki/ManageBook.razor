@@ -17,6 +17,12 @@
 <div class="input-group mb-2">
     <span class="input-group-text bi bi-tag"></span>
     <input type="text" class="form-control" @bind="@_bookName" disabled="@Editing" placeholder="Название"/>
+    @{
+        var publicButtonClass = _isPublic
+            ? "bi-star-fill text-warning"
+            : "bi-star";
+    }
+    <span class="input-group-text bi @publicButtonClass" @onclick="@(() => _isPublic = !_isPublic)"></span>
 </div>
 <div class="input-group mb-2">
     <span class="input-group-text bi bi-person"></span>
@@ -100,8 +106,8 @@ else
     private GetBook.Response? Book
     {
         set => 
-            (_book, _text, _authorName, _bookName, _imageUrl) = 
-            (value, value!.Text, value.Author, value.Name, value.ImageUrl ?? string.Empty);
+            (_book, _text, _authorName, _description, _bookName, _imageUrl, _isPublic) = 
+            (value, value!.Text, value.Author, value.Description, value.Name, value.ImageUrl ?? string.Empty, value.IsPublic);
     }
 
     private string _bookName = string.Empty;
@@ -109,6 +115,7 @@ else
     private string _authorName = string.Empty;
     private string _text = string.Empty;
     private string _imageUrl = string.Empty;
+    private bool _isPublic;
 
     private bool _isPreview;
 
@@ -126,11 +133,14 @@ else
         else
         {
             Book = await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)));
-            Persistence.RegisterOnPersisting(() =>
+            if (BlazorEnv.IsServer)
             {
-                Persistence.PersistAsJson(nameof(_book), _book);
-                return Task.CompletedTask;
-            });
+                Persistence.RegisterOnPersisting(() =>
+                {
+                    Persistence.PersistAsJson(nameof(_book), _book);
+                    return Task.CompletedTask;
+                });
+            }
         }
     }
 
@@ -161,7 +171,8 @@ else
                 _authorName,
                 _description,
                 _text,
-                imageUrl);
+                imageUrl,
+                _isPublic);
             await Backend.Wiki.UpdateBook(request);
         }
         else
@@ -171,7 +182,8 @@ else
                 _description,
                 _authorName,
                 _text,
-                imageUrl);
+                imageUrl,
+                _isPublic);
             var result = await Backend.Wiki.CreateBook(request);
             UrlName = result.UrlName.Value;
         }

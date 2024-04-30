@@ -10,42 +10,49 @@
 <PageTitle>Книги</PageTitle>
 <AuthorizeView Roles="@RoleNames.Admin">
     <NotAuthorized>
-        <div class="card">
-            <div class="card-header">
-                <i class="bi bi-info-square-fill text-primary"></i>
+        <div class="card mb-3" id="UserCallout">
+            <div class="card-header d-flex">
+                <i class="bi bi-info-square-fill text-primary flex-fill"></i>
+                <button class="btn-close" onclick="document.getElementById('UserCallout').hidden = true"></button>
             </div>
             <div class="card-body">
-                Поиск книг недоступен пользователям. Вы можете перейти на них
-                только по прямой ссылке от администратора.
+                Вам доступны для поиска только публичные книги.
+                К остальным доступ только по прямой ссылке от администратора.
             </div>
         </div>
     </NotAuthorized>
-    <Authorized>
-        <div class="input-group input-group-lg mb-2">
-            <span class="input-group-text bi bi-regex"></span>
-            <input class="form-control" type="text" placeholder="[Ии]стория.*" @onchange="@(e => SearchBooks(e.Value as string))" value="@_regex"/>
-            <a class="btn btn-outline-success" href="wiki/books/new">
-                <i class="bi bi-plus"></i>
-            </a>
-        </div>
-        
-        <ul class="list-group list-group-numbered list-group-flush">
-            @foreach (var book in _books ?? [])
-            {
-                <li class="list-group-item">
-                    <a class="text-truncate" href="wiki/books/read/@book.UrlName.Value">@book.Name</a>
-                </li>
-            }
-        </ul>
-    </Authorized>
 </AuthorizeView>
+<div class="input-group input-group-lg mb-2">
+    <span class="input-group-text bi bi-regex"></span>
+    <input class="form-control" type="text" placeholder="[Ии]стория.*" @onchange="@(e => SearchBooks(e.Value as string))" value="@_regex"/>
+    <a class="btn btn-outline-success" href="wiki/books/new">
+        <i class="bi bi-plus"></i>
+    </a>
+</div>
+
+<ul class="list-group list-group-numbered">
+    @foreach (var book in _books ?? [])
+    {
+        <li class="list-group-item d-flex">
+            <a class="text-truncate flex-fill" href="wiki/books/read/@book.UrlName.Value">@book.Name</a>
+            @if (book.IsPublic)
+            {
+                <span class="bi bi-star-fill text-warning" title="Публичная книга"></span>
+            }
+            else
+            {
+                <span class="bi bi-star"></span>
+            }
+
+        </li>
+    }
+</ul>
 
 @code {
-    
-    [CascadingParameter]
-    public Task<AuthenticationState> AuthenticationStateTask { get; set; } = null!;
 
-    private BookModel[]? _books = [];
+    [CascadingParameter] public Task<AuthenticationState> AuthenticationStateTask { get; set; } = null!;
+
+    private BookModel[]? _books;
     private string? _regex;
 
     private async Task SearchBooks(string? regex)
@@ -58,16 +65,10 @@
             cache.Set(nameof(_books), _books);
             cache.Set(nameof(_regex), _regex);
         }
-
     }
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateTask;
-        if (authState.User.IsInRole(RoleNames.Admin) is false)
-        {
-            return;
-        }
         if (Persistence.TryTakeFromJson(nameof(_books), out _books))
         {
             return;
@@ -79,7 +80,11 @@
             _books = cache.Get<BookModel[]>(nameof(_books));
             _regex = cache.Get<string>(nameof(_regex));
         }
-        await SearchBooks(_regex);
+
+        if (_books?.Any() is not true)
+        {
+            await SearchBooks(_regex);
+        }
         if (BlazorEnv.IsServer)
         {
             Persistence.RegisterOnPersisting(() =>

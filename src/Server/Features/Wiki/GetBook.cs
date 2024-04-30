@@ -12,10 +12,6 @@ namespace Server.Features.Wiki;
 [MapGet(Contracts.GetBook.FullPath)]
 public partial class GetBook
 {
-    public record Request(
-        [FromRoute] BookUrlName UrlName)
-        : Contracts.GetBook.Request(UrlName);
-    
     private static async ValueTask<Results<Ok<Contracts.GetBook.Response>, NotFound>> HandleAsync(
         Contracts.GetBook.Request request,
         DataContext dataContext,
@@ -34,6 +30,7 @@ public partial class GetBook
             book.Description,
             book.Author,
             book.Text,
-            book.ImageUrl));
+            book.ImageUrl,
+            book.IsPublic));
     }
 }

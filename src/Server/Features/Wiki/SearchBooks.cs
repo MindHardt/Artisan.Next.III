@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Contracts;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
@@ -12,18 +13,21 @@ namespace Server.Features.Wiki;
 [MapGet(Contracts.SearchBooks.FullPath)]
 public partial class SearchBooks
 {
-    internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin));
-
     private static async ValueTask<Ok<BookModel[]>> HandleAsync(
         Contracts.SearchBooks.Request request,
+        ClaimsPrincipal principal,
         DataContext dataContext,
         CancellationToken ct)
     {
         var query = dataContext.Books
-            .OrderBy(x => x.LastUpdated)
+            .OrderByDescending(x => x.LastUpdated)
             .AsQueryable();
 
+        if (principal.IsInRole(RoleNames.Admin) is false)
+        {
+            query = query.Where(book => book.IsPublic);
+        }
+        
         if (string.IsNullOrWhiteSpace(request.Regex) is false)
         {
             // ReSharper disable once EntityFramework.UnsupportedServerSideFunctionCall
@@ -36,7 +40,8 @@ public partial class SearchBooks
                 book.Name,
                 book.Description,
                 book.ImageUrl,
-                book.Author))
+                book.Author,
+                book.IsPublic))
             .ToArrayAsync(ct));
     }
 }

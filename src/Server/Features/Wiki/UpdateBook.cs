@@ -37,6 +37,8 @@ public partial class UpdateBook
         book.Text = request.Body.Text;
         book.ImageUrl = request.Body.ImageUrl;
         book.LastUpdated = DateTimeOffset.UtcNow;
+        book.IsPublic = request.Body.IsPublic;
+        
         await dataContext.SaveChangesAsync(ct);
 
         return TypedResults.Ok(new BookModel(
@@ -44,7 +46,8 @@ public partial class UpdateBook
             book.Name,
             book.Description,
             book.ImageUrl,
-            book.Author));
+            book.Author,
+            book.IsPublic));
     }
 
 }

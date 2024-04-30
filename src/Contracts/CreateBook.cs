@@ -10,5 +10,6 @@ public static class CreateBook
         string Description,
         string Author,
         string Text,
-        string? ImageUrl);
+        string? ImageUrl,
+        bool IsPublic);
 }
