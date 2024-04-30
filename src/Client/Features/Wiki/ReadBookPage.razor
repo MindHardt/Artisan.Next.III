@@ -59,19 +59,30 @@ else
             </div>
         </div>
     }
+    <div class="input-group mb-3">
+        @{
+            var iconClass = _includeImages
+                ? "text-success bi-check-square"
+                : "text-danger bi-x-square";
+        }
+        <i class="input-group-text bi @iconClass" @onclick="@(() => _includeImages = !_includeImages)"></i>
+        <span class="input-group-text">Отрисовывать изображения</span>
+    </div>
     <hr/>
+    
     @if (BlazorEnv.IsServer)
     {
         <PlaceholderText/>
     }
     else
     {
-        <RenderedMd Markdown="@_book.Text"/>
+        <RenderedMd Markdown="@GetText()"/>
     }
 }
 
 @code {
 
+    private bool _includeImages = true;
     private GetBook.Response? _book;
 
     [Parameter] public string UrlName { get; set; } = null!;
