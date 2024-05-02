@@ -46,65 +46,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-grid.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-grid.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-grid.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-grid.min.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-grid.rtl.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-grid.rtl.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-grid.rtl.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-grid.rtl.min.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-reboot.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-reboot.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-reboot.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-reboot.min.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-reboot.rtl.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-reboot.rtl.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-reboot.rtl.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-reboot.rtl.min.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-utilities.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-utilities.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-utilities.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-utilities.min.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-utilities.rtl.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-utilities.rtl.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-utilities.rtl.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap-utilities.rtl.min.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap.min.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap.rtl.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap.rtl.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap.rtl.min.css" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\css\bootstrap.rtl.min.css.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.bundle.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.bundle.js.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.bundle.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.bundle.min.js.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.esm.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.esm.js.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.esm.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.esm.min.js.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.js.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.min.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\bootstrap\js\bootstrap.min.js.map" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\modals.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\showdown.local.js" />
-    <_ContentIncludedByDefault Remove="wwwroot\js\showdown.min.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="FileStorage\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="FileStorage\36F3B0F3FC57B373ECA5153831B5D81F4EC4D95827E2D4202388EC8B3B388F8E" />
-    <None Remove="FileStorage\50b59d1a1d6dea0937d86f5702cc218dc86859ee6e69d9c54dc29f5097ee88c5" />
-    <None Remove="FileStorage\983327188ee931f523dc6060d716f4d7b9b651f7bca688c17dddb293684103ea" />
-    <None Remove="FileStorage\d3f3f73bb80bd91d14ce9e8fdc51fab41b6cf4fcb4a66b5ac4943773cc465829" />
   </ItemGroup>
 
 </Project>
