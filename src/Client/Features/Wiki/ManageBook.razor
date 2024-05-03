@@ -62,7 +62,6 @@ else
                 const heightDiff = element.previousHeight - parseInt(element.style.height.replace('px', ''));
                 scrollTop -= heightDiff;
 
-                console.log('scrollTop', scrollTop);
                 window.scrollTo({
                     top: scrollTop,
                     left: document.body.scrollLeft,
@@ -86,10 +85,30 @@ else
                         <i class="bi bi-body-text"></i>
                     </button>
                 </div>
-                <button class="btn btn-lg btn-light" onclick="document.getElementById('uploadBookFile').click()">
-                    <i class="bi bi-file-earmark-image"></i>
-                </button>
-                <InputFile hidden id="uploadBookFile" OnChange="@HandleFile"/>
+                <div class="btn-group dropup">
+                    <button type="button" class="btn btn-light btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <button class="dropdown-item" onclick="navigator.clipboard.writeText('<details>\n<summary></summary>\n\n</details>')">
+                                <i class="bi bi-arrows-expand"></i>
+                                Спойлер
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" onclick="document.getElementById('uploadBookFile').click()">
+                                <i class="bi bi-file-earmark-image"></i>
+                                Картинка
+                            </button>
+                            <InputFile hidden id="uploadBookFile" OnChange="@HandleFile"/>
+                        </li>
+                        <li>
+                            <button class="dropdown-item" onclick="navigator.clipboard.writeText('```\n\n```')">
+                                <i class="bi bi-code-slash"></i>
+                                Код
+                            </button>
+                        </li>
+                    </ul>
+                </div>
                 <button class="btn btn-lg btn-success" @onclick="@SaveBook">
                     <i class="bi bi-floppy"></i>
                 </button>
@@ -155,7 +174,7 @@ else
             e.File,
             FileScope.Attachment));
 
-        await Services.GetRequiredService<ClipboardJsInterop>().Copy(result.Path);
+        await Services.GetRequiredService<ClipboardJsInterop>().Copy($"![alt]({result.Path})");
         await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована");
     }
 
