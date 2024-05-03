@@ -1,7 +1,0 @@
-﻿.sticky-bottom {
-    opacity: 0.5;
-    transition: opacity 0.5s;
-}
-.sticky-bottom:hover {
-    opacity: 1;
-}
