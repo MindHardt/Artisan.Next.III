@@ -16,7 +16,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         command_timeout: 30m
-        script: cd src/Artisan.Next.III/src && git pull && && sudo build -t un1ver5e/artisan.next.iii -f Server/Dockerfile --push .
+        script: cd src/Artisan.Next.III/src && git pull && sudo docker build -t un1ver5e/artisan.next.iii -f Server/Dockerfile --push .
         
     - name: Calling portainer webhook
       run: |
