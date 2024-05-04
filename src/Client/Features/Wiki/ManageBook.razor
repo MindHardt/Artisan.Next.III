@@ -35,6 +35,10 @@
 <div class="input-group mb-2">
     <span class="input-group-text bi bi-image"></span>
     <input type="text" class="form-control" @bind="@_imageUrl" placeholder="URL изображения"/>
+    <button class="btn btn-outline-primary rounded-end" onclick="document.getElementById('thumbnailImageUpload').click()">
+        <i class="bi bi-upload"></i>
+    </button>
+    <InputFile hidden id="thumbnailImageUpload" accept="image/*" OnChange="@HandleThumbnailImage"/>
 </div>
 @if (BlazorEnv.IsServer)
 {
@@ -47,7 +51,7 @@ else
     </div>
     
     <div hidden="@_isPreview">
-        <textarea class="form-control" id="bookTextArea" @bind="@_text"></textarea>
+        <textarea class="form-control" id="bookTextArea" @bind="@_text" style="resize: none"></textarea>
     
         <script>
             function adjustHeight() {
@@ -89,6 +93,12 @@ else
                     <button type="button" class="btn btn-light btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></button>
                     <ul class="dropdown-menu">
                         <li>
+                            <button class="dropdown-item" onclick="navigator.clipboard.writeText('```\n\n```')">
+                                <i class="bi bi-code-slash"></i>
+                                Код
+                            </button>
+                        </li>
+                        <li>
                             <button class="dropdown-item" onclick="navigator.clipboard.writeText('<details>\n<summary></summary>\n\n</details>')">
                                 <i class="bi bi-arrows-expand"></i>
                                 Спойлер
@@ -99,13 +109,7 @@ else
                                 <i class="bi bi-file-earmark-image"></i>
                                 Картинка
                             </button>
-                            <InputFile hidden id="uploadBookFile" OnChange="@HandleFile"/>
-                        </li>
-                        <li>
-                            <button class="dropdown-item" onclick="navigator.clipboard.writeText('```\n\n```')">
-                                <i class="bi bi-code-slash"></i>
-                                Код
-                            </button>
+                            <InputFile hidden id="uploadBookFile" accept="image/*" OnChange="@HandleAttachmentImage"/>
                         </li>
                     </ul>
                 </div>
@@ -168,13 +172,22 @@ else
         await Services.GetRequiredService<IJSRuntime>().InvokeVoidAsync("adjustHeight");
     }
 
-    private async Task HandleFile(InputFileChangeEventArgs e)
+    private async Task HandleThumbnailImage(InputFileChangeEventArgs e)
     {
         var result = await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
             e.File,
             FileScope.Attachment));
 
-        await Services.GetRequiredService<ClipboardJsInterop>().Copy($"![alt]({result.Path} =100%x*)");
+        _imageUrl = result.Url;
+    }
+
+    private async Task HandleAttachmentImage(InputFileChangeEventArgs e)
+    {
+        var result = await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
+            e.File,
+            FileScope.Attachment));
+
+        await Services.GetRequiredService<ClipboardJsInterop>().Copy($"![alt]({result.Url} =100%x*)");
         await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована");
     }
 

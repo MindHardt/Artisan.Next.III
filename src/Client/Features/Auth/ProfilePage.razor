@@ -119,7 +119,7 @@ else
         var avatarModel = await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
             newAvatar, 
             FileScope.Avatar));
-        _newAvatarUrl = avatarModel.Path;
+        _newAvatarUrl = avatarModel.Url;
     }
 
     private async Task SaveProfile()

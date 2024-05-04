@@ -15,7 +15,7 @@ public record FileModel(
     string OriginalName,
     long Size)
 {
-    public string Path => GetFile.FullPath
+    public string Url => GetFile.FullPath
         .Replace($"{{{nameof(GetFile.Request.Identifier)}}}", Identifier.Value);
 }
 
