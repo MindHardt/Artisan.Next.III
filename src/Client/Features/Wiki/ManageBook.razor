@@ -186,8 +186,9 @@ else
         var result = await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
             e.File,
             FileScope.Attachment));
-
-        await Services.GetRequiredService<ClipboardJsInterop>().Copy($"![alt]({result.Url} =100%x*)");
+        
+        var alt = Path.GetFileNameWithoutExtension(e.File.Name);
+        await Services.GetRequiredService<ClipboardJsInterop>().Copy($"![{alt}]({result.Url} =100%x*)");
         await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована");
     }
 
