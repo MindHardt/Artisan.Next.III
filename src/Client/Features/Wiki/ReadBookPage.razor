@@ -3,6 +3,7 @@
 @using Client.Features.Shared
 @using Contracts
 @using Client.Features.Shared.Components
+@using ErrorOr
 @using Microsoft.Extensions.Caching.Memory
 @inject PersistentComponentState Persistence
 @inject BackendClient Backend
@@ -91,7 +92,8 @@ else
     {
         if (BlazorEnv.IsServer)
         {
-            _book = await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)));
+            await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)))
+                .ThenDo(book => _book = book);;
             Persistence.RegisterOnPersisting(() =>
             {
                 Persistence.PersistAsJson(nameof(_book), _book);
@@ -101,11 +103,11 @@ else
         else
         {
             var cache = Services.GetRequiredService<IMemoryCache>();
-            if (Persistence.TryTakeFromJson(nameof(_book), out _book) is false)
+            if (Persistence.TryTakeFromJson(nameof(_book), out _book) is false && 
+                cache.TryGetValue($"book_{UrlName}", out _book) is false)
             {
-                _book = 
-                    cache.Get<GetBook.Response>($"book_{UrlName}") ??
-                    await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)));
+                await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)))
+                    .ThenDo(book => _book = book);
             }
 
             if (_book!.ImageUrl is not null && _book.Text.Contains(_book.ImageUrl))

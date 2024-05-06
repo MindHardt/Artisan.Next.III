@@ -4,6 +4,7 @@
 @using Contracts
 @using Microsoft.Extensions.Caching.Memory
 @using Client.Features.Shared.Components
+@using ErrorOr
 @inject PersistentComponentState Persistence
 @inject BackendClient Backend
 @inject IServiceProvider Services
@@ -63,7 +64,8 @@
     private async Task SearchBooks(string? regex)
     {
         _regex = regex;
-        _books = await Backend.Wiki.SearchBooks(new SearchBooks.Request(regex));
+        await Backend.Wiki.SearchBooks(new SearchBooks.Request(regex))
+            .ThenDo(result => _books = result);
         if (BlazorEnv.IsWasm)
         {
             var cache = Services.GetRequiredService<IMemoryCache>();

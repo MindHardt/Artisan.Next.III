@@ -1,12 +1,14 @@
 ﻿using Contracts;
+using ErrorOr;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Server.Features.Shared;
 
 namespace Server.Features.Files;
 
 [RegisterScoped]
 public class FileClient(IServiceProvider sp) : IFileClient
 {
-    public async Task<FileModel> UploadFile(Contracts.UploadFile.Request<Contracts.UploadFile.PostedFile> request, CancellationToken ct = default)
+    public async Task<ErrorOr<FileModel>> UploadFile(Contracts.UploadFile.Request<Contracts.UploadFile.PostedFile> request, CancellationToken ct = default)
     {
         var handler = sp.GetRequiredService<UploadFile.Handler>();
         var formFile = new FormFile(
@@ -15,23 +17,18 @@ public class FileClient(IServiceProvider sp) : IFileClient
             nameof(request.File),
             request.File.FileName);
         
-        var result = await handler.HandleAsync(new UploadFile.Request(formFile, request.Scope), ct);
-        return result.Value!;
+        return (await handler.HandleAsync(new UploadFile.Request(formFile, request.Scope), ct)).AsErrorOr<FileModel>();
     }
 
-    public async Task<FileModel[]> SearchFiles(Contracts.SearchFiles.Request request, CancellationToken ct = default)
+    public async Task<ErrorOr<FileModel[]>> SearchFiles(Contracts.SearchFiles.Request request, CancellationToken ct = default)
     {
         var handler = sp.GetRequiredService<Files.SearchFiles.Handler>();
-        var result = await handler.HandleAsync(request, ct);
-
-        return result.Value!;
+        return (await handler.HandleAsync(request, ct)).AsErrorOr<FileModel[]>();
     }
 
-    public async Task<FileModel> DeleteFile(Contracts.DeleteFile.Request request, CancellationToken ct = default)
+    public async Task<ErrorOr<FileModel>> DeleteFile(Contracts.DeleteFile.Request request, CancellationToken ct = default)
     {
         var handler = sp.GetRequiredService<DeleteFile.Handler>();
-        var result = await handler.HandleAsync(new Contracts.DeleteFile.Request(request.Identifier), ct);
-
-        return ((Ok<FileModel>)result.Result).Value!;
+        return (await handler.HandleAsync(request, ct)).AsErrorOr<FileModel>();
     }
 }
