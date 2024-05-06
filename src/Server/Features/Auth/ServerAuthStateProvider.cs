@@ -62,6 +62,7 @@ public class ServerAuthStateProvider : ServerAuthenticationStateProvider, IDispo
                     .ToArray()
                 
             })
+            .AsSingleQuery()
             .FirstAsync();
         
         _persistence.PersistAsJson(nameof(UserModel), new UserModel(
