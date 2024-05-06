@@ -1,12 +1,13 @@
 ﻿using System.Web;
+using ErrorOr;
 
 namespace Contracts;
 
 public interface IAuthClient
 {
-    public Task<LoginSchemeModel[]> GetLoginSchemes(CancellationToken ct = default);
+    public Task<ErrorOr<LoginSchemeModel[]>> GetLoginSchemes(CancellationToken ct = default);
 
-    public Task UpdateProfile(UpdateProfile.Request request, CancellationToken ct = default);
+    public Task<Error?> UpdateProfile(UpdateProfile.Request request, CancellationToken ct = default);
 
     public string BuildLoginUrl(Login.Request request)
     {

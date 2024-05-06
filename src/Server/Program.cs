@@ -10,6 +10,7 @@ using Server;
 using Server.Components;
 using Server.Data;
 using Server.Features.Auth;
+using Server.Features.Files;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,21 +1,21 @@
 ﻿using Contracts;
+using ErrorOr;
+using Server.Features.Shared;
 
 namespace Server.Features.Auth;
 
 [RegisterScoped]
 public class AuthClient(IServiceProvider sp) : IAuthClient
 {
-    public async Task<LoginSchemeModel[]> GetLoginSchemes(CancellationToken ct = default)
+    public async Task<ErrorOr<LoginSchemeModel[]>> GetLoginSchemes(CancellationToken ct = default)
     {
         var handler = sp.GetRequiredService<GetLoginSchemes.Handler>();
-        var result = await handler.HandleAsync(new EmptyRequest(), ct);
-
-        return result.Value!;
+        return (await handler.HandleAsync(new EmptyRequest(), ct)).AsErrorOr<LoginSchemeModel[]>();
     }
 
-    public async Task UpdateProfile(Contracts.UpdateProfile.Request request, CancellationToken ct = default)
+    public async Task<Error?> UpdateProfile(Contracts.UpdateProfile.Request request, CancellationToken ct = default)
     {
         var handler = sp.GetRequiredService<UpdateProfile.Handler>();
-        await handler.HandleAsync(request, ct);
+        return (await handler.HandleAsync(request, ct)).AsPossibleError();
     }
 }

@@ -116,10 +116,13 @@ else
     {
         var newAvatar = await e.File.RequestImageFileAsync(MediaTypeNames.Image.Jpeg, 1024, 1024);
         
-        var avatarModel = await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
+        var uploadResult = await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
             newAvatar, 
             FileScope.Avatar));
-        _newAvatarUrl = avatarModel.Url;
+        if (uploadResult.IsError is false)
+        {
+            _newAvatarUrl = uploadResult.Value.Url;
+        }
     }
 
     private async Task SaveProfile()
@@ -131,5 +134,4 @@ else
         await Backend.Auth.UpdateProfile(request);
         Navigation.Refresh(forceReload: true);
     }
-
 }

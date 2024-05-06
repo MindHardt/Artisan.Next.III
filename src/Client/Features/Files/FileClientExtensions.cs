@@ -1,11 +1,12 @@
 ﻿using Contracts;
+using ErrorOr;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace Client.Features.Files;
 
 internal static class FileClientExtensions
 {
-    public static async Task<FileModel> UploadFile(
+    public static async Task<ErrorOr<FileModel>> UploadFile(
         this IFileClient client,
         UploadFile.Request<IBrowserFile> request,
         CancellationToken ct = default)

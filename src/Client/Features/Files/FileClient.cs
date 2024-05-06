@@ -2,7 +2,9 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Web;
+using Client.Features.Shared;
 using Contracts;
+using ErrorOr;
 using Microsoft.Extensions.Options;
 
 namespace Client.Features.Files;
@@ -10,7 +12,7 @@ namespace Client.Features.Files;
 [RegisterScoped]
 public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOptions) : IFileClient
 {
-    public async Task<FileModel> UploadFile(UploadFile.Request<UploadFile.PostedFile> request, CancellationToken ct = default)
+    public async Task<ErrorOr<FileModel>> UploadFile(UploadFile.Request<UploadFile.PostedFile> request, CancellationToken ct = default)
     {
         using var form = new MultipartFormDataContent();
         form.Add(new StreamContent(request.File.Content)
@@ -19,11 +21,11 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
         }, nameof(request.File), request.File.FileName);
         form.Add(new StringContent(request.Scope.ToString()), nameof(request.Scope));
 
-        var response = await http.PostAsync(Contracts.UploadFile.FullPath, form, ct);
-        return (await response.Content.ReadFromJsonAsync<FileModel>(ct))!;
+        return await http.PostAsync(Contracts.UploadFile.FullPath, form, ct)
+            .AsErrorOr<FileModel>(jsonOptions.Value, ct);
     }
 
-    public async Task<FileModel[]> SearchFiles(SearchFiles.Request request, CancellationToken ct = default)
+    public async Task<ErrorOr<FileModel[]>> SearchFiles(SearchFiles.Request request, CancellationToken ct = default)
     {
         var query = HttpUtility.ParseQueryString(string.Empty);
         query[nameof(request.Page)] = request.Page.ToString();
@@ -38,14 +40,15 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
         {
             query[nameof(request.RestrictedToScope)] = scope.ToString();
         }
-
-        return (await http.GetFromJsonAsync<FileModel[]>($"{Contracts.SearchFiles.FullPath}?{query}", jsonOptions.Value, ct))!;
+        
+        return await http.GetAsync($"{Contracts.SearchFiles.FullPath}?{query}", ct)
+            .AsErrorOr<FileModel[]>(jsonOptions.Value, ct);
     }
 
-    public async Task<FileModel> DeleteFile(DeleteFile.Request request, CancellationToken ct = default)
+    public async Task<ErrorOr<FileModel>> DeleteFile(DeleteFile.Request request, CancellationToken ct = default)
     {
         var url = Contracts.DeleteFile.FullPath.Replace($"{{{nameof(request.Identifier)}}}", request.Identifier.Value);
 
-        return (await http.DeleteFromJsonAsync<FileModel>(url, jsonOptions.Value, ct))!;
+        return await http.DeleteAsync(url, ct).AsErrorOr<FileModel>(jsonOptions.Value, ct);
     }
 }

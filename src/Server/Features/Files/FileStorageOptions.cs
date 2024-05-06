@@ -1,4 +1,4 @@
-﻿namespace Server;
+﻿namespace Server.Features.Files;
 
 public record FileStorageOptions
 {
