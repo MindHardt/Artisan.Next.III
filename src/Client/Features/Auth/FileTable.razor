@@ -76,7 +76,12 @@
         @if (_totalFiles is not null && _files is not null)
         {
             <tfoot>
-            Файлов: @_files.Length / @_totalFiles
+            <td colspan="3">
+                Файлов: @_files.Length / @_totalFiles
+            </td>
+            <td colspan="3">
+                Общий размер: NaN
+            </td>
             </tfoot>
         }
     </table>
