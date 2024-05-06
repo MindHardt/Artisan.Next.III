@@ -1,9 +1,12 @@
-﻿using Immediate.Apis.Shared;
+﻿using System.Net.Cache;
+using System.Net.Http.Headers;
+using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Server.Data;
+using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 
 namespace Server.Features.Files;
 
@@ -15,6 +18,7 @@ public partial class GetFile
         Contracts.GetFile.Request request,
         DataContext dataContext,
         IOptions<FileStorageOptions> fsOptions,
+        HttpResponse response,
         CancellationToken ct)
     {
         var file = await dataContext.Files
@@ -23,6 +27,8 @@ public partial class GetFile
         {
             return TypedResults.NotFound();
         }
+        
+        response.Headers.CacheControl = CacheControlHeaderValue.PublicString;
 
         var path = Path.Combine(fsOptions.Value.Directory, file.Hash.Value);
         if (File.Exists(path) is false)
@@ -31,6 +37,10 @@ public partial class GetFile
         }
         
         var contentStream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        return TypedResults.File(contentStream, file.ContentType, file.Identifier.Value);
+        return TypedResults.File(
+            contentStream, 
+            file.ContentType, 
+            file.Identifier.Value, 
+            file.CreatedAt);
     }
 }

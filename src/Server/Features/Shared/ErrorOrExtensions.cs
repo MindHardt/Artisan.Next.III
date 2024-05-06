@@ -24,7 +24,7 @@ public static class ErrorOrExtensions
     public static ErrorOr<T> AsErrorOr<T>(this IResult result) => result switch
         {
             Ok<T> { Value: { } value } => value,
-            INestedHttpResult { Result: Ok<T> { Value: { } value }} => value,
+            INestedHttpResult { Result: { } innerResult } => innerResult.AsErrorOr<T>(),
             _ => result.AsPossibleError() ?? Error.Unexpected()
         };
 
