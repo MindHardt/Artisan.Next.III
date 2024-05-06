@@ -11,7 +11,7 @@ namespace Server.Features.Files;
 [MapGet(Contracts.GetFile.FullPath)]
 public partial class GetFile
 {
-    private static async ValueTask<Results<FileStreamHttpResult, NotFound>> HandleAsync(
+    private static async ValueTask<Results<FileStreamHttpResult, NotFound, NoContent>> HandleAsync(
         Contracts.GetFile.Request request,
         DataContext dataContext,
         IOptions<FileStorageOptions> fsOptions,
@@ -25,8 +25,12 @@ public partial class GetFile
         }
 
         var path = Path.Combine(fsOptions.Value.Directory, file.Hash.Value);
+        if (File.Exists(path) is false)
+        {
+            return TypedResults.NoContent();
+        }
+        
         var contentStream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-
         return TypedResults.File(contentStream, file.ContentType, file.Identifier.Value);
     }
 }

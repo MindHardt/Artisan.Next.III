@@ -21,11 +21,12 @@ public static class ErrorOrExtensions
     public static async Task<Error?> AsPossibleError(this ValueTask<IResult> resultTask)
         => (await resultTask).AsPossibleError();
 
-    public static ErrorOr<T> AsErrorOr<T>(
-        this IResult result)
-        => result is Ok<T> { Value: { } value }
-           ? value
-           : result.AsPossibleError() ?? Error.Unexpected();
+    public static ErrorOr<T> AsErrorOr<T>(this IResult result) => result switch
+        {
+            Ok<T> { Value: { } value } => value,
+            INestedHttpResult { Result: Ok<T> { Value: { } value }} => value,
+            _ => result.AsPossibleError() ?? Error.Unexpected()
+        };
 
     public static async Task<ErrorOr<T>> AsErrorOr<T>(
         this ValueTask<IResult> resultTask)

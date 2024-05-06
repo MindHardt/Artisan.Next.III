@@ -86,23 +86,27 @@ else
     private bool _includeImages = true;
     private GetBook.Response? _book;
 
-    [Parameter] public string UrlName { get; set; } = null!;
+    [Parameter]
+    public string UrlName { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
         if (BlazorEnv.IsServer)
         {
-            await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)))
-                .ThenDo(book => _book = book);;
-            Persistence.RegisterOnPersisting(() =>
+            await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName))).ThenDo(book =>
             {
-                Persistence.PersistAsJson(nameof(_book), _book);
-                return Task.CompletedTask;
+                _book = book;
+                Persistence.RegisterOnPersisting(() =>
+                {
+                    Persistence.PersistAsJson(nameof(_book), _book);
+                    return Task.CompletedTask;
+                });
             });
         }
         else
         {
             var cache = Services.GetRequiredService<IMemoryCache>();
+            
             if (Persistence.TryTakeFromJson(nameof(_book), out _book) is false && 
                 cache.TryGetValue($"book_{UrlName}", out _book) is false)
             {
@@ -110,7 +114,7 @@ else
                     .ThenDo(book => _book = book);
             }
 
-            if (_book!.ImageUrl is not null && _book.Text.Contains(_book.ImageUrl))
+            if (_book?.ImageUrl is not null && _book.Text.Contains(_book.ImageUrl))
             {
                 _book = _book with { ImageUrl = null };
             }
