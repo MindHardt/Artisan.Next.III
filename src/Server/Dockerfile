@@ -5,7 +5,6 @@ EXPOSE 8080
 EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-RUN apt install curl -y
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Server/Server.csproj", "Server/"]
@@ -23,4 +22,5 @@ RUN dotnet publish "Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:Us
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN apt install curl -y
 ENTRYPOINT ["dotnet", "Server.dll"]
