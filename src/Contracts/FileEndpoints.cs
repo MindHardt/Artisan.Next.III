@@ -13,7 +13,8 @@ public record FileModel(
     FileIdentifier Identifier,
     FileHashString Hash,
     string OriginalName,
-    long Size)
+    long Size,
+    FileScope Scope)
 {
     public string Url => GetFile.FullPath
         .Replace($"{{{nameof(GetFile.Request.Identifier)}}}", Identifier.Value);

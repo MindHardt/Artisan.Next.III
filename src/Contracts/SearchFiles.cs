@@ -10,4 +10,8 @@ public static class SearchFiles
         FileScope? RestrictedToScope = null,
         int Page = 0,
         int PageSize = 10);
+
+    public record Response(
+        FileModel[] Files,
+        int TotalFiles);
 }

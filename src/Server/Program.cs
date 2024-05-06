@@ -34,7 +34,10 @@ builder.Services.AddDbContextFactory<DataContext>(options =>
 builder.Services.AddAuthSetup(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen( options =>
+{
+    options.CustomSchemaIds(x => x.FullName?.Replace("+", ".", StringComparison.Ordinal));
+});
 
 builder.Services.AddOptions<FileStorageOptions>()
     .BindConfiguration(FileStorageOptions.Section);

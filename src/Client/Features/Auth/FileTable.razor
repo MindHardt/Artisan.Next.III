@@ -1,0 +1,137 @@
+﻿@using System.Diagnostics
+@using Client.Features.Shared
+@using ErrorOr
+
+@using Contracts
+@inject BackendClient Backend
+
+<div class="input-group">
+    <span class="input-group-text bi bi-regex"></span>
+    <input class="form-control" type="text" @bind="@_fileRegex" placeholder="(.*?)\.jpe?g"/>
+    <select class="form-select" @onchange="@SelectScope">
+        <option value="" selected>Любой</option>
+        @foreach (var scope in Enum.GetValues<FileScope>())
+        {
+            <option value="@scope">@GetName(scope)</option>
+        }
+    </select>
+    <button class="btn btn-primary rounded-end" @onclick="@SearchFiles">
+        <i class="bi bi-search"></i>
+    </button>
+</div>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">ID</th>
+            <th scope="col">Имя</th>
+            <th scope="col">Размер</th>
+            <th scope="col">Цель</th>
+            <th scope="col">Управление</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var row in (_files ?? []).Select((file, index) => (file, index)))
+        {
+            <tr>
+                <th scope="row">@(row.index + 1)</th>
+                <td>@row.file.Identifier</td>
+                <td class="text-truncate">@row.file.OriginalName</td>
+                <td>@AsMegabytes(row.file.Size)</td>
+                <td>
+                    @{
+                        var icon = row.file.Scope switch
+                        {
+                            FileScope.Avatar => "person-badge",
+                            FileScope.Attachment => "paperclip",
+                            _ => "question"
+                        };
+                    }
+                    <i class="bi bi-@icon" title="@GetName(row.file.Scope)"></i>
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-outline-primary me-1" href="@row.file.Url">
+                        <i class="bi bi-link-45deg"></i>
+                    </a>
+                    @{
+                        var isCurrentAvatar = row.file.Url == _avatarUrl;
+                    }
+                    @if (isCurrentAvatar)
+                    {
+                        <button class="btn btn-sm btn-outline-danger" title="Нельзя удалить свой аватар">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-sm btn-danger" @onclick="@(() => DeleteFile(row.file))">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+        @if (_totalFiles is not null && _files is not null)
+        {
+            <tfoot>
+            Файлов: @_files.Length / @_totalFiles
+            </tfoot>
+        }
+    </table>
+</div>
+                
+@code {
+
+    [CascadingParameter] public Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    private string? _avatarUrl;
+    private string _fileRegex = "";
+    private FileScope? _scope;
+    private FileModel[]? _files;
+    private int? _totalFiles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _avatarUrl = (await AuthStateTask).User.GetAvatarUrl();
+        await SearchFiles();
+    }
+
+    private async Task DeleteFile(FileModel file)
+    {
+        await Backend.Files.DeleteFile(new DeleteFile.Request(file.Identifier)).ThenDoAsync(async _ =>
+            await SearchFiles());
+    }
+
+    private void SelectScope(ChangeEventArgs e)
+    {
+        _scope = e.Value switch
+        {
+            "" => null,
+            string s => Enum.Parse<FileScope>(s),
+            _ => throw new UnreachableException()
+        };
+    }
+
+    private async Task SearchFiles()
+    {
+        await Backend.Files.SearchFiles(new SearchFiles.Request(_fileRegex, _scope))
+            .ThenDo(result =>
+            {
+                _files = result.Files;
+                _totalFiles = result.TotalFiles;
+            });
+    }
+
+    private string AsMegabytes(long fileSize)
+        => $"{fileSize/1_048_576d:0.00}МБ";
+
+    private string GetName(FileScope scope) => scope switch
+    {
+        FileScope.Attachment => "Вложение",
+        FileScope.Avatar => "Аватар",
+        _ => "Неизвестно"
+    };
+
+}

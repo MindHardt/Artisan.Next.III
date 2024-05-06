@@ -28,7 +28,7 @@ public partial class DeleteFile
             return TypedResults.NotFound();
         }
 
-        var isUploader = file.UploaderId != principal.GetUserId();
+        var isUploader = file.UploaderId == principal.GetUserId();
         var isAdmin = principal.IsInRole(RoleNames.Admin);
         if (isUploader is false && isAdmin is false)
         {
@@ -45,6 +45,6 @@ public partial class DeleteFile
             File.Delete(Path.Combine(fsOptions.Value.Directory, file.Hash.Value));
         }
         
-        return TypedResults.Ok(new FileModel(file.Identifier, file.Hash, file.OriginalName, file.Size));
+        return TypedResults.Ok(new FileModel(file.Identifier, file.Hash, file.OriginalName, file.Size, file.Scope));
     }
 }

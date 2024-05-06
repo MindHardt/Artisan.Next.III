@@ -65,6 +65,7 @@ public partial class UploadFile
             fileRecord.Identifier,
             fileRecord.Hash,
             fileRecord.OriginalName,
-            fileRecord.Size));
+            fileRecord.Size,
+            fileRecord.Scope));
     }
 }

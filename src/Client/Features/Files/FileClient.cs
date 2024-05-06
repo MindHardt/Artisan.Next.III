@@ -25,7 +25,7 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
             .AsErrorOr<FileModel>(jsonOptions.Value, ct);
     }
 
-    public async Task<ErrorOr<FileModel[]>> SearchFiles(SearchFiles.Request request, CancellationToken ct = default)
+    public async Task<ErrorOr<SearchFiles.Response>> SearchFiles(SearchFiles.Request request, CancellationToken ct = default)
     {
         var query = HttpUtility.ParseQueryString(string.Empty);
         query[nameof(request.Page)] = request.Page.ToString();
@@ -42,7 +42,7 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
         }
         
         return await http.GetAsync($"{Contracts.SearchFiles.FullPath}?{query}", ct)
-            .AsErrorOr<FileModel[]>(jsonOptions.Value, ct);
+            .AsErrorOr<SearchFiles.Response>(jsonOptions.Value, ct);
     }
 
     public async Task<ErrorOr<FileModel>> DeleteFile(DeleteFile.Request request, CancellationToken ct = default)
