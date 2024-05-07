@@ -17,8 +17,14 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
         using var form = new MultipartFormDataContent();
         form.Add(new StreamContent(request.File.Content)
         {
-            Headers = { ContentType = new MediaTypeHeaderValue(request.File.ContentType) }
+            Headers =
+            {
+                ContentType = string.IsNullOrEmpty(request.File.ContentType)
+                    ? null
+                    : new MediaTypeHeaderValue(request.File.ContentType)
+            }
         }, nameof(request.File), request.File.FileName);
+        
         form.Add(new StringContent(request.Scope.ToString()), nameof(request.Scope));
 
         return await http.PostAsync(Contracts.UploadFile.FullPath, form, ct)

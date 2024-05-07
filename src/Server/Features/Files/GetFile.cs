@@ -29,6 +29,11 @@ public partial class GetFile
         }
         
         response.Headers.CacheControl = CacheControlHeaderValue.PublicString;
+        var fileName = request.Name switch
+        {
+            Contracts.GetFile.Name.Original => file.OriginalName,
+            _ => file.Identifier.Value
+        };
 
         var path = Path.Combine(fsOptions.Value.Directory, file.Hash.Value);
         if (File.Exists(path) is false)
@@ -40,7 +45,7 @@ public partial class GetFile
         return TypedResults.File(
             contentStream, 
             file.ContentType, 
-            file.Identifier.Value, 
+            fileName, 
             file.CreatedAt);
     }
 }

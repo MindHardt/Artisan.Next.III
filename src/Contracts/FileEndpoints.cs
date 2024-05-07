@@ -18,6 +18,9 @@ public record FileModel(
 {
     public string Url => GetFile.FullPath
         .Replace($"{{{nameof(GetFile.Request.Identifier)}}}", Identifier.Value);
+    public string GetUrl(GetFile.Name name) => name is GetFile.Name.Server
+        ? Url
+        : $"{Url}?{nameof(GetFile.Request.Name)}={name}";
 }
 
 [ValueObject<string>]

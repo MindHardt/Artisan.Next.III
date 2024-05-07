@@ -14,6 +14,8 @@ using Server.Features.Files;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(kestrel => kestrel.Limits.MaxRequestBodySize = int.MaxValue);
+
 builder.Logging.AddSerilog();
 builder.Services.AddSerilog(logger =>
 {

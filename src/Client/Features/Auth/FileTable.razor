@@ -1,13 +1,16 @@
 ﻿@using System.Diagnostics
+@using Client.Features.Files
 @using Client.Features.Shared
+@using Client.Features.Shared.Toasts
 @using ErrorOr
 
 @using Contracts
 @inject BackendClient Backend
+@inject IServiceProvider Services
 
 <div class="input-group">
     <span class="input-group-text bi bi-regex"></span>
-    <input class="form-control" type="text" @bind="@_fileRegex" placeholder="(.*?)\.jpe?g"/>
+    <input class="form-control" type="text" value="@_fileRegex" @onchange="@HandleRegex" placeholder="(.*?)\.jpe?g"/>
     <select class="form-select" @onchange="@SelectScope">
         <option value="" selected>Любой</option>
         @foreach (var scope in Enum.GetValues<FileScope>())
@@ -51,7 +54,7 @@
                     <i class="bi bi-@icon" title="@GetName(row.file.Scope)"></i>
                 </td>
                 <td>
-                    <a class="btn btn-sm btn-outline-primary me-1" href="@row.file.Url">
+                    <a class="btn btn-sm btn-outline-primary me-1" href="@row.file.GetUrl(GetFile.Name.Original)">
                         <i class="bi bi-link-45deg"></i>
                     </a>
                     @{
@@ -86,10 +89,22 @@
         }
     </table>
 </div>
+<AuthorizeView Roles="@RoleNames.Admin">
+    <Authorized>
+        <div>
+            <button class="btn btn-lg btn-success w-100 mt-2" onclick="document.getElementById('AdminFileUpload').click()">
+                <i class="bi bi-upload"></i>
+                Загрузить файлы
+            </button>
+            <InputFile OnChange="@HandleAdminFiles" hidden id="AdminFileUpload"/>
+        </div>
+    </Authorized>
+</AuthorizeView>
                 
 @code {
 
-    [CascadingParameter] public Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+    [CascadingParameter] 
+    public Task<AuthenticationState> AuthStateTask { get; set; } = null!;
 
     private string? _avatarUrl;
     private string _fileRegex = "";
@@ -109,7 +124,7 @@
             await SearchFiles());
     }
 
-    private void SelectScope(ChangeEventArgs e)
+    private async Task SelectScope(ChangeEventArgs e)
     {
         _scope = e.Value switch
         {
@@ -117,6 +132,13 @@
             string s => Enum.Parse<FileScope>(s),
             _ => throw new UnreachableException()
         };
+        await SearchFiles();
+    }
+
+    private async Task HandleRegex(ChangeEventArgs e)
+    {
+        _fileRegex = (string)e.Value!;
+        await SearchFiles();
     }
 
     private async Task SearchFiles()
@@ -138,5 +160,19 @@
         FileScope.Avatar => "Аватар",
         _ => "Неизвестно"
     };
+
+    private async Task HandleAdminFiles(InputFileChangeEventArgs e)
+    {
+        var toasts = Services.GetRequiredService<ToastSender>();
+        await toasts.ShowInfoToast("Загружаем файлы...");
+
+        foreach (var file in e.GetMultipleFiles(int.MaxValue))
+        {
+            await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(file, FileScope.Unknown));
+        }
+
+        await SearchFiles();
+        await toasts.ShowInfoToast("Файлы загружены!");
+    }
 
 }
