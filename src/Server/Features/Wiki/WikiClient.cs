@@ -1,6 +1,5 @@
 ﻿using Contracts;
 using ErrorOr;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Server.Features.Shared;
 
 namespace Server.Features.Wiki;

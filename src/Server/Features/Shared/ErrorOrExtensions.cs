@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using ErrorOr;
+﻿using ErrorOr;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Server.Features.Shared;

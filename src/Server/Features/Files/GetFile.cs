@@ -1,6 +1,4 @@
-﻿using System.Net.Cache;
-using System.Net.Http.Headers;
-using Immediate.Apis.Shared;
+﻿using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
