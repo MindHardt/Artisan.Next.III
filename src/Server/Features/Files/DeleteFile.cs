@@ -45,6 +45,11 @@ public partial class DeleteFile
             File.Delete(Path.Combine(fsOptions.Value.Directory, file.Hash.Value));
         }
         
-        return TypedResults.Ok(new FileModel(file.Identifier, file.Hash, file.OriginalName, file.Size, file.Scope));
+        return TypedResults.Ok(new FileModel(
+            file.Identifier, 
+            file.Hash, 
+            file.OriginalName, 
+            FileSize.From(file.Size), 
+            file.Scope));
     }
 }

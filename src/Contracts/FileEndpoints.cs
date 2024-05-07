@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using Vogen;
 
 namespace Contracts;
@@ -13,7 +14,7 @@ public record FileModel(
     FileIdentifier Identifier,
     FileHashString Hash,
     string OriginalName,
-    long Size,
+    FileSize Size,
     FileScope Scope)
 {
     public string Url => GetFile.FullPath
@@ -52,6 +53,19 @@ public readonly partial struct FileIdentifier
 
         _ => Validation.Ok
     };
+}
+
+[ValueObject<long>]
+public readonly partial struct FileSize
+{
+    public long Bytes => Value;
+    public double Kilobytes => Bytes / 1024d;
+    public double Megabytes => Kilobytes / 1024d;
+    public double Gigabytes => Megabytes / 1024d;
+
+    private static Validation Validate(long size) => size > 0
+        ? Validation.Ok
+        : Validation.Invalid("File size cannot be negative");
 }
 
 public enum FileScope

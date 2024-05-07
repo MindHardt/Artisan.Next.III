@@ -49,7 +49,7 @@ public partial class SearchFiles
                 file.Identifier,
                 file.Hash,
                 file.OriginalName,
-                file.Size,
+                FileSize.From(file.Size),
                 file.Scope))
             .ToArrayAsync(ct);
         var totalCount = await query.CountAsync(ct);

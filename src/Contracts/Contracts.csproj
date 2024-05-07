@@ -64,6 +64,9 @@
       <Compile Update="UserModel.cs">
         <DependentUpon>AuthEndpoints.cs</DependentUpon>
       </Compile>
+      <Compile Update="GetFileUsage.cs">
+        <DependentUpon>FileEndpoints.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

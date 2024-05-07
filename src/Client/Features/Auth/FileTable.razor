@@ -41,7 +41,7 @@
                 <th scope="row">@(row.index + 1)</th>
                 <td>@row.file.Identifier</td>
                 <td class="text-truncate">@row.file.OriginalName</td>
-                <td>@AsMegabytes(row.file.Size)</td>
+                <td>@row.file.Size.Megabytes.ToString("0.00") МБ</td>
                 <td>
                     @{
                         var icon = row.file.Scope switch
@@ -83,12 +83,28 @@
                 Файлов: @_files.Length / @_totalFiles
             </td>
             <td colspan="3">
-                Общий размер: NaN
+                Общий размер: @(_usage?.Used.Megabytes.ToString("0.00") ?? "NaN") Мб 
             </td>
             </tfoot>
         }
     </table>
 </div>
+@if (_usage is not null)
+{
+    var (percent, color) = GetUsageContext();
+    <h3 class="mt-2">Использовано</h3>
+    <div class="d-flex">
+        <span class="badge text-bg-light me-1">
+            @_usage.Used.Megabytes.ToString("0.00") МБ
+        </span>
+        <div class="progress flex-fill" role="progressbar">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-@color" style="width: @percent%">@percent%</div>
+        </div>
+        <div class="badge text-bg-light ms-1">
+            @_usage.Limit.Megabytes.ToString("0.00") МБ
+        </div>
+    </div>
+}
 <AuthorizeView Roles="@RoleNames.Admin">
     <Authorized>
         <div>
@@ -103,25 +119,29 @@
                 
 @code {
 
-    [CascadingParameter] 
-    public Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+    [CascadingParameter] public Task<AuthenticationState> AuthStateTask { get; set; } = null!;
 
     private string? _avatarUrl;
     private string _fileRegex = "";
     private FileScope? _scope;
     private FileModel[]? _files;
     private int? _totalFiles;
+    private GetFileUsage.Response? _usage;
 
     protected override async Task OnInitializedAsync()
     {
         _avatarUrl = (await AuthStateTask).User.GetAvatarUrl();
         await SearchFiles();
+        await UpdateUsage();
     }
 
     private async Task DeleteFile(FileModel file)
     {
         await Backend.Files.DeleteFile(new DeleteFile.Request(file.Identifier)).ThenDoAsync(async _ =>
-            await SearchFiles());
+        {
+            await SearchFiles();
+            await UpdateUsage();
+        });
     }
 
     private async Task SelectScope(ChangeEventArgs e)
@@ -151,8 +171,10 @@
             });
     }
 
-    private string AsMegabytes(long fileSize)
-        => $"{fileSize/1_048_576d:0.00}МБ";
+    private async Task UpdateUsage()
+    {
+        await Backend.Files.GetUsage().ThenDo(result => _usage = result);
+    }
 
     private string GetName(FileScope scope) => scope switch
     {
@@ -164,15 +186,30 @@
     private async Task HandleAdminFiles(InputFileChangeEventArgs e)
     {
         var toasts = Services.GetRequiredService<ToastSender>();
-        await toasts.ShowInfoToast("Загружаем файлы...");
+        await toasts.ShowInfoToast("Загружаем файл...");
 
-        foreach (var file in e.GetMultipleFiles(int.MaxValue))
-        {
-            await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(file, FileScope.Unknown));
-        }
-
-        await SearchFiles();
-        await toasts.ShowInfoToast("Файлы загружены!");
+        await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(e.File, FileScope.Unknown)).SwitchAsync(
+            async _ =>
+            {
+                await SearchFiles();
+                await UpdateUsage();
+                await toasts.ShowInfoToast("Файл загружены!");
+            },
+            async error =>
+            {
+                await toasts.ShowErrorToast($"Произошла ошибка {error.First().Description}");
+            });
     }
 
+    private (double percent, string color) GetUsageContext()
+    {
+        var usagePercent = Math.Round(_usage!.Used.Value * 100d / _usage!.Limit.Value);
+        var usageColor = usagePercent < 80
+            ? "success"
+            : usagePercent < 90
+                ? "warning"
+                : "danger";
+        
+        return (usagePercent, usageColor);
+    }
 }

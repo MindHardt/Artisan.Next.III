@@ -6,6 +6,7 @@ using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Server.Data;
 
@@ -24,14 +25,14 @@ public partial class UploadFile
         [FromForm] FileScope Scope)
         : Contracts.UploadFile.Request<IFormFile>(File, Scope);
 
-    private static async ValueTask<Ok<FileModel>> HandleAsync(
+    private static async ValueTask<Results<Ok<FileModel>, ForbidHttpResult>> HandleAsync(
         Request request,
         DataContext dataContext,
         ClaimsPrincipal principal,
         IOptions<FileStorageOptions> fsOptions,
         CancellationToken ct)
     {
-        
+        var userId = principal.GetUserId()!.Value;
         await using var contentStream = request.File.OpenReadStream();
 
         var hash = FileHashString.From(Convert.ToHexString(await SHA256.HashDataAsync(contentStream, ct)));
@@ -42,6 +43,22 @@ public partial class UploadFile
         var file = new FileInfo(Path.Combine(fsOptions.Value.Directory, hash.Value));
         if (file.Exists is false)
         {
+            var totalFileSizes = await dataContext.Files
+                .Where(x => x.UploaderId == userId)
+                .Select(x => new { x.Hash, x.Size })
+                .Distinct()
+                .SumAsync(x => x.Size, ct);
+            var storageLimit = await dataContext.Users
+                .Where(x => x.Id == userId)
+                .Select(x => x.CustomStorageLimit)
+                .FirstAsync(ct)
+                ?? fsOptions.Value.DefaultLimit;
+
+            if (totalFileSizes + contentStream.Length > storageLimit)
+            {
+                return TypedResults.Forbid();
+            }
+            
             await using var destinationStream = file.Open(FileMode.Create);
             contentStream.Seek(0, SeekOrigin.Begin);
             await contentStream.CopyToAsync(destinationStream, ct);
@@ -55,7 +72,7 @@ public partial class UploadFile
             Scope = request.Scope,
             Size = request.File.Length,
             CreatedAt = DateTimeOffset.UtcNow,
-            UploaderId = principal.GetUserId()!.Value,
+            UploaderId = userId,
             ContentType = request.File.ContentType
         };
         dataContext.Files.Add(fileRecord);
@@ -65,7 +82,7 @@ public partial class UploadFile
             fileRecord.Identifier,
             fileRecord.Hash,
             fileRecord.OriginalName,
-            fileRecord.Size,
+            FileSize.From(fileRecord.Size),
             fileRecord.Scope));
     }
 }

@@ -56,4 +56,9 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
 
         return await http.DeleteAsync(url, ct).AsErrorOr<FileModel>(jsonOptions.Value, ct);
     }
+
+    public async Task<ErrorOr<GetFileUsage.Response>> GetUsage(CancellationToken ct = default)
+    {
+        return await http.GetAsync(GetFileUsage.FullPath, ct).AsErrorOr<GetFileUsage.Response>(jsonOptions.Value, ct);
+    }
 }

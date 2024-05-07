@@ -30,4 +30,10 @@ public class FileClient(IServiceProvider sp) : IFileClient
         var handler = sp.GetRequiredService<DeleteFile.Handler>();
         return (await handler.HandleAsync(request, ct)).AsErrorOr<FileModel>();
     }
+
+    public async Task<ErrorOr<Contracts.GetFileUsage.Response>> GetUsage(CancellationToken ct = default)
+    {
+        var handler = sp.GetRequiredService<GetFileUsage.Handler>();
+        return (await handler.HandleAsync(new EmptyRequest(), ct)).AsErrorOr<Contracts.GetFileUsage.Response>();
+    }
 }
