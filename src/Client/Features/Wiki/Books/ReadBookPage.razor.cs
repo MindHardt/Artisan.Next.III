@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Client.Features.Wiki;
+namespace Client.Features.Wiki.Books;
 
 public partial class ReadBookPage
 {
@@ -10,6 +10,4 @@ public partial class ReadBookPage
     
     [GeneratedRegex(@"!\[.*?\]\(.*?\)")]
     private static partial Regex ExcludeImageRegex();
-    
-    
 }

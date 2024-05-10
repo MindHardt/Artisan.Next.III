@@ -98,7 +98,9 @@
             @_usage.Used.Megabytes.ToString("0.00") МБ
         </span>
         <div class="progress flex-fill" role="progressbar">
-            <div class="progress-bar progress-bar-striped progress-bar-animated bg-@color" style="width: @percent%">@percent%</div>
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-@color" style="width: @percent%">
+                @(percent > 5 ? $"{percent}%" : null)
+            </div>
         </div>
         <div class="badge text-bg-light ms-1">
             @_usage.Limit.Megabytes.ToString("0.00") МБ

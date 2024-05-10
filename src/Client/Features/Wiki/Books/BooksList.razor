@@ -1,0 +1,24 @@
+﻿@using Contracts
+
+<ul class="list-group list-group-numbered">
+    @foreach (var book in Books ?? [])
+    {
+        <li class="list-group-item d-flex">
+            <a class="text-truncate flex-fill" href="wiki/books/read/@book.UrlName.Value">@book.Name</a>
+            @if (book.IsPublic)
+            {
+                <span class="bi bi-star-fill text-warning" title="Публичная книга"></span>
+            }
+            else
+            {
+                <span class="bi bi-star"></span>
+            }
+        </li>
+    }
+</ul>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public BookModel[]? Books { get; set; }
+}

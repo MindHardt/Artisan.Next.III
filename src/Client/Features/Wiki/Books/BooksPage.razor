@@ -29,6 +29,12 @@
 <div class="input-group input-group-lg mb-2">
     <span class="input-group-text bi bi-regex"></span>
     <input class="form-control" type="text" placeholder="[Ии]стория.*" @onchange="@(e => SearchBooks(e.Value as string))" value="@_regex"/>
+    <button class="btn btn-@(_isList ? "primary" : "outline-primary")" @onclick="@(() => _isList = true)">
+        <i class="bi bi-list-ol"></i>
+    </button>
+    <button class="btn btn-@(_isList ? "outline-primary" : "primary")" @onclick="@(() => _isList = false)">
+        <i class="bi bi-card-text"></i>
+    </button>
     <AuthorizeView Roles="@RoleNames.Admin">
         <Authorized>
             <a class="btn btn-outline-success" href="wiki/books/new">
@@ -38,28 +44,22 @@
     </AuthorizeView>
 </div>
 
-<ul class="list-group list-group-numbered">
-    @foreach (var book in _books ?? [])
-    {
-        <li class="list-group-item d-flex">
-            <a class="text-truncate flex-fill" href="wiki/books/read/@book.UrlName.Value">@book.Name</a>
-            @if (book.IsPublic)
-            {
-                <span class="bi bi-star-fill text-warning" title="Публичная книга"></span>
-            }
-            else
-            {
-                <span class="bi bi-star"></span>
-            }
+@if (_isList)
+{
+    <BooksList Books="_books" />
+}
+else
+{
+    <BookCards Books="_books" />
+}
 
-        </li>
-    }
-</ul>
 
 @code {
 
     private BookModel[]? _books;
     private string? _regex;
+
+    private bool _isList = false;
 
     private async Task SearchBooks(string? regex)
     {

@@ -36,7 +36,7 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
         query[nameof(request.Page)] = request.Page.ToString();
         query[nameof(request.PageSize)] = request.PageSize.ToString();
         
-        if (request.Regex is not null)
+        if (string.IsNullOrEmpty(request.Regex) is false)
         {
             query[nameof(request.Regex)] = request.Regex;
         }
