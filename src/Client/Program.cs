@@ -22,7 +22,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, ClientAuthStateProvider>
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddMemoryCache();
-builder.Services.AddScoped<IMapFramesProvider, YandexMapFramesProvider>();
+builder.Services.AddYandexFrames();
 
 builder.Services.Configure<JsonSerializerOptions>(options => options.SetDefaults());
 
