@@ -1,0 +1,137 @@
+﻿@page "/maps"
+@using Client.Features.Shared.Components
+@inject IServiceProvider Services
+
+<OpenGraph 
+    Title="Случайные панорамы"
+    Description="На этой странице можно попасть на случайную панораму в выбранной области"/>
+
+<h1>Панорамы</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6 col-12 mb-3">
+            <div class="input-group mb-2">
+                <span class="input-group-text bi bi-pin-map"></span>
+                @{
+                    void SetRandomSeed(ChangeEventArgs e)
+                    {
+                        var hex = (string)e.Value!;
+                        if (hex.Length <= 8 && hex.All(char.IsAsciiHexDigit))
+                        {
+                            RandomSeed = Convert.ToInt32(hex, 16);
+                        }
+                        else
+                        {
+                            ResetRandomSeed();
+                        }
+                    }
+                }
+                <input type="text" class="form-control" value="@($"{RandomSeed:X}")" @onchange="@SetRandomSeed"/>
+                <button class="btn btn-primary" @onclick="@ResetRandomSeed">
+                    <i class="bi bi-dice-@(RandomSeed % 6 + 1)"></i>
+                </button>
+                @{
+                    var externalUri = BlazorEnv.IsWasm && _currentPoint is not null
+                        ? Services.GetRequiredService<IMapFramesProvider>().GetExternalStreetViewUri(_currentPoint.Value)
+                        : null;
+                }
+                <a class="btn btn-info" href="@externalUri" target="_blank">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+            </div>
+            <div class="img-thumbnail" style="height: 20rem">
+                @if (BlazorEnv.IsServer || _currentPoint is null)
+                {
+                    <Spinner />
+                }
+                else
+                {
+                    var mapProvider = Services.GetRequiredService<IMapFramesProvider>();
+                    <iframe src="@mapProvider.GetStreetViewUri(_currentPoint.Value)"
+                            allowfullscreen width="100%" height="100%"></iframe>
+                }
+            </div>
+        </div>
+        <div class="col-lg-6 col-12 mb-3">
+            <div class="input-group mb-2">
+                <span class="input-group-text bi bi-compass"></span>
+                <select class="form-select" @onchange="@(e => CurrentArea = _areas[Guid.Parse((string)e.Value!)])">
+                    @foreach (var area in _areas.Values)
+                    {
+                        <option selected="@(area == _currentArea)" value="@area.Id">
+                            @area.Name
+                        </option>
+                    }
+                </select>
+                <button class="btn btn-warning" title="WIP">
+                    <i class="bi bi-pencil"></i>
+                </button>
+            </div>
+            <div class="img-thumbnail" style="height: 20rem">
+                @if (BlazorEnv.IsServer || _currentArea is null)
+                {
+                    <Spinner />
+                }
+                else
+                {
+                    var mapProvider = Services.GetRequiredService<IMapFramesProvider>();
+                    <iframe src="@mapProvider.GetAreaDisplayUri(_currentArea.Area)"
+                            allowfullscreen width="100%" height="100%"></iframe>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    
+    private Point? _currentPoint;
+    private Dictionary<Guid, NamedArea> _areas = [];
+    
+    private int _randomSeed;
+    private int RandomSeed
+    {
+        get => _randomSeed;
+        set
+        {
+            _randomSeed = value;
+            _currentPoint = _currentArea!.Area.GetRandomPoint(new Random(_randomSeed));
+        }
+    }
+    
+    private NamedArea? _currentArea;
+    private NamedArea? CurrentArea
+    {
+        get => _currentArea;
+        set
+        {
+            _currentArea = value;
+            ResetRandomSeed();
+        }
+    }
+    
+    private void ResetRandomSeed()
+        => RandomSeed = Random.Shared.Next();
+
+    protected override Task OnInitializedAsync()
+    {
+        _areas = DefaultAreas.ToDictionary(x => x.Id);
+        CurrentArea = _areas.First().Value;
+        return base.OnInitializedAsync();
+    }
+
+    private static readonly NamedArea[] DefaultAreas =
+    [
+        new NamedArea(
+            Id: Guid.NewGuid(), 
+            Name: "Москва", 
+            Area: new EllipsoidArea((37.625f, 55.75f), 0.75f, 0.4f)),
+        
+        new NamedArea(
+            Id: Guid.NewGuid(), 
+            Name: "Москва+", 
+            Area: new EllipsoidArea((37.625f, 55.75f), 1.25f, 0.8f))
+    ];
+
+}

@@ -3,11 +3,10 @@
 @using Client.Features.Shared.Components
 @inject IServiceProvider Services
 
-<PageTitle>Лист персонажа</PageTitle>
-<h3>Генератор листов персонажей</h3>
+<h1>Генератор листов персонажей</h1>
 
 <OpenGraph
-    Title="Генератор листов персонажей Аркленс"
+    Title="Лист персонажа"
     Description="На этой странице вы можете получить pdf файл с листом вашего персонажа"/>
 
 <div class="d-flex flex-md-row flex-column gap-2 mb-3">
@@ -95,7 +94,7 @@
             return;
         }
         var http = Services.GetRequiredService<HttpClient>();
-        _originalSvg = await http.GetStringAsync("svg/charsheet.svg");
+        _originalSvg = await http.GetStringAsync("static/charsheet.svg");
         _renderedSvg = _originalSvg;
     }
 

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Client.Features.Auth;
+using Client.Features.Maps;
 using Client.Features.Shared;
 using Contracts;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -21,6 +22,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, ClientAuthStateProvider>
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IMapFramesProvider, YandexMapFramesProvider>();
 
 builder.Services.Configure<JsonSerializerOptions>(options => options.SetDefaults());
 
