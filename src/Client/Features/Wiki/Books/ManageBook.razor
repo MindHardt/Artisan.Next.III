@@ -177,9 +177,8 @@ else
 
     private async Task HandleThumbnailImage(InputFileChangeEventArgs e)
     {
-        var normalizedImage = await e.File.RequestImageFileAsync(MediaTypeNames.Image.Jpeg, 1024, 1024);
         await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
-            normalizedImage,
+            e.File,
             FileScope.Attachment))
             .ThenDo(result => _imageUrl = result.Url);
     }
