@@ -67,7 +67,7 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
-app.MapGet("health", () => TypedResults.Ok());
+app.MapGet("health", () => TypedResults.Ok()).WithTags("Utility");
 
 if (app.Configuration["ExternalHost"] is { Length: > 0 } host)
 {
