@@ -60,13 +60,13 @@ else
             </div>
         </div>
     }
-    <div class="input-group mb-3">
+    <div class="input-group mb-3" @onclick="@(() => _includeImages = !_includeImages)">
         @{
             var iconClass = _includeImages
                 ? "text-success bi-check-square"
                 : "text-danger bi-x-square";
         }
-        <i class="input-group-text bi @iconClass" @onclick="@(() => _includeImages = !_includeImages)"></i>
+        <i class="input-group-text bi @iconClass"></i>
         <span class="input-group-text text-truncate">Картинки</span>
     </div>
     <hr/>

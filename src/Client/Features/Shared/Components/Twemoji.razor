@@ -1,0 +1,23 @@
+﻿@inject IServiceProvider Services
+
+<div id="@_id">
+    @ChildContent
+</div>
+
+@code {
+
+    private readonly string _id = $"twemoji-{Guid.NewGuid()}";
+    
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (BlazorEnv.IsServer)
+        {
+            return;
+        }
+
+        await Services.GetRequiredService<TwemojiJsInterop>().UpdateTwemoji(_id);
+    }
+}
