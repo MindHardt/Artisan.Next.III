@@ -14,6 +14,9 @@ namespace Server.Features.Files;
 [MapDelete(Contracts.DeleteFile.FullPath)]
 public partial class DeleteFile
 {
+    internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
+        endpoint.WithTags(nameof(FileEndpoints));
+    
     private static async ValueTask<Results<NotFound, ForbidHttpResult, Ok<FileModel>>> HandleAsync(
         Contracts.DeleteFile.Request request,
         DataContext dataContext,

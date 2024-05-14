@@ -1,4 +1,5 @@
-﻿using Immediate.Apis.Shared;
+﻿using Contracts;
+using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,9 @@ namespace Server.Features.Wiki;
 [MapGet(Contracts.GetBook.FullPath)]
 public partial class GetBook
 {
+    internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
+        endpoint.WithTags(nameof(WikiEndpoints));
+    
     private static async ValueTask<Results<Ok<Contracts.GetBook.Response>, NotFound>> HandleAsync(
         Contracts.GetBook.Request request,
         DataContext dataContext,

@@ -1,4 +1,5 @@
-﻿using Immediate.Apis.Shared;
+﻿using Contracts;
+using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -12,7 +13,7 @@ namespace Server.Features.Auth;
 public partial class LinkLogin
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.RequireAuthorization();
+        endpoint.RequireAuthorization().WithTags(nameof(AuthEndpoints));
 
 
     private static ValueTask<ChallengeHttpResult> HandleAsync(

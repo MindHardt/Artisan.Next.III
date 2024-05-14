@@ -13,7 +13,7 @@ namespace Server.Features.Wiki;
 public partial class UpdateBook
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin));
+        endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(WikiEndpoints));
     
     [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
     public record Request(

@@ -1,4 +1,5 @@
-﻿using Immediate.Apis.Shared;
+﻿using Contracts;
+using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +11,9 @@ namespace Server.Features.Auth;
 [MapGet(Contracts.Logout.FullPath)]
 public partial class Logout
 {
+    internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
+        endpoint.WithTags(nameof(AuthEndpoints));
+    
     private static async ValueTask<RedirectHttpResult> HandleAsync(
         Contracts.Logout.Request request,
         SignInManager<User> signInManager,

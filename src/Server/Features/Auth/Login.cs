@@ -1,4 +1,5 @@
-﻿using Immediate.Apis.Shared;
+﻿using Contracts;
+using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -12,6 +13,9 @@ namespace Server.Features.Auth;
 [MapGet(Contracts.Login.FullPath)]
 public partial class Login
 {
+    internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
+        endpoint.WithTags(nameof(AuthEndpoints));
+    
     [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
     public record Request(
         [FromRoute] string Scheme,

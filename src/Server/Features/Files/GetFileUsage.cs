@@ -15,7 +15,7 @@ namespace Server.Features.Files;
 public partial class GetFileUsage
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.RequireAuthorization();
+        endpoint.RequireAuthorization().WithTags(nameof(FileEndpoints));
 
     private static async ValueTask<Ok<Contracts.GetFileUsage.Response>> HandleAsync(
         EmptyRequest _,

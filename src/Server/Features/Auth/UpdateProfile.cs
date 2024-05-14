@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Contracts;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -12,7 +13,7 @@ namespace Server.Features.Auth;
 public partial class UpdateProfile
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) => endpoint
-        .RequireAuthorization();
+        .RequireAuthorization().WithTags(nameof(AuthEndpoints));
 
     private static async ValueTask<Ok> HandleAsync(
         Contracts.UpdateProfile.Request request,

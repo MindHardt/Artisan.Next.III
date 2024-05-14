@@ -1,6 +1,8 @@
-﻿using Immediate.Apis.Shared;
+﻿using Contracts;
+using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Server.Data;
@@ -12,8 +14,20 @@ namespace Server.Features.Files;
 [MapGet(Contracts.GetFile.FullPath)]
 public partial class GetFile
 {
-    private static async ValueTask<Results<FileStreamHttpResult, NotFound, NoContent>> HandleAsync(
-        Contracts.GetFile.Request request,
+    internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
+        (endpoint as RouteHandlerBuilder)?
+        .Produces(StatusCodes.Status410Gone)
+        .WithTags(nameof(FileEndpoints));
+
+    [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
+    public record Request(
+        [FromQuery] FileIdentifier Identifier,
+        [FromQuery] Contracts.GetFile.Name? Name = null)
+        : Contracts.GetFile.Request(Identifier, Name);
+    
+    private static async ValueTask<Results<PhysicalFileHttpResult, NotFound, StatusCodeHttpResult>> HandleAsync(
+        // ReSharper disable once SuggestBaseTypeForParameter
+        Request request,
         DataContext dataContext,
         IOptions<FileStorageOptions> fsOptions,
         HttpResponse response,
@@ -36,12 +50,11 @@ public partial class GetFile
         var path = Path.Combine(fsOptions.Value.Directory, file.Hash.Value);
         if (File.Exists(path) is false)
         {
-            return TypedResults.NoContent();
+            return TypedResults.StatusCode(StatusCodes.Status410Gone);
         }
         
-        var contentStream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        return TypedResults.File(
-            contentStream, 
+        return TypedResults.PhysicalFile(
+            path,
             file.ContentType, 
             fileName, 
             file.CreatedAt);

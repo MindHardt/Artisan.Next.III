@@ -5,6 +5,7 @@ using Contracts;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
 
@@ -15,10 +16,17 @@ namespace Server.Features.Files;
 public partial class SearchFiles
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.RequireAuthorization();
+        endpoint.RequireAuthorization().WithTags(nameof(FileEndpoints));
+
+    public record Request(
+        [FromQuery] string? Regex = null,
+        [FromQuery] FileScope? RestrictedToScope = null,
+        [FromQuery] int Page = 0,
+        [FromQuery] int PageSize = 10)
+        : Contracts.SearchFiles.Request(Regex, RestrictedToScope, Page, PageSize);
     
     private static async ValueTask<Ok<Contracts.SearchFiles.Response>> HandleAsync(
-        Contracts.SearchFiles.Request request,
+        Request request,
         ClaimsPrincipal principal,
         DataContext dataContext,
         CancellationToken ct)

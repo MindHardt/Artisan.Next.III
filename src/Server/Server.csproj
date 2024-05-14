@@ -48,6 +48,7 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="FileStorage\" />
+    <Folder Include="wwwroot\static\portraits\" />
   </ItemGroup>
 
 </Project>

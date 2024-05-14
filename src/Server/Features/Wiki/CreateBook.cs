@@ -14,7 +14,7 @@ namespace Server.Features.Wiki;
 public partial class CreateBook
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin));
+        endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(WikiEndpoints));
 
     private static async ValueTask<Results<Ok<BookModel>, Conflict, ProblemHttpResult>> HandleAsync(
         Contracts.CreateBook.Request request,

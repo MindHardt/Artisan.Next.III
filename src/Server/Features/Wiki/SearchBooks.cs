@@ -13,6 +13,9 @@ namespace Server.Features.Wiki;
 [MapGet(Contracts.SearchBooks.FullPath)]
 public partial class SearchBooks
 {
+    internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
+        endpoint.WithTags(nameof(WikiEndpoints));
+    
     private static async ValueTask<Ok<BookModel[]>> HandleAsync(
         Contracts.SearchBooks.Request request,
         ClaimsPrincipal principal,

@@ -17,7 +17,7 @@ namespace Server.Features.Files;
 public partial class UploadFile
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint)
-        => endpoint.DisableAntiforgery().RequireAuthorization();
+        => endpoint.DisableAntiforgery().RequireAuthorization().WithTags(nameof(FileEndpoints));
     
     [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
     public record Request(

@@ -22,7 +22,9 @@ public class FileClient(IServiceProvider sp) : IFileClient
     public async Task<ErrorOr<Contracts.SearchFiles.Response>> SearchFiles(Contracts.SearchFiles.Request request, CancellationToken ct = default)
     {
         var handler = sp.GetRequiredService<SearchFiles.Handler>();
-        return (await handler.HandleAsync(request, ct)).AsErrorOr<Contracts.SearchFiles.Response>();
+        var innerRequest = new SearchFiles.Request(
+            request.Regex, request.RestrictedToScope, request.Page, request.PageSize);
+        return (await handler.HandleAsync(innerRequest, ct)).AsErrorOr<Contracts.SearchFiles.Response>();
     }
 
     public async Task<ErrorOr<FileModel>> DeleteFile(Contracts.DeleteFile.Request request, CancellationToken ct = default)
