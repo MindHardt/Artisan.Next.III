@@ -21,7 +21,7 @@ public partial class GetFile
 
     [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
     public record Request(
-        [FromQuery] FileIdentifier Identifier,
+        [FromRoute] FileIdentifier Identifier,
         [FromQuery] Contracts.GetFile.Name? Name = null)
         : Contracts.GetFile.Request(Identifier, Name);
     
