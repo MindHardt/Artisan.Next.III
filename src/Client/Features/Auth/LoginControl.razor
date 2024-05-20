@@ -41,9 +41,9 @@ else
                                 <div class="d-flex gap-1">
                                     @foreach (var scheme in _schemes)
                                     {
+                                        var iconFile = $"/icons/{scheme.Name.ToLower()}.svg";
                                         <a class="btn btn-lg btn-primary flex-fill" href="@Backend.Auth.BuildLoginUrl(new Login.Request(scheme.Name, Navigation.Uri))">
-                                            <i class="bi @LoginIconClasses[scheme.Name]"></i>
-                                            @(scheme.DisplayName)
+                                            <img src="@iconFile" alt="@scheme.Name" style="height: 32px; width: 32px; filter: brightness(0) saturate(100%) invert(83%) sepia(100%) saturate(1%) hue-rotate(260deg) brightness(104%) contrast(101%);" />
                                         </a>
                                     }
                                 </div>
@@ -101,12 +101,6 @@ else
 
 @code {
     private LoginSchemeModel[]? _schemes;
-
-    private static readonly IReadOnlyDictionary<string, string> LoginIconClasses = new Dictionary<string, string>
-    {
-        ["Yandex"] = "bi-sign-intersection-y",
-        ["Google"] = "bi-google"
-    };
 
     protected override async Task OnInitializedAsync()
     {

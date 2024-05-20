@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNet.Security.OAuth.Notion" Version="8.0.0" />
     <PackageReference Include="AspNet.Security.OAuth.Yandex" Version="8.0.0" />
     <PackageReference Include="AutoRegisterInject" Version="1.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.4" />
@@ -20,6 +21,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NickBuhro.Translit" Version="1.4.5" />
+    <PackageReference Include="Notion.Net" Version="4.2.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
@@ -49,6 +51,11 @@
     <Folder Include="Data\Migrations\" />
     <Folder Include="FileStorage\" />
     <Folder Include="wwwroot\static\portraits\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\static\icons\notion-logo-svgrepo-com.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\static\icons\yandex-international-svgrepo-com.svg" />
   </ItemGroup>
 
 </Project>

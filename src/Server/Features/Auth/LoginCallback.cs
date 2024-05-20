@@ -29,7 +29,15 @@ public partial class LoginCallback
         CancellationToken ct)
     {
         var loginInfo = await signInManager.GetExternalLoginInfoAsync();
-        var user = await userManager.FindByLoginAsync(loginInfo!.LoginProvider, loginInfo.ProviderKey);
+         if (loginInfo is null)
+        {
+            return TypedResults.Problem(new ProblemDetails
+            {
+                Detail = "An error occured when retrieving external login info"
+            });
+        }
+        
+        var user = await userManager.FindByLoginAsync(loginInfo.LoginProvider, loginInfo.ProviderKey);
         if (user is null)
         {
             user = new User
