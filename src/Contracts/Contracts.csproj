@@ -67,11 +67,21 @@
       <Compile Update="GetFileUsage.cs">
         <DependentUpon>FileEndpoints.cs</DependentUpon>
       </Compile>
+      <Compile Update="GetStatusEffects.cs">
+        <DependentUpon>NotionEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="INotionClient.cs">
+        <DependentUpon>NotionEndpoints.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="ErrorOr" Version="2.0.1" />
       <PackageReference Include="Vogen" Version="4.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Arklens\Arklens.csproj" />
     </ItemGroup>
 
 </Project>

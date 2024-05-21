@@ -7,20 +7,13 @@
     }
     else
     {
-        @if (WithTwemoji)
-        {
-            <Twemoji>
-                @_html.Value
-            </Twemoji>
-        }
-        else
-        {
-            @_html.Value
-        }
+        @_html.Value
     }
 </div>
 
 @code {
+
+    private readonly string _id = $"md_{Guid.NewGuid()}";
     
     [Parameter, EditorRequired]
     public string Markdown { get; set; } = null!;
@@ -31,9 +24,6 @@
     /// </summary>
     [Parameter]
     public bool SmoothRerender { get; set; } = true;
-    
-    [Parameter]
-    public bool WithTwemoji { get; set; } = true;
 
     private MarkupString? _html;
 

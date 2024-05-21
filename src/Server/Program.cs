@@ -11,6 +11,7 @@ using Server.Components;
 using Server.Data;
 using Server.Features.Auth;
 using Server.Features.Files;
+using Server.Features.Notion;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,15 @@ builder.Services.AddDbContextFactory<DataContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
 });
 builder.Services.AddAuthSetup(builder.Configuration);
+
+builder.Services.AddNotionClient(client =>
+{
+    client.AuthToken = builder.Configuration["Notion:AuthToken"];
+});
+builder.Services.AddOptions<NotionConfiguration>()
+    .BindConfiguration("Notion")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen( options =>

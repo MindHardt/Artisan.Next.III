@@ -1,23 +1,20 @@
 ﻿@inject IServiceProvider Services
 
-<div id="@_id">
-    @ChildContent
-</div>
+<span id="@_id">
+    @if (BlazorEnv.IsServer)
+    {
+        @Text
+    }
+</span>
 
 @code {
 
     private readonly string _id = $"twemoji-{Guid.NewGuid()}";
-    
+
     [Parameter, EditorRequired]
-    public RenderFragment ChildContent { get; set; } = null!;
+    public string Text { get; set; } = null!;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (BlazorEnv.IsServer)
-        {
-            return;
-        }
+    protected override async Task OnAfterRenderAsync(bool firstRender) =>
+        await Services.GetRequiredService<TwemojiJsInterop>().UpdateTwemoji(_id, Text);
 
-        await Services.GetRequiredService<TwemojiJsInterop>().UpdateTwemoji(_id);
-    }
 }

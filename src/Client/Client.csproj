@@ -30,6 +30,9 @@
     <Compile Update="Features\Shared\Components\TwemojiJsInterop.cs">
       <DependentUpon>Twemoji.razor</DependentUpon>
     </Compile>
+    <Compile Update="Features\Shared\Components\ShowdownJsInterop.cs">
+      <DependentUpon>RenderedMd.razor</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

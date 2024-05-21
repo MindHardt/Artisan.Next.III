@@ -50,12 +50,19 @@
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
     <Folder Include="FileStorage\" />
+    <Folder Include="wwwroot\static\effects\" />
     <Folder Include="wwwroot\static\portraits\" />
   </ItemGroup>
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\static\icons\notion-logo-svgrepo-com.svg" />
     <_ContentIncludedByDefault Remove="wwwroot\static\icons\yandex-international-svgrepo-com.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Features\Notion\StatusEffectsConfiguration.cs">
+      <DependentUpon>NotionConfiguration.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

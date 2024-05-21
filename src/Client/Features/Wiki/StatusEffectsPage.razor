@@ -1,0 +1,94 @@
+﻿@page "/wiki/effects"
+@using Client.Features.Shared
+@using Client.Features.Shared.Components
+@using Contracts
+@using ErrorOr
+@layout WikiLayout
+@inject BackendClient Backend
+@inject PersistentComponentState Persistence
+
+<OpenGraph 
+    Title="Статусные эффекты"
+    Description="На этой странице перечислены статусные эффекты системы Аркленс"/>
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="input-group">
+            <span class="input-group-text bi bi-search"></span>
+            <input type="text" class="form-control" value="@_query" placeholder="Поиск" @onchange="@Search"/>
+        </div>
+    </div>
+    <div class="row">
+        @if (_effects is null)
+        {
+            <Spinner/>
+        }
+        else foreach (var effect in _effects)
+        {
+            <div class="col-12 col-md-4 col-lg-3 mb-3">
+                <div class="card shadow h-100">
+                    @if (effect.CoverUrl is not null)
+                    {
+                        <img src="@effect.CoverUrl" alt="@effect.Name" class="card-img-top"/>
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <Twemoji Text="@effect.Icon"/>
+                            <span class="text-truncate">@effect.Name</span>
+                        </h5>
+                        <p class="card-text">@((MarkupString)effect.Description)</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    private GetStatusEffects.Model[]? _effects;
+    private string? _query;
+
+    private void Search(ChangeEventArgs e)
+    {
+        _query = e.Value as string;
+        _effects = null;
+        _ = Task.Run(async () =>
+        {
+            await Backend.Notion.GetStatusEffects(new GetStatusEffects.Request(_query)).ThenDoAsync(async result =>
+            {
+                _effects = result;
+                await InvokeAsync(StateHasChanged);
+            });
+        });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (BlazorEnv.IsServer)
+        {
+            await Backend.Notion.GetStatusEffects(new GetStatusEffects.Request(null)).ThenDo(result =>
+            {
+                _effects = result;
+                Persistence.RegisterOnPersisting(() =>
+                {
+                    Persistence.PersistAsJson(nameof(_effects), _effects);
+                    return Task.CompletedTask;
+                });
+            });
+        }
+        else
+        {
+            if (Persistence.TryTakeFromJson(nameof(_effects), out _effects))
+            {
+                return;
+            }
+
+            await Backend.Notion.GetStatusEffects(new GetStatusEffects.Request(null)).ThenDo(result =>
+            {
+                _effects = result;
+            });
+        }
+    }
+
+}

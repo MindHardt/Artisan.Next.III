@@ -12,7 +12,8 @@
     object-fit: fill;
 }
 
-img.emoji {
+img.twemoji {
     height: 24px;
     width: 24px;
+    vertical-align: text-bottom;
 }
