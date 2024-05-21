@@ -11,10 +11,7 @@ public static class NotionExtensions
         .Single();
 
     public static string ToPlainText(this IEnumerable<RichTextBase> richTexts) => string.Concat(richTexts
-        .Select(rt => rt switch
-        {
-            _ => rt.PlainText
-        }));
+        .Select(rt => rt.PlainText));
 
     public static MarkupString ToHtml(this IEnumerable<RichTextBase> richTexts) => (MarkupString)string.Concat(richTexts
         .Select(rt => rt switch
