@@ -25,7 +25,7 @@ public partial class GetFile
         [FromQuery] Contracts.GetFile.Name? Name = null)
         : Contracts.GetFile.Request(Identifier, Name);
     
-    private static async ValueTask<Results<PhysicalFileHttpResult, NotFound, StatusCodeHttpResult>> HandleAsync(
+    private static async ValueTask<Results<FileStreamHttpResult, NotFound, StatusCodeHttpResult>> HandleAsync(
         // ReSharper disable once SuggestBaseTypeForParameter
         Request request,
         DataContext dataContext,
@@ -52,9 +52,10 @@ public partial class GetFile
         {
             return TypedResults.StatusCode(StatusCodes.Status410Gone);
         }
-        
-        return TypedResults.PhysicalFile(
-            path,
+
+        var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        return TypedResults.File(
+            fileStream,
             file.ContentType, 
             fileName, 
             file.CreatedAt);

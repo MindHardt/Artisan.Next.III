@@ -1,0 +1,62 @@
+﻿@page "/character/new"
+@using System.Net.Mime
+@using Arklens
+@using Arklens.Races
+@using Client.Features.Shared.Components
+
+<OpenGraph
+    Title="Генератор персонажа"
+    Description="На этой странице можно создать себе персонажа на сайте и создать его связанный лист персонажа" />
+<h1>Новый персонаж</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="card col-12">
+            <div class="card-body">
+                <BasicInfoPanel @bind-Character="@Character" />
+            </div>
+        </div>
+        <div class="card col-md-6 col-12">
+            <div class="card-body">
+                <div class="avatar-container">
+                    @if (_avatarBase64 is not null)
+                    {
+                        <img class="img-thumbnail" src="data:image/png;base64,@_avatarBase64" alt="Аватар"/>
+                    }
+                </div>
+                <button class="btn btn-outline-primary btn-lg mt-2 w-100" onclick="document.getElementById('newCharacterPortrait').click()">
+                    <i class="bi bi-upload"></i>
+                    Портрет
+                </button>
+                <InputFile accept="image/*" OnChange="HandlePortrait" hidden id="newCharacterPortrait"/>
+            </div>
+        </div>
+        <div class="card col-md-6 col-12">
+            <div class="card-body">
+                <CharacteristicPanel @bind-Character="@Character" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private CharacterBuilder Character { get; set; } = new()
+    {
+        CharacteristicLimit = 5
+    };
+
+    private string? _avatarBase64;
+    private IBrowserFile? _avatarFile;
+
+    private async Task HandlePortrait(InputFileChangeEventArgs e)
+    {
+        var formattedImage = await e.File.RequestImageFileAsync(MediaTypeNames.Image.Jpeg, 1024, 1024);
+        _avatarFile = formattedImage;
+
+        var dest = new MemoryStream();
+        await using var avatarStream = _avatarFile.OpenReadStream(long.MaxValue);
+        await avatarStream.CopyToAsync(dest);
+        _avatarBase64 = Convert.ToBase64String(dest.ToArray());
+    }
+}

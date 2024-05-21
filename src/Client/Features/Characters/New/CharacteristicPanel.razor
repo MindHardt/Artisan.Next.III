@@ -1,0 +1,107 @@
+﻿@using Arklens.Races
+@using Client.Features.Shared.Components
+
+<div class="container-fluid">
+    @if (Character.Characteristics.PointsLeft is not null)
+    {
+        <div class="row">
+            <div class="col-12 col-md-">
+                
+            </div>
+        </div>
+    }
+    @foreach (var characteristic in Character.Characteristics)
+    {
+        <div class="row">
+            <div class="col-md-2 col-2">
+                <Twemoji Text="@characteristic.Key"/>
+            </div>
+            <div class="col-md-1 col-2 d-flex justify-content-end pe-0">
+                <button class="btn btn-md btn-light 
+                        @(Character.Characteristics.DecreaseForbidden(characteristic.Key) ? "invisible" : "")"
+                        @onclick="@(() => Decrease(characteristic.Key))">
+                    <i class="bi bi-dash-circle"></i>
+                </button>
+            </div>
+            <div class="col-md-2 col-3 text-center ps-0 pe-0">
+                @characteristic.Value.AsModifier()
+            </div>
+            <div class="col-md-1 col-2 d-flex justify-content-start ps-0">
+                <button class="btn btn-md btn-light 
+                        @(Character.Characteristics.IncreaseForbidden(characteristic.Key) ? "invisible" : "")"
+                        @onclick="@(() => Increase(characteristic.Key))">
+                    <i class="bi bi-plus-circle"></i>
+                </button>
+            </div>
+            <div class="col-md-2 col-3">
+                @if (Character.RaceImpacts?.GetByEmoji(characteristic.Key) is { } impact and not RaceImpact.Unaffected)
+                {
+                    var numberClass = impact is RaceImpact.Increased
+                        ? "text-success"
+                        : "text-danger";
+                    <div class="d-flex flex-row justify-content-end pb-0 pt-0">
+                        <strong class="@numberClass me-1">@(((sbyte)impact).AsModifier())</strong>
+                        <Twemoji Text="@Character.Race!.Emoji"/>
+                    </div>
+                }
+            </div>
+            <div class="d-none d-md-block col-2">
+                <strong class="p-0">
+                    @{
+                        var raceImpact = Character.RaceImpacts?
+                            .GetByEmoji(characteristic.Key) ?? RaceImpact.Unaffected;
+                    }
+                    <span class="badge text-bg-primary w-100 h-75">
+                        @((characteristic.Value + (int)raceImpact).AsModifier())
+                    </span>
+                </strong>
+            </div>
+            <div class="d-none d-md-block col-2">
+                <Twemoji Text="@characteristic.Key"/>
+            </div>
+        </div>
+    }
+    <div class="d-block d-md-none">
+        <hr/>
+        <h2 class="text-center">Результат</h2>
+        @foreach (var characteristic in Character.Characteristics)
+        {
+            <div class="row">
+                <div class="col-6 d-flex justify-content-end">
+                    <strong class="p-0">
+                        @{
+                            var raceImpact = Character.RaceImpacts?
+                                .GetByEmoji(characteristic.Key) ?? RaceImpact.Unaffected;
+                        }
+                        <span class="badge text-bg-primary h-75">
+                            @((characteristic.Value + (int)raceImpact).AsModifier())
+                        </span>
+                    </strong>
+                </div>
+                <div class="col-6 d-flex justify-content-start">
+                    <Twemoji Text="@characteristic.Key"/>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    
+    private Task Increase(string emoji)
+    {
+        Character.Characteristics.TryIncrease(emoji);
+        return CharacterChanged.InvokeAsync(Character);
+    }
+
+    private Task Decrease(string emoji)
+    {
+        Character.Characteristics.TryDecrease(emoji);
+        return CharacterChanged.InvokeAsync(Character);
+    }
+
+    [Parameter]
+    public CharacterBuilder Character { get; set; } = null!;
+    [Parameter]
+    public EventCallback<CharacterBuilder> CharacterChanged { get; set; }
+}
