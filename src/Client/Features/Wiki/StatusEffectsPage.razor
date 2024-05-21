@@ -38,6 +38,13 @@
                         </h5>
                         <p class="card-text">@((MarkupString)effect.Description)</p>
                     </div>
+                    @if (effect.PageUrl is not null)
+                    {
+                        <div class="card-footer">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                            <a href="@effect.PageUrl">Notion</a>
+                        </div>
+                    }
                 </div>
             </div>
         }
