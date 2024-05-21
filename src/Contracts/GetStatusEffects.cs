@@ -11,5 +11,6 @@ public static class GetStatusEffects
         string? CoverUrl,
         string Name,
         string Icon,
-        string Description);
+        string Description,
+        string? PageUrl);
 }

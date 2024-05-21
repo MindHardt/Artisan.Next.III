@@ -34,10 +34,11 @@ public partial class GetStatusEffects
 
         return TypedResults.Ok(pages.Results
             .Select(x => new Contracts.GetStatusEffects.Model(
-                null,
+                (x.Cover as ExternalFile)?.External.Url,
                 x.GetTitle().Title.ToPlainText(),
                 ((EmojiObject)x.Icon).Emoji,
-                ((RichTextPropertyValue)x.Properties[statusEffects.Description]).RichText.ToHtml().Value))
+                ((RichTextPropertyValue)x.Properties[statusEffects.Description]).RichText.ToHtml().Value,
+                x.PublicUrl))
             .ToArray());
     }
 }
