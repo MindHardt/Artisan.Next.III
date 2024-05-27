@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Arklens", "Arklens", "{FB20
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arklens.Generators", "Arklens.Generators\Arklens.Generators.csproj", "{152EBE0D-4FEC-4499-8C72-1A6874B809A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arklens.Tests", "Arklens.Tests\Arklens.Tests.csproj", "{A50077A1-F37B-4EA4-A592-1A36ECD754B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,18 @@ Global
 		{152EBE0D-4FEC-4499-8C72-1A6874B809A0}.Release|x64.Build.0 = Release|Any CPU
 		{152EBE0D-4FEC-4499-8C72-1A6874B809A0}.Release|x86.ActiveCfg = Release|Any CPU
 		{152EBE0D-4FEC-4499-8C72-1A6874B809A0}.Release|x86.Build.0 = Release|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Debug|x64.Build.0 = Debug|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Debug|x86.Build.0 = Debug|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Release|x64.ActiveCfg = Release|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Release|x64.Build.0 = Release|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Release|x86.ActiveCfg = Release|Any CPU
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,5 +117,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D837A801-E7F8-4C6A-BC14-C199B560DCE4} = {FB20D652-4B85-4D78-B479-8D222912AA6C}
 		{152EBE0D-4FEC-4499-8C72-1A6874B809A0} = {FB20D652-4B85-4D78-B479-8D222912AA6C}
+		{A50077A1-F37B-4EA4-A592-1A36ECD754B5} = {FB20D652-4B85-4D78-B479-8D222912AA6C}
 	EndGlobalSection
 EndGlobal

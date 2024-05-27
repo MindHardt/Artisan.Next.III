@@ -1,8 +1,15 @@
 ﻿@page "/character/new"
 @using System.Net.Mime
-@using Arklens
-@using Arklens.Races
+@using System.Text.Json
+@using Client.Features.Files
+@using Client.Features.Shared
 @using Client.Features.Shared.Components
+@using Contracts
+@using Microsoft.Extensions.Options
+@using ErrorOr
+@inject BackendClient Backend
+@inject IServiceProvider Services
+@inject IOptions<JsonSerializerOptions> JsonOptions
 
 <OpenGraph
     Title="Генератор персонажа"
@@ -29,12 +36,27 @@
                     Портрет
                 </button>
                 <InputFile accept="image/*" OnChange="HandlePortrait" hidden id="newCharacterPortrait"/>
+                <div class="avatar-container">
+                    @if (_minifigureBase64 is not null)
+                    {
+                    <img class="img-thumbnail" src="data:image/png;base64,@_minifigureBase64" alt="Аватар"/>
+                    }
+                </div>
+                <button class="btn btn-outline-primary btn-lg mt-2 w-100" onclick="document.getElementById('newCharacterMinifigure').click()">
+                    <i class="bi bi-upload"></i>
+                    Минифигурка
+                </button>
+                <InputFile accept="image/*" OnChange="HandleMinifigure" hidden id="newCharacterMinifigure"/>
             </div>
         </div>
         <div class="card col-md-6 col-12">
             <div class="card-body">
                 <CharacteristicPanel @bind-Character="@Character" />
             </div>
+        </div>
+        <div class="btn btn-lg btn-primary w-100" disabled="@(!CanBeDownloaded)" @onclick="@DownloadJson">
+            <i class="bi bi-download"></i>
+            Скачать
         </div>
     </div>
 </div>
@@ -49,14 +71,74 @@
     private string? _avatarBase64;
     private IBrowserFile? _avatarFile;
 
+    private string? _minifigureBase64;
+    private IBrowserFile? _minifigureFile;
+
     private async Task HandlePortrait(InputFileChangeEventArgs e)
     {
         var formattedImage = await e.File.RequestImageFileAsync(MediaTypeNames.Image.Jpeg, 1024, 1024);
         _avatarFile = formattedImage;
-
-        var dest = new MemoryStream();
+        
         await using var avatarStream = _avatarFile.OpenReadStream(long.MaxValue);
-        await avatarStream.CopyToAsync(dest);
-        _avatarBase64 = Convert.ToBase64String(dest.ToArray());
+        _avatarBase64 = await avatarStream.CalculateBase64();
     }
+
+    private async Task HandleMinifigure(InputFileChangeEventArgs e)
+    {
+        var formattedImage = await e.File.RequestImageFileAsync(MediaTypeNames.Image.Jpeg, 512, 1024);
+        _minifigureFile = formattedImage;
+
+        await using var minifigureStream = _minifigureFile.OpenReadStream(long.MaxValue);
+        _minifigureBase64 = await minifigureStream.CalculateBase64();
+    }
+
+    private bool CanBeDownloaded =>
+        _minifigureFile is not null &&
+        _avatarFile is not null &&
+        Character is
+        {
+            Alignment: not null,
+            Class: not null,
+            Characteristics.PointsLeft: null or 0,
+            Gender: not null,
+            Name: not null,
+            Race: not null
+        } 
+        && (Character.Race.Impacts is null || Character.RaceImpacts is not null) 
+        && (Character.Class.Subclasses.Any() || Character.Subclass is not null);
+
+    private async Task DownloadJson()
+    {
+        if (CanBeDownloaded is false)
+        {
+            return;
+        }
+
+        FileIdentifier avatarUploadedFile = default;
+        var uploadAvatarRequest = new UploadFile.Request<IBrowserFile>(_avatarFile!, FileScope.Character);
+        await Backend.Files.UploadFile(uploadAvatarRequest).Match(
+            result => avatarUploadedFile = result.Identifier,
+            error => throw new Exception(error.First().Description));
+
+        FileIdentifier minifigureUploadedFile = default;
+        var uploadMinifigureRequest = new UploadFile.Request<IBrowserFile>(_minifigureFile!, FileScope.Character);
+        await Backend.Files.UploadFile(uploadMinifigureRequest).Match(
+            result => minifigureUploadedFile = result.Identifier,
+            error => throw new Exception(error.First().Description));
+
+        var model = new CharacterModel(
+            Character.Gender!.Value,
+            Character.Race!,
+            Character.Name!,
+            Character.Class!,
+            Character.Subclass,
+            Character.Alignment!,
+            Character.Characteristics.ToModel(),
+            avatarUploadedFile,
+            minifigureUploadedFile);
+
+        var json = JsonSerializer.Serialize(model, JsonOptions.Value);
+        await Services.GetRequiredService<IJSRuntime>().Alert(json);
+    }
+
 }

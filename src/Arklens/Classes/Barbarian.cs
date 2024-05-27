@@ -1,4 +1,6 @@
-﻿namespace Arklens.Classes;
+﻿using System.Runtime.CompilerServices;
+
+namespace Arklens.Classes;
 
 public record Barbarian : Class
 {
@@ -13,4 +15,7 @@ public record Barbarian : Class
         ClassSkills.Survival |
         ClassSkills.KnowledgeDungeons |
         ClassSkills.HorseRiding;
+
+    public Barbarian([CallerMemberName] string ownName = "") : base(ownName)
+    { }
 }

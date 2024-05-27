@@ -1,8 +1,14 @@
-﻿using Arklens.Core;
+﻿using Arklens.Alids;
+using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Subclass(
-    string Emoji,
-    string Name,
-    IReadOnlyCollection<Alignment>? AllowedAlignments = null) : IArklensEntity;
+[AlidDomain]
+public abstract record Subclass : IArklensEntity, IAlidEntity
+{
+    public abstract Alid Alid { get; }
+    public abstract string Emoji { get; }
+    public abstract string Name { get; }
+    
+    public virtual IReadOnlyCollection<Alignment>? AllowedAlignments => null;
+}

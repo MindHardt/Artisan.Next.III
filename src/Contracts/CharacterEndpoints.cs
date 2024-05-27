@@ -1,4 +1,7 @@
-﻿using Arklens;
+﻿using System.Security.Claims;
+using Arklens;
+using Arklens.Classes;
+using Arklens.Races;
 
 namespace Contracts;
 
@@ -9,11 +12,11 @@ public static class CharacterEndpoints
 
 public record CharacterModel(
     Gender Gender,
-    string Race,
+    Race Race,
     string Name,
-    string Class,
-    string Subclass,
-    string Alignment,
+    Class Class,
+    Subclass? Subclass,
+    Alignment Alignment,
     CharacteristicsModel Characteristics,
     FileIdentifier Portrait,
     FileIdentifier Minifigure);

@@ -52,6 +52,18 @@
       <Compile Update="Classes\Ranger.cs">
         <DependentUpon>Class.cs</DependentUpon>
       </Compile>
+      <Compile Update="Classes\PriestFaith.cs">
+        <DependentUpon>Priest.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\CrusaderFaith.cs">
+        <DependentUpon>Crusader.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\WizardSchool.cs">
+        <DependentUpon>Wizard.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\DruidCircle.cs">
+        <DependentUpon>Druid.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

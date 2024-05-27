@@ -1,4 +1,6 @@
-﻿namespace Arklens.Classes;
+﻿using System.Runtime.CompilerServices;
+
+namespace Arklens.Classes;
 
 public record Kineticist : Class
 {
@@ -10,4 +12,7 @@ public record Kineticist : Class
         ClassSkills.Survival |
         ClassSkills.FirstAid |
         ClassSkills.KnowledgeWorld;
+    
+    public Kineticist([CallerMemberName] string ownName = "") : base(ownName)
+    { }
 }

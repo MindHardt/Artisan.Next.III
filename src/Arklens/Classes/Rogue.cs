@@ -1,4 +1,6 @@
-﻿namespace Arklens.Classes;
+﻿using System.Runtime.CompilerServices;
+
+namespace Arklens.Classes;
 
 public record Rogue : Class
 {
@@ -12,4 +14,7 @@ public record Rogue : Class
         ClassSkills.Acrobatics |
         ClassSkills.Stealth |
         ClassSkills.Climbing;
+    
+    public Rogue([CallerMemberName] string ownName = "") : base(ownName)
+    { }
 }

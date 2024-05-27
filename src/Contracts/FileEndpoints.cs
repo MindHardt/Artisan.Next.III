@@ -72,5 +72,6 @@ public enum FileScope
 {
     Unknown,
     Avatar,
-    Attachment
+    Attachment,
+    Character
 }

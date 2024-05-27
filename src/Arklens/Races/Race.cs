@@ -1,15 +1,21 @@
-﻿using Arklens.Core;
+﻿using System.Runtime.CompilerServices;
+using Arklens.Alids;
+using Arklens.Core;
 using Arklens.Generators;
+// ReSharper disable NotAccessedPositionalProperty.Global
 
 namespace Arklens.Races;
 
+[AlidDomain]
 [GenerateEnumeration]
 public partial record Race(
     string Name,
     string Emoji,
-    RaceImpacts? Impacts) 
-    : IArklensEntity
+    RaceImpacts? Impacts,
+    [CallerMemberName] string OwnName = "") : IAlidEntity, IArklensEntity
 {
+    public Alid Alid { get; } = Alid.OfType<Race>(OwnName);
+    
     public static Race Human { get; } = new(
         "Человек",
         "🧑",
@@ -54,5 +60,4 @@ public partial record Race(
             Con: RaceImpact.Increased,
             Int: RaceImpact.Increased,
             Wis: RaceImpact.Decreased));
-
 }

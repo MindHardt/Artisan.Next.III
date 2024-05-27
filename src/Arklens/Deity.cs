@@ -1,11 +1,18 @@
-﻿using Arklens.Core;
+﻿using System.Runtime.CompilerServices;
+using Arklens.Alids;
+using Arklens.Core;
 using Arklens.Generators;
 
 namespace Arklens;
 
+[AlidDomain]
 [GenerateEnumeration]
-public partial record Deity(string Emoji, string Name, Alignment Alignment) : IArklensEntity
+public partial record Deity(string Emoji, string Name, Alignment Alignment, [CallerMemberName] string OwnName = "") :   
+    IAlidEntity,
+    IArklensEntity
 {
+    public Alid Alid { get; } = Alid.OfType<Deity>(OwnName);
+
     public static Deity Neras { get; } = new("⚒️", "Нерас", Alignment.LawfulGood);
     public static Deity Sol { get; } = new("☀️", "Сол", Alignment.NeutralGood);
     public static Deity Yunai { get; } = new("✨", "Юнай", Alignment.ChaoticGood);

@@ -1,4 +1,6 @@
-﻿namespace Arklens.Classes;
+﻿using System.Runtime.CompilerServices;
+
+namespace Arklens.Classes;
 
 public record Bookworm : Class
 {
@@ -14,4 +16,7 @@ public record Bookworm : Class
         ClassSkills.Diplomacy |
         ClassSkills.Mechanics |
         ClassSkills.FirstAid;
+    
+    public Bookworm([CallerMemberName] string ownName = "") : base(ownName)
+    { }
 }

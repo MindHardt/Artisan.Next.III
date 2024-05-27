@@ -38,7 +38,7 @@ namespace Server.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataProtectionKeys");
+                    b.ToTable("DataProtectionKeys", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
@@ -206,7 +206,7 @@ namespace Server.Data.Migrations
 
                     b.HasKey("UrlName");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("Server.Data.StorageFile", b =>
@@ -253,7 +253,7 @@ namespace Server.Data.Migrations
 
                     NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("Hash", "Identifier"), new[] { "Scope", "OriginalName" });
 
-                    b.ToTable("Files");
+                    b.ToTable("Files", (string)null);
                 });
 
             modelBuilder.Entity("Server.Data.User", b =>

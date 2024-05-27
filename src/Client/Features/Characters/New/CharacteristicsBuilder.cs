@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Arklens.Races;
+using Contracts;
 
 namespace Client.Features.Characters.New;
 
@@ -50,4 +51,8 @@ public record CharacteristicsBuilder(CharacterBuilder _character) : IEnumerable<
 
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
+
+    public CharacteristicsModel ToModel() => new(
+        _values[0], _values[1], _values[2],
+        _values[3], _values[4], _values[5]);
 }

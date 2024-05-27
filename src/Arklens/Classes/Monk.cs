@@ -1,4 +1,6 @@
-﻿namespace Arklens.Classes;
+﻿using System.Runtime.CompilerServices;
+
+namespace Arklens.Classes;
 
 public record Monk : Class
 {
@@ -15,4 +17,7 @@ public record Monk : Class
         ClassSkills.Climbing |
         ClassSkills.Acrobatics |
         ClassSkills.Stealth;
+    
+    public Monk([CallerMemberName] string ownName = "") : base(ownName)
+    { }
 } 

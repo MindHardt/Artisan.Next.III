@@ -1,11 +1,15 @@
 ﻿using System.Diagnostics;
+using Arklens.Alids;
 using Arklens.Generators;
 
 namespace Arklens;
 
+[AlidDomain]
 [GenerateEnumeration]
-public partial record Alignment(Lawfulness Lawfulness, Goodness Goodness)
+public partial record Alignment(Lawfulness Lawfulness, Goodness Goodness) : IAlidEntity
 {
+    public Alid Alid { get; } = Alid.OfType<Alignment>($"{Lawfulness}{Goodness}");
+
     public int DistanceTo(Alignment other) => 
         int.Abs(Goodness - other.Goodness) + 
         int.Abs(Lawfulness - other.Lawfulness);

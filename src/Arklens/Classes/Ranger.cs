@@ -1,4 +1,6 @@
-﻿namespace Arklens.Classes;
+﻿using System.Runtime.CompilerServices;
+
+namespace Arklens.Classes;
 
 public record Ranger : Class
 {
@@ -13,4 +15,7 @@ public record Ranger : Class
         ClassSkills.KnowledgeNature |
         ClassSkills.HorseRiding |
         ClassSkills.FirstAid;
+    
+    public Ranger([CallerMemberName] string ownName = "") : base(ownName)
+    { }
 }

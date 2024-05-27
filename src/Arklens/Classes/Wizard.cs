@@ -1,4 +1,6 @@
-﻿namespace Arklens.Classes;
+﻿using System.Runtime.CompilerServices;
+
+namespace Arklens.Classes;
 
 public record Wizard : Class
 {
@@ -12,14 +14,8 @@ public record Wizard : Class
         ClassSkills.KnowledgeDungeons |
         ClassSkills.KnowledgeNature;
 
-    public override IReadOnlyCollection<Subclass> Subclasses { get; } =
-    [
-        new Subclass("👻", "Аниматургия"),
-        new Subclass("👁️", "Иллюзия"),
-        new Subclass("🔮", "Прорицание"),
-        new Subclass("💥", "Разрушение"),
-        new Subclass("💫", "Релокация"),
-        new Subclass("♻️", "Трансмутация"),
-        new Subclass("🪄", "Универсализм")
-    ];
+    public override IReadOnlyCollection<Subclass> Subclasses => WizardSchool.AllValues;
+    
+    public Wizard([CallerMemberName] string ownName = "") : base(ownName)
+    { }
 }
