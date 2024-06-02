@@ -21,7 +21,11 @@
             
             element.hidden = false;
             element.firstChild.firstChild.className += iconClass;
-            element.childNodes[2].textContent = text;
+            
+            const div = document.createElement('div');
+            element.childNodes[2].appendChild(div);
+            div.insertAdjacentHTML('afterend', text);
+            div.remove();
             
             reference.parentNode.append(element);
             
