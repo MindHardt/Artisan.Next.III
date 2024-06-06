@@ -60,6 +60,8 @@ builder.Services
 
 builder.Services.AddHttpContextFeatures();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddHandlers();
 builder.Services.Configure<JsonSerializerOptions>(options => options.SetDefaults());
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.SetDefaults());

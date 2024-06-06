@@ -73,6 +73,9 @@
       <Compile Update="INotionClient.cs">
         <DependentUpon>NotionEndpoints.cs</DependentUpon>
       </Compile>
+      <Compile Update="CloneFile.cs">
+        <DependentUpon>FileEndpoints.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
