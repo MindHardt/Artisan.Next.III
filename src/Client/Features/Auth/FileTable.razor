@@ -197,7 +197,7 @@
                 {
                     await SearchFiles();
                     await UpdateUsage();
-                    await toasts.ShowInfoToast($"Файл <a href=\"{result.Url}\">{result.OriginalName}</a> загружен!");
+                    await toasts.ShowInfoToast($"Файл <a href=\"{result.Url}\">{result.GetUrl(GetFile.Name.Original)}</a> загружен!");
                 },
                 async error =>
                 {
