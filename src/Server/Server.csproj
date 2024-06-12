@@ -12,6 +12,7 @@
     <PackageReference Include="AspNet.Security.OAuth.Notion" Version="8.0.0" />
     <PackageReference Include="AspNet.Security.OAuth.Yandex" Version="8.0.0" />
     <PackageReference Include="AutoRegisterInject" Version="1.4.0" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.309.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.4" />
@@ -62,6 +63,12 @@
   <ItemGroup>
     <Compile Update="Features\Notion\StatusEffectsConfiguration.cs">
       <DependentUpon>NotionConfiguration.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Files\S3FileStorage.cs">
+      <DependentUpon>IFileStorage.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Files\LocalFileStorage.cs">
+      <DependentUpon>IFileStorage.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 

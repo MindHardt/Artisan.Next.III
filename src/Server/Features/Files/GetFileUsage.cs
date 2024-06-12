@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Server.Data;
+using Server.Features.Auth;
 
 namespace Server.Features.Files;
 
@@ -21,7 +22,7 @@ public partial class GetFileUsage
         EmptyRequest _,
         ClaimsPrincipal principal,
         DataContext dataContext,
-        IOptions<FileStorageOptions> fsOptions,
+        IOptions<UserOptions> userOptions,
         CancellationToken ct)
     {
         var userId = principal.GetUserId()!.Value;
@@ -41,6 +42,6 @@ public partial class GetFileUsage
 
         return TypedResults.Ok(new Contracts.GetFileUsage.Response(
             FileSize.From(queryResult.TotalFileSize),
-            FileSize.From(queryResult.CustomStorageLimit ?? fsOptions.Value.DefaultLimit)));
+            FileSize.From(queryResult.CustomStorageLimit ?? userOptions.Value.FileStorageLimit)));
     }
 }

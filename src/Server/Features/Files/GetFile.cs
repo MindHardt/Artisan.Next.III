@@ -29,7 +29,7 @@ public partial class GetFile
         // ReSharper disable once SuggestBaseTypeForParameter
         Request request,
         DataContext dataContext,
-        IOptions<FileStorageOptions> fsOptions,
+        IFileStorage fs,
         HttpResponse response,
         CancellationToken ct)
     {
@@ -47,14 +47,7 @@ public partial class GetFile
             _ => file.Identifier.Value
         };
 
-        var path = Path.Combine(fsOptions.Value.Directory, file.Hash.Value);
-        if (File.Exists(path) is false)
-        {
-            return TypedResults.StatusCode(StatusCodes.Status410Gone);
-        }
-
-        var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        
+        var fileStream = await fs.GetFileStream(file.Hash, ct);
         return TypedResults.File(
             fileStream,
             file.ContentType, 
