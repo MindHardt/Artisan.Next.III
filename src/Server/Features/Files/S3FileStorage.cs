@@ -30,6 +30,13 @@ public class S3FileStorage(IAmazonS3 s3, IOptions<S3FileStorageOptions> options)
             Prefix = hash.Value,
             MaxKeys = 1
         }, ct)).S3Objects is [var s3Object, ..] && s3Object.Key == hash.Value;
+
+    public Task DeleteFile(FileHashString hash, CancellationToken ct = default)
+        => s3.DeleteObjectAsync(new DeleteObjectRequest
+        {
+            BucketName = options.Value.BucketName,
+            Key = hash.Value
+        }, ct);
 }
 
 public record S3FileStorageOptions

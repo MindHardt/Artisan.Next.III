@@ -21,7 +21,7 @@ public partial class DeleteFile
         Contracts.DeleteFile.Request request,
         DataContext dataContext,
         ClaimsPrincipal principal,
-        IOptions<LocalFileStorageOptions> fsOptions,
+        IFileStorage fileStorage,
         CancellationToken ct)
     {
         var file = await dataContext.Files
@@ -45,7 +45,7 @@ public partial class DeleteFile
             .AnyAsync(x => x.Hash == file.Hash, ct);
         if (hashUsed is false)
         {
-            File.Delete(Path.Combine(fsOptions.Value.Directory, file.Hash.Value));
+            await fileStorage.DeleteFile(file.Hash, ct);
         }
         
         return TypedResults.Ok(new FileModel(

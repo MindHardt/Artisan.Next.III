@@ -17,6 +17,12 @@ public class LocalFileStorage(IOptions<LocalFileStorageOptions> options) : IFile
     public Task<bool> FileExists(FileHashString hash, CancellationToken ct = default)
         => Task.FromResult(File.Exists(GetPath(hash)));
 
+    public Task DeleteFile(FileHashString hash, CancellationToken ct = default)
+    {
+        File.Delete(GetPath(hash));
+        return Task.CompletedTask;
+    }
+
     private string GetPath(FileHashString hash) => Path.Combine(options.Value.Directory, hash.Value);
 }
 
