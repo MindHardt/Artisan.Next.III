@@ -21,7 +21,7 @@ public partial class DeleteFile
         Contracts.DeleteFile.Request request,
         DataContext dataContext,
         ClaimsPrincipal principal,
-        IOptions<FileStorageOptions> fsOptions,
+        IOptions<LocalFileStorageOptions> fsOptions,
         CancellationToken ct)
     {
         var file = await dataContext.Files

@@ -12,6 +12,7 @@ using Server.Data;
 using Server.Features.Auth;
 using Server.Features.Files;
 using Server.Features.Notion;
+using UserOptions = Server.Features.Auth.UserOptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,8 +52,11 @@ builder.Services.AddSwaggerGen( options =>
     options.CustomSchemaIds(x => x.FullName?.Replace("+", ".", StringComparison.Ordinal));
 });
 
-builder.Services.AddOptions<FileStorageOptions>()
-    .BindConfiguration(FileStorageOptions.Section);
+builder.Services.AddFileStorage(environment: builder.Environment);
+builder.Services.AddOptions<UserOptions>()
+    .BindConfiguration(UserOptions.Section)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 builder.Services
     .AddScoped<BackendClient>()
