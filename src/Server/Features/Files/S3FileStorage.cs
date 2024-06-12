@@ -12,7 +12,8 @@ public class S3FileStorage(IAmazonS3 s3, IOptions<S3FileStorageOptions> options)
     public async Task<Stream> GetFileStream(FileHashString hash, CancellationToken ct = default)
         => (await s3.GetObjectAsync(new GetObjectRequest
         {
-            Key = hash.Value
+            Key = hash.Value,
+            BucketName = options.Value.BucketName
         }, ct)).ResponseStream;
 
     public Task SaveFile(Stream content, FileHashString hash, CancellationToken ct = default)
