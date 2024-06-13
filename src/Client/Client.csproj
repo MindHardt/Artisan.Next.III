@@ -35,4 +35,8 @@
     </Compile>
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Features\Monsters\ChitGeneratorPage.razor" />
+  </ItemGroup>
+
 </Project>

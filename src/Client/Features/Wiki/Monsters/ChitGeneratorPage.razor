@@ -1,0 +1,99 @@
+﻿@page "/wiki/chit-generator"
+@using System.Net.Mime
+@using Client.Features.Shared.Components
+@using Client.Features.Shared.Js
+@inject IServiceProvider Services
+
+<h3>Генератор читов монстров</h3>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 col-md-4 vstack gap-2 mb-3">
+            @foreach (var param in _parameters ?? [])
+            {
+                <div class="input-group">
+                    <span class="input-group-text">
+                        @param.Key
+                    </span>
+                    <input type="text" class="form-control" value="@param.Value"
+                           @onchange="@(e => SetValue(param.Key, (string)e.Value!))" />
+                </div>
+            }
+            <div class="input-group input-group-lg w-100">
+                <span class="input-group-text bi bi-filetype-json"></span>
+                <span class="input-group-text flex-fill">Импорт/Экспорт</span>
+                
+                <button class="btn btn-lg btn-outline-success" @onclick="@ExportJson">
+                    <i class="bi bi-download"></i>
+                </button>
+
+                @{
+                    var inputId = $"file-{Guid.NewGuid()}";
+                }
+                <button class="btn btn-lg btn-outline-success" onclick="document.getElementById('@inputId').click()">
+                    <i class="bi bi-upload"></i>
+                </button>
+            </div>
+            <InputFile OnChange="@ImportJson" id="@inputId" hidden accept="@MediaTypeNames.Application.Json" />
+        </div>
+        <div class="col">
+            <div class="card p-2 overflow-x-scroll">
+                @if (_renderedSvg is null)
+                {
+                    <Spinner/>
+                }
+                else
+                {
+                    <div id="svgElement">
+                        @((MarkupString)_renderedSvg)
+                    </div>
+                }
+            </div>
+            <button class="btn btn-lg btn-primary w-100 mt-2" 
+                    @onclick="@DownloadPdf" 
+                    disabled="@(_renderedSvg is null)">
+                <i class="bi bi-download"></i>
+                <i class="bi bi-filetype-pdf"></i>
+                PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private Dictionary<string, string>? _parameters;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (BlazorEnv.IsServer)
+        {
+            return;
+        }
+        
+        _originalSvg = await Services.GetRequiredService<HttpClient>()
+            .GetStringAsync("/static/svg/monster_chit.svg");
+        _parameters = PreparationRegex().Matches(_originalSvg)
+            .Select(x => x.Groups["NAME"].Value)
+            .ToDictionary(x => x, _ => string.Empty);
+        
+        InitSvgRender();
+    }
+
+    private void SetValue(string parameter, string value)
+    {
+        _parameters![parameter] = value;
+        InitSvgRender();
+    }
+
+    private string? _originalSvg;
+    private string? _renderedSvg;
+
+    private void InitSvgRender() => _ = Task.Run(async () =>
+    {
+        _renderedSvg = PrepareSvg();
+        await InvokeAsync(StateHasChanged);
+    });
+
+    private Task DownloadPdf() => Services.GetRequiredService<PdfJsInterop>().DownloadSvg(
+        "#svgElement > svg", $"{GetFileName()}.pdf", PageSize.A5).AsTask();
+}

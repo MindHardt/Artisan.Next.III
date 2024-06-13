@@ -1,6 +1,6 @@
 ﻿using Microsoft.JSInterop;
 
-namespace Client.Features.Shared;
+namespace Client.Features.Shared.Js;
 
 [RegisterScoped]
 public class ClipboardJsInterop(IJSRuntime jsRuntime) : JsInterop(jsRuntime)

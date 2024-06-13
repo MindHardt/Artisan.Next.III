@@ -1,4 +1,5 @@
 ﻿@layout MainLayout
+@using Contracts
 @inherits LayoutComponentBase
 
 <div class="container-fluid">
@@ -17,6 +18,15 @@
                     <i class="bi bi-emoji-dizzy"></i>
                     Эффекты
                 </NavLink>
+                
+                <AuthorizeView Roles="@RoleNames.Admin">
+                    <Authorized>
+                        <NavLink href="/wiki/chit-generator" class="btn btn-outline-dark" ActiveClass="btn-dark text-light">
+                            <i class="bi bi-bug"></i>
+                            Монстры
+                        </NavLink>
+                    </Authorized>
+                </AuthorizeView>
                 
                 <a class="btn btn-outline-primary" href="https://un1ver5e.notion.site/724decf43a11419aa240f0ab42c37559?pvs=4" target="_blank">
                     <i class="bi bi-box-arrow-up-right"></i>

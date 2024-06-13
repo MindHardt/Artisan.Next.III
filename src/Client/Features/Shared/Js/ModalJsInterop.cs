@@ -1,6 +1,6 @@
 ﻿using Microsoft.JSInterop;
 
-namespace Client.Features.Shared;
+namespace Client.Features.Shared.Js;
 
 public class ModalJsInterop(IJSRuntime jsRuntime) : JsInterop(jsRuntime)
 {
