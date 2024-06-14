@@ -11,11 +11,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7BA4087B-6DFB-47F7-8098-0DE1F91F2B22}"
 	ProjectSection(SolutionItems) = preProject
 		..\docker-compose.yml = ..\docker-compose.yml
-		..\nginx.conf = ..\nginx.conf
 		.gitignore = .gitignore
 		..\.github\workflows\pipeline.yml = ..\.github\workflows\pipeline.yml
 		..\README.md = ..\README.md
-		..\.github\workflows\pipeline_old.yml-disabled = ..\.github\workflows\pipeline_old.yml-disabled
+		..\.github\workflows\pipeline.yml-old = ..\.github\workflows\pipeline.yml-old
 	EndProjectSection
 EndProject
 Global
