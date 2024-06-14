@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		..\.github\workflows\pipeline.yml = ..\.github\workflows\pipeline.yml
 		..\README.md = ..\README.md
-		..\.github\workflows\pipeline_old.yml = ..\.github\workflows\pipeline_old.yml
+		..\.github\workflows\pipeline_old.yml-disabled = ..\.github\workflows\pipeline_old.yml-disabled
 	EndProjectSection
 EndProject
 Global
