@@ -32,4 +32,12 @@ public class WikiClient(IServiceProvider sp) : IWikiClient
         var handler = sp.GetRequiredService<SearchBooks.Handler>();
         return (await handler.HandleAsync(request, ct)).AsErrorOr<BookModel[]>();
     }
+
+    public async Task<ErrorOr<BookInviteKey>> CreateInviteKey(Contracts.CreateBookInvite.Request request, CancellationToken ct = default)
+    {
+        var innerRequest = new CreateBookInvite.Request(request.UrlName);
+        
+        var handler = sp.GetRequiredService<CreateBookInvite.Handler>();
+        return (await handler.HandleAsync(innerRequest, ct)).AsErrorOr<BookInviteKey>();
+    }
 }

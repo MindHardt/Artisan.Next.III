@@ -1,5 +1,6 @@
 ﻿@attribute [Route($"/wiki/books/read/{{{nameof(UrlName)}}}")]
 @layout WikiLayout
+@using System.Web
 @using Client.Features.Shared
 @using Contracts
 @using Client.Features.Shared.Components
@@ -22,6 +23,12 @@ else
                 <i class="bi bi-pencil"></i>
                 Редактировать
             </a>
+            <div class="input-group mb-2">
+                <button class="btn btn-primary" @onclick="@GenerateInviteKey">
+                    Создать ссылку-приглашение
+                </button>
+                <input class="form-control" type="text" readonly value="@_generatedInviteLink"/>
+            </div>
         </Authorized>
     </AuthorizeView>
     
@@ -86,6 +93,11 @@ else
     private bool _includeImages = true;
     private GetBook.Response? _book;
 
+    private string? _generatedInviteLink;
+
+    [SupplyParameterFromQuery(Name = nameof(GetBook.Request.InviteKey))]
+    public string? InviteKey { get; set; }
+    
     [Parameter]
     public string UrlName { get; set; } = null!;
 
@@ -93,7 +105,7 @@ else
     {
         if (BlazorEnv.IsServer)
         {
-            await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName))).ThenDo(book =>
+            await Backend.Wiki.GetBook(CreateRequest()).ThenDo(book =>
             {
                 _book = book;
                 Persistence.RegisterOnPersisting(() =>
@@ -110,7 +122,7 @@ else
             if (Persistence.TryTakeFromJson(nameof(_book), out _book) is false && 
                 cache.TryGetValue($"book_{UrlName}", out _book) is false)
             {
-                await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)))
+                await Backend.Wiki.GetBook(CreateRequest())
                     .ThenDo(book => _book = book);
             }
 
@@ -122,4 +134,16 @@ else
             cache.Set($"book_{UrlName}", _book, TimeSpan.FromMinutes(30));
         }
     }
+
+    private GetBook.Request CreateRequest() => new(
+        BookUrlName.From(UrlName),
+        InviteKey is not null
+            ? BookInviteKey.From(InviteKey)
+            : null);
+
+    private Task GenerateInviteKey() => 
+        Backend.Wiki.CreateInviteKey(new CreateBookInvite.Request(BookUrlName.From(UrlName)))
+            .ThenDo(key => _generatedInviteLink = Navigation
+                .GetUriWithQueryParameter(nameof(GetBook.Request.InviteKey), key.Value));
+
 }

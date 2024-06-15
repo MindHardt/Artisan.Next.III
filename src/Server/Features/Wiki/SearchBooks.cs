@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text.RegularExpressions;
+using Client.Features.Auth;
 using Contracts;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
@@ -28,7 +29,9 @@ public partial class SearchBooks
 
         if (principal.IsInRole(RoleNames.Admin) is false)
         {
-            query = query.Where(book => book.IsPublic);
+            query = principal.GetUserId() is { } userId
+                ? query.Where(book => book.IsPublic || book.Visits!.Any(visit => visit.UserId == userId))
+                : query.Where(book => book.IsPublic);
         }
         
         if (string.IsNullOrWhiteSpace(request.Regex) is false)

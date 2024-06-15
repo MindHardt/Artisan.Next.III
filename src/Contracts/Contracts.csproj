@@ -73,6 +73,9 @@
       <Compile Update="INotionClient.cs">
         <DependentUpon>NotionEndpoints.cs</DependentUpon>
       </Compile>
+      <Compile Update="CreateBookInvite.cs">
+        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
