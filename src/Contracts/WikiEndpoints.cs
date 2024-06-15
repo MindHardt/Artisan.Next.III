@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Frozen;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Vogen;
 
@@ -40,4 +41,27 @@ public readonly partial struct BookUrlName
         _ 
             => Validation.Invalid($"Url name {urlName} does not match regex {ValidationRegexText}")
     };
+}
+
+[ValueObject<string>]
+public readonly partial struct BookInviteKey
+{
+    public const int MaxLength = 16;
+    public static readonly IReadOnlySet<char> AllowedSymbols = ((char[])
+    [
+        ..Enumerable.Range('a', 26).Select(x => (char)x),
+        ..Enumerable.Range('A', 26).Select(x => (char)x),
+    ]).ToFrozenSet();
+
+    public static Validation Validate(string inviteKey) => inviteKey switch
+    {
+        { Length: > MaxLength }
+            => Validation.Invalid($"{nameof(BookInviteKey)} cannot be longer than {MaxLength} symbols"),
+
+        _ when inviteKey.All(x => AllowedSymbols.Contains(x))
+            => Validation.Ok,
+
+        _ => Validation.Invalid($"Provided string {inviteKey} contains forbidden characters.")
+    };
+
 }

@@ -70,6 +70,12 @@
     <Compile Update="Features\Files\LocalFileStorage.cs">
       <DependentUpon>IFileStorage.cs</DependentUpon>
     </Compile>
+    <Compile Update="Data\BookInvite.cs">
+      <DependentUpon>Book.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Data\BookVisit.cs">
+      <DependentUpon>Book.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

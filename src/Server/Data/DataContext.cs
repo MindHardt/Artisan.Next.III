@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+﻿using Contracts;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,8 @@ public class DataContext(DbContextOptions<DataContext> options)
     public DbSet<StorageFile> Files => Set<StorageFile>();
     public DbSet<Book> Books => Set<Book>();
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
+    public DbSet<BookInvite> BookInvites => Set<BookInvite>();
+    public DbSet<BookVisit> BookVisits => Set<BookVisit>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
