@@ -1,9 +1,9 @@
 ﻿@attribute [Route($"/wiki/books/read/{{{nameof(UrlName)}}}")]
 @layout WikiLayout
-@using System.Web
 @using Client.Features.Shared
 @using Contracts
 @using Client.Features.Shared.Components
+@using Client.Features.Shared.Toasts
 @using ErrorOr
 @using Microsoft.Extensions.Caching.Memory
 @inject PersistentComponentState Persistence
@@ -25,9 +25,12 @@ else
             </a>
             <div class="input-group mb-2">
                 <button class="btn btn-primary" @onclick="@GenerateInviteKey">
-                    Создать ссылку-приглашение
+                    <i class="bi bi-share-fill"></i>
                 </button>
                 <input class="form-control" type="text" readonly value="@_generatedInviteLink"/>
+                <button class="btn btn-primary" disabled="@(_generatedInviteLink is null)" @onclick="@CopyInviteKey">
+                    <i class="bi bi-copy"></i>
+                </button>
             </div>
         </Authorized>
     </AuthorizeView>
@@ -145,5 +148,11 @@ else
         Backend.Wiki.CreateInviteKey(new CreateBookInvite.Request(BookUrlName.From(UrlName)))
             .ThenDo(key => _generatedInviteLink = Navigation
                 .GetUriWithQueryParameter(nameof(GetBook.Request.InviteKey), key.Value));
+    
+    private async Task CopyInviteKey()
+    {
+        await Services.GetRequiredService<ClipboardJsInterop>().Copy(_generatedInviteLink!);
+        await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована!");
+    }
 
 }
