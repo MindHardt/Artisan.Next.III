@@ -131,6 +131,11 @@ else
                 
             cache.Set($"book_{UrlName}", _book, TimeSpan.FromMinutes(30));
         }
+
+        if (_book is null)
+        {
+            Navigation.NavigateTo(BookErrorPage.Path, replace: true);
+        }
     }
 
     private GetBook.Request CreateRequest() => new(

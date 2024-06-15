@@ -8,6 +8,7 @@
 @inject PersistentComponentState Persistence
 @inject BackendClient Backend
 @inject IServiceProvider Services
+@inject NavigationManager Navigation
 
 <PageTitle>Книги</PageTitle>
 <OpenGraph Title="Библиотека" Description="Список доступных книг Аркленса"/>
@@ -20,7 +21,8 @@
                 <button class="btn-close" onclick="document.getElementById('UserCallout').hidden = true"></button>
             </div>
             <div class="card-body">
-                Вам доступны для поиска только публичные книги.
+                Вам доступны для поиска только публичные книги и книги к которым вы переходили
+                по ссылке-приглашению.
                 К остальным доступ только по прямой ссылке от администратора.
             </div>
         </div>
@@ -55,7 +57,6 @@ else
 
 
 @code {
-
     private BookModel[]? _books;
     private string? _regex;
 
