@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Server.Data;
+using Server.Features.Auth;
 
 namespace Server.Features.Files;
 
@@ -19,29 +20,29 @@ public partial class UploadFile
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint)
         => endpoint.DisableAntiforgery().RequireAuthorization().WithTags(nameof(FileEndpoints));
     
-    [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
     public record Request(
         [FromForm] IFormFile File,
         [FromForm] FileScope Scope)
         : Contracts.UploadFile.Request<IFormFile>(File, Scope);
 
     private static async ValueTask<Results<Ok<FileModel>, ForbidHttpResult>> HandleAsync(
-        Request request,
+        [AsParameters] Request request,
         DataContext dataContext,
         ClaimsPrincipal principal,
-        IOptions<FileStorageOptions> fsOptions,
+        IOptions<UserOptions> userOptions,
+        IFileStorage fileStorage,
         CancellationToken ct)
     {
         var userId = principal.GetUserId()!.Value;
         await using var contentStream = request.File.OpenReadStream();
 
         var hash = FileHashString.From(Convert.ToHexString(await SHA256.HashDataAsync(contentStream, ct)));
+        contentStream.Seek(0, SeekOrigin.Begin);
 
         var identifier = FileIdentifier.From(Path.GetRandomFileName() + Path.GetExtension(request.File.FileName));
 
-        Directory.CreateDirectory(fsOptions.Value.Directory);
-        var file = new FileInfo(Path.Combine(fsOptions.Value.Directory, hash.Value));
-        if (file.Exists is false)
+        var fileExists = await fileStorage.FileExists(hash, ct);
+        if (fileExists)
         {
             var totalFileSizes = await dataContext.Files
                 .Where(x => x.UploaderId == userId)
@@ -52,16 +53,14 @@ public partial class UploadFile
                 .Where(x => x.Id == userId)
                 .Select(x => x.CustomStorageLimit)
                 .FirstAsync(ct)
-                ?? fsOptions.Value.DefaultLimit;
+                ?? userOptions.Value.FileStorageLimit;
 
             if (totalFileSizes + contentStream.Length > storageLimit)
             {
                 return TypedResults.Forbid();
             }
-            
-            await using var destinationStream = file.Open(FileMode.Create);
-            contentStream.Seek(0, SeekOrigin.Begin);
-            await contentStream.CopyToAsync(destinationStream, ct);
+
+            await fileStorage.SaveFile(contentStream, hash, ct);
         }
 
         var fileRecord = new StorageFile

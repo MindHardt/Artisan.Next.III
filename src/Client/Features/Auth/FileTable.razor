@@ -3,8 +3,8 @@
 @using Client.Features.Shared
 @using Client.Features.Shared.Toasts
 @using ErrorOr
-
 @using Contracts
+@using Microsoft.AspNetCore.Components.Authorization
 @inject BackendClient Backend
 @inject IServiceProvider Services
 
@@ -195,15 +195,15 @@
             await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(file, FileScope.Unknown)).SwitchAsync(
                 async result =>
                 {
-                    await SearchFiles();
-                    await UpdateUsage();
-                    await toasts.ShowInfoToast($"Файл <a href=\"{result.Url}\">{result.GetUrl(GetFile.Name.Original)}</a> загружен!");
+                    await toasts.ShowInfoToast($"Файл <a href=\"{result.GetUrl(GetFile.Name.Original)}\">{result.OriginalName}</a> загружен!");
                 },
                 async error =>
                 {
                     await toasts.ShowErrorToast($"Произошла ошибка {error.First().Description}");
                 });
         }
+        await SearchFiles();
+        await UpdateUsage();
     }
 
     private (double percent, string color) GetUsageContext()

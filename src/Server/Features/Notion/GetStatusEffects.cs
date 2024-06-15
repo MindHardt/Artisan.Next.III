@@ -1,8 +1,10 @@
-﻿using Immediate.Apis.Shared;
+﻿using Contracts;
+using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
 using Notion.Client;
+using INotionClient = Notion.Client.INotionClient;
 
 namespace Server.Features.Notion;
 
@@ -10,13 +12,11 @@ namespace Server.Features.Notion;
 [MapGet(Contracts.GetStatusEffects.FullPath)]
 public partial class GetStatusEffects
 {
-    [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
-    public record Request(
-        string? PartialName)
-        : Contracts.GetStatusEffects.Request(PartialName);
+    internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
+        endpoint.WithTags(nameof(NotionEndpoints));
     
     private static async ValueTask<Ok<Contracts.GetStatusEffects.Model[]>> HandleAsync(
-        Request request,
+        [AsParameters] Contracts.GetStatusEffects.Request request,
         IOptions<NotionConfiguration> configuration,
         INotionClient notion,
         CancellationToken ct)

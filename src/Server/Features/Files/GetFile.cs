@@ -18,18 +18,11 @@ public partial class GetFile
         (endpoint as RouteHandlerBuilder)?
         .Produces(StatusCodes.Status410Gone)
         .WithTags(nameof(FileEndpoints));
-
-    [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
-    public record Request(
-        [FromRoute] FileIdentifier Identifier,
-        [FromQuery] Contracts.GetFile.Name? Name = null)
-        : Contracts.GetFile.Request(Identifier, Name);
     
     private static async ValueTask<Results<FileStreamHttpResult, NotFound, StatusCodeHttpResult>> HandleAsync(
-        // ReSharper disable once SuggestBaseTypeForParameter
-        Request request,
+        [AsParameters] Contracts.GetFile.Request request,
         DataContext dataContext,
-        IOptions<FileStorageOptions> fsOptions,
+        IFileStorage fs,
         HttpResponse response,
         CancellationToken ct)
     {
@@ -47,14 +40,7 @@ public partial class GetFile
             _ => file.Identifier.Value
         };
 
-        var path = Path.Combine(fsOptions.Value.Directory, file.Hash.Value);
-        if (File.Exists(path) is false)
-        {
-            return TypedResults.StatusCode(StatusCodes.Status410Gone);
-        }
-
-        var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        
+        var fileStream = await fs.GetFileStream(file.Hash, ct);
         return TypedResults.File(
             fileStream,
             file.ContentType, 
