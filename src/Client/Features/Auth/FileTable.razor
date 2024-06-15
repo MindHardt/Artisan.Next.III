@@ -201,9 +201,9 @@
                 {
                     await toasts.ShowErrorToast($"Произошла ошибка {error.First().Description}");
                 });
-            await SearchFiles();
-            await UpdateUsage();
         }
+        await SearchFiles();
+        await UpdateUsage();
     }
 
     private (double percent, string color) GetUsageContext()
