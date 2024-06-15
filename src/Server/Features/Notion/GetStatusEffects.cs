@@ -15,13 +15,8 @@ public partial class GetStatusEffects
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.WithTags(nameof(NotionEndpoints));
     
-    [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
-    public record Request(
-        string? PartialName)
-        : Contracts.GetStatusEffects.Request(PartialName);
-    
     private static async ValueTask<Ok<Contracts.GetStatusEffects.Model[]>> HandleAsync(
-        Request request,
+        [AsParameters] Contracts.GetStatusEffects.Request request,
         IOptions<NotionConfiguration> configuration,
         INotionClient notion,
         CancellationToken ct)

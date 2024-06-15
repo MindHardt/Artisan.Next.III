@@ -15,13 +15,12 @@ public partial class UpdateBook
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(WikiEndpoints));
     
-    [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
     public record Request(
         [FromRoute] BookUrlName UrlName,
         [FromBody] Contracts.UpdateBook.Request Body);
 
     private static async ValueTask<Results<NotFound, Ok<BookModel>, ForbidHttpResult>> HandleAsync(
-        Request request,
+        [AsParameters] Request request,
         DataContext dataContext,
         CancellationToken ct)
     {

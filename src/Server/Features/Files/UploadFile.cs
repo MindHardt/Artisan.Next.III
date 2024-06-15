@@ -20,14 +20,13 @@ public partial class UploadFile
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint)
         => endpoint.DisableAntiforgery().RequireAuthorization().WithTags(nameof(FileEndpoints));
     
-    [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
     public record Request(
         [FromForm] IFormFile File,
         [FromForm] FileScope Scope)
         : Contracts.UploadFile.Request<IFormFile>(File, Scope);
 
     private static async ValueTask<Results<Ok<FileModel>, ForbidHttpResult>> HandleAsync(
-        Request request,
+        [AsParameters] Request request,
         DataContext dataContext,
         ClaimsPrincipal principal,
         IOptions<UserOptions> userOptions,

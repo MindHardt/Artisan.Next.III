@@ -18,14 +18,9 @@ public partial class CreateBookInvite
 
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) => endpoint
         .RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(WikiEndpoints));
-
-    [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
-    public record Request(
-        [FromRoute] BookUrlName UrlName) 
-        : Contracts.CreateBookInvite.Request(UrlName);
     
     private static async ValueTask<Results<Ok<BookInviteKey>, NotFound>> HandleAsync(
-        Request request,
+        [AsParameters] Contracts.CreateBookInvite.Request request,
         DataContext dataContext,
         CancellationToken ct = default)
     {
