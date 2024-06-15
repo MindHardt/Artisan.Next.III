@@ -37,7 +37,7 @@ public partial class CreateBookInvite
         }
 
         var existingInvite = await dataContext.BookInvites.FirstOrDefaultAsync(x => 
-            x.BookName == book.Name && x.Status == BookInviteStatus.Active, ct);
+            x.Book == book && x.Status == BookInviteStatus.Active, ct);
         if (existingInvite is not null)
         {
             return TypedResults.Ok(existingInvite.Key);

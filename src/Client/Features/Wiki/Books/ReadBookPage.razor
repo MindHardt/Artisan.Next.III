@@ -17,23 +17,29 @@
 }
 else
 {
-    <AuthorizeView Roles="@RoleNames.Admin">
-        <Authorized>
-            <a href="/wiki/books/edit/@UrlName" class="btn btn-lg btn-warning w-100 mb-2">
-                <i class="bi bi-pencil"></i>
-                Редактировать
-            </a>
-            <div class="input-group mb-2">
-                <button class="btn btn-primary" @onclick="@GenerateInviteKey">
+    <div class="d-flex flex-column flex-md-row gap-2 mb-2">
+        <AuthorizeView Roles="@RoleNames.Admin">
+            <Authorized>
+                <a href="/wiki/books/edit/@UrlName" class="btn btn-warning w-100">
+                    <i class="bi bi-pencil"></i>
+                    Редактировать
+                </a>
+                <button class="btn btn-primary w-100" @onclick="@CopyInviteLink">
                     <i class="bi bi-share-fill"></i>
+                    Ссылка-приглашение
                 </button>
-                <input class="form-control" type="text" readonly value="@_generatedInviteLink"/>
-                <button class="btn btn-primary" disabled="@(_generatedInviteLink is null)" @onclick="@CopyInviteKey">
-                    <i class="bi bi-copy"></i>
-                </button>
-            </div>
-        </Authorized>
-    </AuthorizeView>
+            </Authorized>
+        </AuthorizeView>
+        <button class="btn btn-outline-primary w-100" @onclick="@(() => _includeImages = !_includeImages)">
+            @{
+                var icon = _includeImages
+                    ? "eye-fill"
+                    : "eye-slash-fill";
+            }
+            <i class="bi bi-@icon"></i>
+            Картинки
+        </button>
+    </div>
     
     var imageUrl = _book.ImageUrl ?? $"{Navigation.BaseUri}/icon-1024.png";
     <HeadContent>
@@ -70,15 +76,6 @@ else
             </div>
         </div>
     }
-    <div class="input-group mb-3" @onclick="@(() => _includeImages = !_includeImages)">
-        @{
-            var iconClass = _includeImages
-                ? "text-success bi-check-square"
-                : "text-danger bi-x-square";
-        }
-        <i class="input-group-text bi @iconClass"></i>
-        <span class="input-group-text text-truncate">Картинки</span>
-    </div>
     <hr/>
     
     @if (BlazorEnv.IsServer)
@@ -95,8 +92,6 @@ else
 
     private bool _includeImages = true;
     private GetBook.Response? _book;
-
-    private string? _generatedInviteLink;
 
     [SupplyParameterFromQuery(Name = nameof(GetBook.Request.InviteKey))]
     public string? InviteKey { get; set; }
@@ -144,15 +139,12 @@ else
             ? BookInviteKey.From(InviteKey)
             : null);
 
-    private Task GenerateInviteKey() => 
-        Backend.Wiki.CreateInviteKey(new CreateBookInvite.Request(BookUrlName.From(UrlName)))
-            .ThenDo(key => _generatedInviteLink = Navigation
-                .GetUriWithQueryParameter(nameof(GetBook.Request.InviteKey), key.Value));
-    
-    private async Task CopyInviteKey()
-    {
-        await Services.GetRequiredService<ClipboardJsInterop>().Copy(_generatedInviteLink!);
-        await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована!");
-    }
+    private Task CopyInviteLink() =>
+        Backend.Wiki.CreateInviteKey(new CreateBookInvite.Request(BookUrlName.From(UrlName))).ThenDoAsync(async key =>
+        {
+            var inviteLink = Navigation.GetUriWithQueryParameter(nameof(GetBook.Request.InviteKey), key.Value);
+            await Services.GetRequiredService<ClipboardJsInterop>().Copy(inviteLink);
+            await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована");
+        });
 
 }
