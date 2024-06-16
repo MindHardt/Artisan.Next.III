@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Data;
@@ -11,9 +12,11 @@ using Server.Data;
 namespace Server.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240615102041_AddedBookInvites")]
+    partial class AddedBookInvites
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,7 +41,7 @@ namespace Server.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataProtectionKeys", (string)null);
+                    b.ToTable("DataProtectionKeys");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
@@ -206,7 +209,7 @@ namespace Server.Data.Migrations
 
                     b.HasKey("UrlName");
 
-                    b.ToTable("Books", (string)null);
+                    b.ToTable("Books");
                 });
 
             modelBuilder.Entity("Server.Data.BookInvite", b =>
@@ -290,7 +293,7 @@ namespace Server.Data.Migrations
 
                     NpgsqlIndexBuilderExtensions.IncludeProperties(b.HasIndex("Hash", "Identifier"), new[] { "Scope", "OriginalName" });
 
-                    b.ToTable("Files", (string)null);
+                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("Server.Data.User", b =>

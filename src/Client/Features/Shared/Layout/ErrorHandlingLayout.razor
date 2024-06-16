@@ -5,11 +5,11 @@
         @Body
     </ChildContent>
     <ErrorContent>
-        <div class="card position-absolute top-50 start-50 translate-middle shadow-lg" style="width: 18rem;">
+        <div class="container-md card">
             <div class="card-body text-center">
                 <h5 class="card-title bi bi-heartbreak-fill text-danger"></h5>
                 <h6 class="card-subtitle mb-2 text-body-secondary">Произошла ошибка!</h6>
-                <p class="card-text font-monospace text">@context.Message</p>
+                <p class="card-text font-monospace text overflow-y-scroll">@context.Message</p>
             </div>
         </div>
     </ErrorContent>

@@ -3,8 +3,8 @@
 @using Client.Features.Shared
 @using Client.Features.Shared.Toasts
 @using ErrorOr
-
 @using Contracts
+@using Microsoft.AspNetCore.Components.Authorization
 @inject BackendClient Backend
 @inject IServiceProvider Services
 
@@ -114,7 +114,7 @@
                 <i class="bi bi-upload"></i>
                 Загрузить файлы
             </button>
-            <InputFile OnChange="@HandleAdminFiles" hidden id="AdminFileUpload"/>
+            <InputFile OnChange="@HandleAdminFiles" hidden multiple id="AdminFileUpload"/>
         </div>
     </Authorized>
 </AuthorizeView>
@@ -188,19 +188,22 @@
     private async Task HandleAdminFiles(InputFileChangeEventArgs e)
     {
         var toasts = Services.GetRequiredService<ToastSender>();
-        await toasts.ShowInfoToast("Загружаем файл...");
+        await toasts.ShowInfoToast("Загружаем файлы...");
 
-        await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(e.File, FileScope.Unknown)).SwitchAsync(
-            async _ =>
-            {
-                await SearchFiles();
-                await UpdateUsage();
-                await toasts.ShowInfoToast("Файл загружены!");
-            },
-            async error =>
-            {
-                await toasts.ShowErrorToast($"Произошла ошибка {error.First().Description}");
-            });
+        foreach (var file in e.GetMultipleFiles(int.MaxValue))
+        {
+            await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(file, FileScope.Unknown)).SwitchAsync(
+                async result =>
+                {
+                    await toasts.ShowInfoToast($"Файл <a href=\"{result.GetUrl(GetFile.Name.Original)}\">{result.OriginalName}</a> загружен!");
+                },
+                async error =>
+                {
+                    await toasts.ShowErrorToast($"Произошла ошибка {error.First().Description}");
+                });
+        }
+        await SearchFiles();
+        await UpdateUsage();
     }
 
     private (double percent, string color) GetUsageContext()

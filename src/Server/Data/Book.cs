@@ -16,6 +16,9 @@ public record Book
     
     public required DateTimeOffset LastUpdated { get; set; }
 
+    public ICollection<BookInvite>? Invites { get; set; }
+    public ICollection<BookVisit>? Visits { get; set; }
+
     public class EntityConfiguration : IEntityTypeConfiguration<Book>
     {
         public void Configure(EntityTypeBuilder<Book> builder)

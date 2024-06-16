@@ -1,0 +1,10 @@
+﻿@attribute [Route(Path)]
+@layout WikiLayout
+
+<div class="alert alert-danger mb-3" role="alert">
+    Книга, которую вы искали, не существует или у вас нет доступа на ее чтение.
+</div>
+
+@code {
+    public const string Path = "/wiki/books/error";
+}

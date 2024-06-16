@@ -15,15 +15,9 @@ public partial class Login
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.WithTags(nameof(AuthEndpoints));
-    
-    [EndpointRegistrationOverride(nameof(AsParametersAttribute))]
-    public record Request(
-        [FromRoute] string Scheme,
-        [FromQuery] string ReturnUrl)
-        : Contracts.Login.Request(Scheme, ReturnUrl);
 
     private static ValueTask<ChallengeHttpResult> HandleAsync(
-        Request request,
+        [AsParameters] Contracts.Login.Request request,
         SignInManager<User> signInManager,
         HttpRequest httpRequest,
         CancellationToken ct)

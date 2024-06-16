@@ -49,4 +49,13 @@ public class WikiClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
         return await http.GetAsync($"{Contracts.SearchBooks.FullPath}?{query}", ct)
             .AsErrorOr<BookModel[]>(jsonOptions.Value, ct);
     }
+
+    public async Task<ErrorOr<BookInviteKey>> CreateInviteKey(CreateBookInvite.Request request, CancellationToken ct = default)
+    {
+        var url = CreateBookInvite.FullPath
+            .Replace($"{{{nameof(request.UrlName)}}}", request.UrlName.Value);
+
+        return await http.PostAsync(url, null, ct)
+            .AsErrorOr<BookInviteKey>(jsonOptions.Value, ct);
+    }
 }

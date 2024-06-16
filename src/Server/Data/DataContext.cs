@@ -1,6 +1,7 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using System.Reflection;
 using Arklens.Alids;
+using Contracts;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -17,6 +18,8 @@ public class DataContext(DbContextOptions<DataContext> options)
     public DbSet<StorageFile> Files => Set<StorageFile>();
     public DbSet<Book> Books => Set<Book>();
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
+    public DbSet<BookInvite> BookInvites => Set<BookInvite>();
+    public DbSet<BookVisit> BookVisits => Set<BookVisit>();
     public DbSet<Character> Characters => Set<Character>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

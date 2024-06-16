@@ -73,11 +73,14 @@
       <Compile Update="INotionClient.cs">
         <DependentUpon>NotionEndpoints.cs</DependentUpon>
       </Compile>
+      <Compile Update="CreateBookInvite.cs">
+        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="ErrorOr" Version="2.0.1" />
-      <PackageReference Include="Vogen" Version="4.0.0" />
+      <PackageReference Include="Vogen" Version="4.0.8" />
     </ItemGroup>
 
     <ItemGroup>
