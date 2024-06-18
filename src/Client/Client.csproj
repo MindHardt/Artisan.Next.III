@@ -33,6 +33,15 @@
     <Compile Update="Features\Shared\Components\ShowdownJsInterop.cs">
       <DependentUpon>RenderedMd.razor</DependentUpon>
     </Compile>
+    <Compile Update="Features\Shared\ModalJsInterop.cs">
+      <DependentUpon>JsInterop.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Shared\ClipboardJsInterop.cs">
+      <DependentUpon>JsInterop.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Shared\DownloadJsInterop.cs">
+      <DependentUpon>JsInterop.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

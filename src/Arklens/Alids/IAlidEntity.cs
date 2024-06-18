@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Arklens.Classes;
 
 namespace Arklens.Alids;
 
@@ -8,6 +9,10 @@ public partial interface IAlidEntity
     public Alid Alid { get; }
 
     public static IReadOnlyCollection<IAlidEntity> AllValues => AllValuesDictionary.Values;
+    private static readonly IEnumerable<IAlidEntity> AdditionalEntities =
+    [
+        ..Class.AllValues
+    ];
     
     public static partial IAlidEntity? Find(Alid alid);
 

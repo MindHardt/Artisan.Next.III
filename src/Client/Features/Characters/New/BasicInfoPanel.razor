@@ -2,7 +2,7 @@
 @using Arklens.Classes
 @using Arklens.Races
 @using Client.Features.Shared.Components
-<div class="d-flex flex-column flex-lg-row gap-2">
+<div class="d-flex flex-column flex-lg-row gap-2 m-2">
     <div class="input-group">
         <button class="flex-fill btn btn-lg btn-@(Character.Gender is Gender.Male ? "primary" : "outline-primary")"
                 @onclick="() => SetGender(Gender.Male)">

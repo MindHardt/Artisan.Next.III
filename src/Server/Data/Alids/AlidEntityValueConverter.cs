@@ -19,7 +19,7 @@ internal static class AlidEntityValueConverterExtensions
     {
         var alidTypes = typeof(Alid).Assembly
             .GetTypes()
-            .Where(x => x.IsAssignableTo(typeof(IAlidEntity)));
+            .Where(static x => x.IsAssignableTo(typeof(IAlidEntity)));
         foreach (var alidType in alidTypes)
         {
             var converterType = typeof(AlidEntityValueConverter<>).MakeGenericType(alidType);

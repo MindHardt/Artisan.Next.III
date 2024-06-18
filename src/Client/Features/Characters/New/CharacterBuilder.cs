@@ -62,5 +62,6 @@ public record CharacterBuilder
     public Subclass? Subclass { get; set; }
     
     public int? CharacteristicLimit { get; set; }
+    public string? AvatarBase64 { get; set; }
     public CharacteristicsBuilder Characteristics { get; }
 }

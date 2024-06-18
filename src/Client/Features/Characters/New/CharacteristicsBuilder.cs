@@ -1,10 +1,8 @@
 ﻿using System.Collections;
-using Arklens.Races;
-using Contracts;
 
 namespace Client.Features.Characters.New;
 
-public record CharacteristicsBuilder(CharacterBuilder _character) : IEnumerable<KeyValuePair<string, int>>
+public record CharacteristicsBuilder(CharacterBuilder Character) : IEnumerable<KeyValuePair<string, int>>
 {
     private static readonly (int Min, int Max) DefaultRange = (-3, 3);
     private static readonly string[] Emojis =
@@ -12,7 +10,6 @@ public record CharacteristicsBuilder(CharacterBuilder _character) : IEnumerable<
         "💪", "🏃", "🧡", "🧠", "🦉", "👄"
     ];
     
-    private readonly CharacterBuilder _character = _character;
     private readonly int[] _values = new int[6];
 
     public int this[string emoji]
@@ -21,7 +18,7 @@ public record CharacteristicsBuilder(CharacterBuilder _character) : IEnumerable<
         set => _values[Array.IndexOf(Emojis, emoji)] = value;
     }
 
-    public int? PointsLimit => _character.CharacteristicLimit;
+    public int? PointsLimit => Character.CharacteristicLimit;
     public int? PointsLeft => PointsLimit - _values.Sum();
 
     public bool IncreaseForbidden(string emoji)
@@ -51,8 +48,4 @@ public record CharacteristicsBuilder(CharacterBuilder _character) : IEnumerable<
 
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
-
-    public CharacteristicsModel ToModel() => new(
-        _values[0], _values[1], _values[2],
-        _values[3], _values[4], _values[5]);
 }

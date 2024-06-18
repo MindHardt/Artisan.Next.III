@@ -4,7 +4,6 @@ using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Server.Data;
 
 namespace Server.Features.Auth;

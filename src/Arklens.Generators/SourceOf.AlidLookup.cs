@@ -25,7 +25,8 @@ partial interface IAlidEntity
 
     private static IReadOnlyCollection<IAlidEntity> GetAllValues() => 
     [
-{string.Join(",\n", types.Select(x => $"\t\t..{x.ContainingNamespace.ToDisplayString()}.{x.Name}.AllValues"))}
+{string.Join("\n", types.Select(x => $"\t\t..{x.ContainingNamespace.ToDisplayString()}.{x.Name}.AllValues,"))}
+        ..AdditionalEntities
     ];
 }}", Encoding.UTF8);
 }
