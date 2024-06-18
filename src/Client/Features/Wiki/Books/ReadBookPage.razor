@@ -54,14 +54,7 @@ else
     }
     
     var imageUrl = _book.ImageUrl ?? $"{Navigation.BaseUri}/icon-1024.png";
-    <HeadContent>
-        <meta property="og:title" content="@_book.Name"/>
-        <meta property="og:description" content="@_book.Description"/>
-        <meta property="og:image" content="@imageUrl"/>
-        <meta property="og:type" content="title"/>
-        <meta property="og:url" content= "@Navigation.Uri"/>
-    </HeadContent>
-    <PageTitle>@_book.Name</PageTitle>
+    <OpenGraph Image="@imageUrl" Title="@_book.Name" Description="@_book.Description"/>
     
     @if (_book.ImageUrl is null)
     {
