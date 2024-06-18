@@ -83,4 +83,8 @@
       <PackageReference Include="Vogen" Version="4.0.8" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Arklens\Arklens.csproj" />
+    </ItemGroup>
+
 </Project>

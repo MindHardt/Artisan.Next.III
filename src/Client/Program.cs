@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Arklens.Alids;
 using Client.Features.Auth;
 using Client.Features.Maps;
 using Client.Features.Shared;
@@ -26,4 +27,9 @@ builder.Services.AddYandexFrames();
 
 builder.Services.Configure<JsonSerializerOptions>(options => options.SetDefaults());
 
-await builder.Build().RunAsync();
+var app = builder.Build();
+
+app.Services.GetRequiredService<ILogger<IAlidEntity>>().LogInformation("Loaded {Count} alid entities: {Entities}",
+    IAlidEntity.AllValues.Count, IAlidEntity.AllValues.Select(x => $"\n{x.Alid.Value}").Order());
+
+await app.RunAsync();

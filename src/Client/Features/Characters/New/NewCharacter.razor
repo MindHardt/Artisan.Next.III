@@ -1,0 +1,197 @@
+﻿@page "/charsheet"
+@using System.Net.Mime
+@using System.Text.Json
+@using Client.Features.Shared
+@using Client.Features.Shared.Components
+@using Microsoft.Extensions.Options
+@inject IServiceProvider Services
+@inject IOptions<JsonSerializerOptions> JsonOptions
+
+<OpenGraph
+    Title="Генератор персонажа"
+    Description="На этой странице можно создать лист персонажа Аркленс" />
+<h1>Новый персонаж</h1>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <BasicInfoPanel @bind-Character="@Character" />
+        </div>
+        <div class="col-md-6 col-12">
+            <CharacteristicPanel @bind-Character="@Character"/>
+        </div>
+        <div class="col-md-6 col-12">
+            <div class="m-2 vstack gap-2">
+                <button class="btn btn-lg btn-outline-primary w-100" onclick="document.getElementById('newCharacterPortrait').click()">
+                    <i class="bi bi-upload"></i>
+                    Портрет
+                </button>
+                <button class="btn btn-lg btn-success w-100" @onclick="@StartRender">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Обновить
+                </button>
+                <div class="input-group input-group-lg">
+                    @{
+                        var (textClass, text) = CanBeDownloaded
+                            ? ("text-success", "Готово к печати")
+                            : ("text-danger", "Заполните все поля");
+                    }
+                    <span class="input-group-text w-100 @textClass">
+                        @text
+                    </span>
+                </div>
+                <div class="input-group input-group-lg w-100">
+                    <span class="input-group-text bi bi-filetype-json"></span>
+                    <button class="btn btn-outline-success flex-fill" @onclick="@ExportJson">
+                        <i class="bi bi-download"></i>
+                    </button>
+                    <button class="btn btn-outline-success flex-fill" onclick="document.getElementById('importJson').click()">
+                        <i class="bi bi-upload"></i>
+                    </button>
+                </div>
+                <InputFile accept="@MediaTypeNames.Application.Json" OnChange="ImportJson" hidden id="importJson"/>
+                <InputFile accept="image/*" OnChange="HandlePortrait" hidden id="newCharacterPortrait"/>
+            </div>
+        </div>
+        
+        <div class="col-12">
+            <button class="btn btn-lg btn-primary w-100 mt-2" disabled="@(_renderedSvg is null)" @onclick="@DownloadPdf">
+                <i class="bi bi-download"></i>
+                Скачать
+            </button>
+            <div class="overflow-x-scroll mt-2 border rounded p-2 d-flex justify-content-center" id="charSheetContainer">
+                @if (_renderedSvg is null)
+                {
+                    <Spinner/>
+                }
+                else
+                {
+                    @((MarkupString)_renderedSvg)
+                }
+            </div>
+        </div>
+
+        <script>
+            function downloadPdf(fileName) {
+                const modalElement = document.getElementById('loadingModal');
+                const loadingModal = bootstrap.Modal.getOrCreateInstance(modalElement, {
+                    keyboard: false,
+                    backdrop: 'static'
+                });
+                async function execute() {
+                    const svg = document.querySelector('#charSheetContainer > svg');
+                    const options = {
+                        margin: 0,
+                        filename: fileName,
+                        image: {
+                            type: 'jpeg',
+                            quality: 1
+                        },
+                        jsPDF: {
+                            format: 'a4'
+                        },
+                        html2canvas: {
+                            width: 830
+                        }
+                    };
+                    const worker = html2pdf();
+                    console.log(worker);
+                    await worker.set(options).from(svg).save();
+                    await loadingModal.hide();
+                    modalElement.removeEventListener('shown.bs.modal', execute);
+                }
+
+                modalElement.addEventListener('shown.bs.modal', execute);
+                loadingModal.show();
+            }
+        </script>
+        <div class="modal modal-sm fade" id="loadingModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body d-flex justify-content-center vstack text-center">
+                        <span class="fs-5">Подождите, мы генерируем файл...</span>
+                        <span class="fs-6">Это не очень быстро</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private CharacterBuilder Character { get; set; } = new()
+    {
+        CharacteristicLimit = 5
+    };
+
+    private string? _renderedSvg;
+    private string? _originalSvg;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (BlazorEnv.IsServer)
+        {
+            return;
+        }
+        
+        _originalSvg = await Services.GetRequiredService<HttpClient>().GetStringAsync("/static/charsheet.svg");
+        StartRender();
+    }
+
+    private async Task HandlePortrait(InputFileChangeEventArgs e)
+    {
+        var formattedImage = await e.File.RequestImageFileAsync(MediaTypeNames.Image.Jpeg, 256, 256);
+        
+        await using var avatarStream = formattedImage.OpenReadStream(long.MaxValue);
+        Character.AvatarBase64 = await avatarStream.CalculateBase64();
+    }
+
+    private bool CanBeDownloaded =>
+        Character is
+        {
+            Alignment: not null,
+            Class: not null,
+            Characteristics.PointsLeft: null or 0,
+            Gender: not null,
+            Name: not null,
+            Race: not null,
+            AvatarBase64: not null
+        } 
+        && (Character.Race.Impacts is null || Character.RaceImpacts is not null) 
+        && (Character.Class.Subclasses.Any() is false || Character.Subclass is not null);
+
+    private async Task DownloadPdf()
+    {
+        _renderedSvg = PrepareSvg();
+        await Services.GetRequiredService<IJSRuntime>().InvokeVoidAsync(
+            "downloadPdf", $"{GetFileName()}.pdf");
+    }
+
+    private void StartRender()
+    {
+        _renderedSvg = null;
+        _ = Task.Run(async () =>
+        {
+            _renderedSvg = PrepareSvg();
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private string GetFileName() => (Character.Name ?? "character") + $"-{DateTime.Now:s}";
+
+    private async Task ExportJson()
+    {
+        var model = CharacterJsonModel.FromBuilder(Character);
+        var json = JsonSerializer.Serialize(model, JsonOptions.Value);
+        await Services.GetRequiredService<DownloadJsInterop>().Download($"{GetFileName()}.json", json);
+    }
+
+    private async Task ImportJson(InputFileChangeEventArgs e)
+    {
+        await using var jsonStream = e.File.OpenReadStream();
+        var model = await JsonSerializer.DeserializeAsync<CharacterJsonModel>(jsonStream, JsonOptions.Value);
+        Character = model!.ToBuilder();
+        StartRender();
+    }
+}

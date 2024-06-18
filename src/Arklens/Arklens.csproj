@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Arklens</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Arklens.Generators\Arklens.Generators.csproj" ReferenceOutputAssembly="false" OutputItemType="analyzer"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Skills\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Classes\Barbarian.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Bard.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Warrior.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Wizard.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Druid.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Priest.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Kineticist.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Bookworm.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Crusader.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Monk.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Rogue.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\Ranger.cs">
+        <DependentUpon>Class.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\PriestFaith.cs">
+        <DependentUpon>Priest.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\CrusaderFaith.cs">
+        <DependentUpon>Crusader.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\WizardSchool.cs">
+        <DependentUpon>Wizard.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Classes\DruidCircle.cs">
+        <DependentUpon>Druid.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>

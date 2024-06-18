@@ -1,0 +1,180 @@
+﻿@using Arklens
+@using Arklens.Classes
+@using Arklens.Races
+@using Client.Features.Shared.Components
+<div class="d-flex flex-column flex-lg-row gap-2 m-2">
+    <div class="input-group">
+        <button class="flex-fill btn btn-lg btn-@(Character.Gender is Gender.Male ? "primary" : "outline-primary")"
+                @onclick="() => SetGender(Gender.Male)">
+            <Twemoji Text="♂️"/>
+        </button>
+        <button class="flex-fill btn btn-lg btn-@(Character.Gender is Gender.Female ? "primary" : "outline-primary")"
+                @onclick="() => SetGender(Gender.Female)">
+            <Twemoji Text="♀️"/>
+        </button>
+    </div>
+    <div class="input-group">
+        @{
+            var raceEndClass = Character.Race is not { Impacts: null }
+                ? "rounded-end"
+                : null;
+        }
+        <button class="flex-fill btn btn-lg @raceEndClass btn-@(Character.Race is null ? "outline-primary" : "primary")" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @if (Character.Race is null)
+            {
+                <text>Раса</text>
+            }
+            else
+            {
+                <Twemoji Text="@Character.Race.Emoji"/>
+            }
+        </button>
+        <ul class="dropdown-menu">
+            @foreach (var race in Race.AllValues)
+            {
+                <li>
+                    <a class="dropdown-item" @onclick="@(() => SetRace(race))">
+                        <Twemoji Text="@race.Emoji"/> @race.Name
+                    </a>
+                </li>
+            }
+        </ul>
+        @if (Character.Race is { Impacts: null })
+        {
+            var emoji = Character.RaceImpacts is null ? null : GetRaceImpactEmoji(Character.RaceImpacts.Value);
+            <button class="flex-fill btn btn-lg rounded-end @(emoji is null ? "btn-outline-primary" : "btn-primary")" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <Twemoji Text="@(emoji ?? "❔")"/>
+            </button>
+            <ul class="dropdown-menu">
+                @foreach (var prefab in ImpactPrefabs)
+                {
+                    <li>
+                        <a class="dropdown-item" @onclick="@(() => SetRaceImpacts(prefab))">
+                            <Twemoji Text="@GetRaceImpactEmoji(prefab)"/>
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+    <div class="input-group">
+        @{
+            var classEndClass = Character.Class?.Subclasses.Count is 0 or null
+                ? "rounded-end"
+                : null;
+        }
+        <button class="flex-fill btn btn-lg @classEndClass btn-@(Character.Class is null ? "outline-primary" : "primary")" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @if (Character.Class is null)
+            {
+                <text>Класс</text>
+            }
+            else
+            {
+                <Twemoji Text="@Character.Class.Emoji"/>
+            }
+        </button>
+        <ul class="dropdown-menu">
+            @foreach (var classType in Class.AllValues)
+            {
+                <li>
+                    <a class="dropdown-item" @onclick="@(() => SetClass(classType))">
+                        <Twemoji Text="@classType.Emoji"/>
+                        <span class="ms-1">@classType.Name</span>
+                    </a>
+                </li>
+            }
+        </ul>
+        @if (Character.Class is { Subclasses: { Count: not 0 } subclasses })
+        {
+            <button class="flex-fill btn btn-lg rounded-end @(Character.Subclass is null ? "btn-outline-primary" : "btn-primary")" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <Twemoji Text="@(Character.Subclass?.Emoji ?? "➕")"/>
+            </button>
+            <ul class="dropdown-menu">
+                @foreach (var subclass in subclasses)
+                {
+                    <li>
+                        <a class="dropdown-item" @onclick="@(() => SetSubclass(subclass))">
+                            <Twemoji Text="@subclass.Emoji"/>
+                            <span class="ms-1">@subclass.Name</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+    <div class="input-group">
+        <button class="flex-fill btn btn-lg rounded-end @(Character.Alignment is null ? "btn-outline-primary" : "btn-primary")" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @if (Character.Alignment is null)
+            {
+                <text>Мировоззрение</text>
+            }
+            else
+            {
+                <Twemoji Text="@Character.Alignment.Emoji" />
+            }
+        </button>
+        <ul class="dropdown-menu">
+            @foreach (var alignment in Character.AllowedAlignments)
+            {
+                <li>
+                    <a class="dropdown-item" @onclick="@(() => SetAlignment(alignment))">
+                        <Twemoji Text="@alignment.Emoji"/>
+                        <span class="ms-1">@alignment.Name</span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="input-group">
+        <input type="text" value="@Character.Name" @onchange="@SetName" class="form-control form-control-lg" placeholder="Имя персонажа"/>
+    </div>
+</div>
+
+@code {
+    
+    [Parameter]
+    public CharacterBuilder Character { get; set; } = null!;
+    [Parameter]
+    public EventCallback<CharacterBuilder> CharacterChanged { get; set; }
+
+    private Task SetSubclass(Subclass subclass)
+        => CharacterChanged.InvokeAsync(Character with { Subclass = subclass });
+    
+    private Task SetClass(Class @class)
+        => CharacterChanged.InvokeAsync(Character with { Class = @class });
+    
+    private Task SetName(ChangeEventArgs e)
+        => CharacterChanged.InvokeAsync(Character with { Name = (string)e.Value! });
+
+    private Task SetRaceImpacts(RaceImpacts impacts)
+        => CharacterChanged.InvokeAsync(Character with { RaceImpacts = impacts });
+    
+    private Task SetRace(Race race)
+        => CharacterChanged.InvokeAsync(Character with { Race = race });
+    
+    private Task SetGender(Gender gender)
+        => CharacterChanged.InvokeAsync(Character with { Gender = gender });
+
+    private Task SetAlignment(Alignment alignment)
+        => CharacterChanged.InvokeAsync(Character with { Alignment = alignment });
+    
+    private static string? GetRaceImpactEmoji(RaceImpacts impacts) => impacts switch
+    {
+        { Str: RaceImpact.Increased } => "💪",
+        { Dex: RaceImpact.Increased } => "🏃",
+        { Con: RaceImpact.Increased } => "🧡",
+        { Int: RaceImpact.Increased } => "🧠",
+        { Wis: RaceImpact.Increased } => "🦉",
+        { Cha: RaceImpact.Increased } => "👄",
+        _ => null
+    };
+    private static readonly RaceImpacts[] ImpactPrefabs =
+    [
+        new RaceImpacts(Str: RaceImpact.Increased),
+        new RaceImpacts(Dex: RaceImpact.Increased),
+        new RaceImpacts(Con: RaceImpact.Increased),
+        new RaceImpacts(Int: RaceImpact.Increased),
+        new RaceImpacts(Wis: RaceImpact.Increased),
+        new RaceImpacts(Cha: RaceImpact.Increased)
+    ];
+}
