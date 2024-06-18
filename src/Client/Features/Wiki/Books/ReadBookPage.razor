@@ -41,6 +41,18 @@ else
         </button>
     </div>
     
+    @if (_book.IsPublic is false)
+    {
+        <AuthorizeView>
+            <NotAuthorized>
+                <div class="alert alert-warning" role="alert">
+                    Если вы авторизуетесь то ваш переход на эту книгу сохранится
+                    и она станет вам доступна всегда.
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    }
+    
     var imageUrl = _book.ImageUrl ?? $"{Navigation.BaseUri}/icon-1024.png";
     <HeadContent>
         <meta property="og:title" content="@_book.Name"/>
