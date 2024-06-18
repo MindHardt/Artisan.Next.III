@@ -42,7 +42,7 @@ public partial class UploadFile
         var identifier = FileIdentifier.From(Path.GetRandomFileName() + Path.GetExtension(request.File.FileName));
 
         var fileExists = await fileStorage.FileExists(hash, ct);
-        if (fileExists)
+        if (fileExists is false)
         {
             var totalFileSizes = await dataContext.Files
                 .Where(x => x.UploaderId == userId)
