@@ -10,6 +10,6 @@ public class ModalJsInterop(IJSRuntime jsRuntime) : JsInterop(jsRuntime)
     public async ValueTask ShowModal(string selector)
         => await (await GetModuleAsync()).InvokeVoidAsync("showModal", selector);
 
-    public ValueTask ShowLoginModal()
-        => ShowModal("#LoginModal");
+    public ValueTask ShowProfileModal() => ShowModal("#UserInfoModal");
+    public ValueTask ShowLoginModal() => ShowModal("#LoginModal");
 }

@@ -55,7 +55,7 @@ else
         </NotAuthorized>
         <Authorized>
             <img src="@context.User.GetAvatarUrl()" alt="avatar" class="rounded" style="height: 48px; width: 48px;" />
-            <button type="button" class="btn btn-lg btn-outline-light" onclick="showModal('#UserInfoModal')">
+            <button type="button" class="btn btn-lg btn-outline-light" @onclick="() => Services.GetRequiredService<ModalJsInterop>().ShowProfileModal()">
                 Обо мне
             </button>
             <div class="modal fade" id="UserInfoModal" tabindex="-1" aria-hidden="true" aria-labelledby="UserInfoModalName" data-bs-theme="dark">
