@@ -8,14 +8,7 @@
                 <div class="card shadow h-100">
                     <img src="@(book.ImageUrl ?? "static/Book.jpg")" alt="книга" class="card-img-top" />
                     <div class="position-absolute top-0 end-0 m-1 text-center rounded-circle bg-light shadow-sm" style="width: 1.5rem; height: 1.5rem">
-                        @if (book.IsPublic)
-                        {
-                            <span class="bi bi-star-fill text-warning" title="Публичная книга"></span>
-                        }
-                        else
-                        {
-                            <span class="bi bi-star"></span>
-                        }
+                        <BookPublicityIcon IsPublic="@book.IsPublic" />
                     </div>
                     <div class="card-body vstack">
                         <h5 class="card-title">@book.Name</h5>

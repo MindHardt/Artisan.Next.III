@@ -1,0 +1,13 @@
+﻿@if (IsPublic)
+{
+    <i class="bi bi-unlock-fill text-success" title="Публичная книга"></i>
+}
+else
+{
+    <i class="bi bi-link-45deg text-primary" title="Доступ по ссылке"></i>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public bool IsPublic { get; set; }
+}

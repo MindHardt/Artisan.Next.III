@@ -18,12 +18,9 @@
 <div class="input-group mb-2">
     <span class="input-group-text bi bi-tag"></span>
     <input type="text" class="form-control" @bind="@_bookName" disabled="@Editing" placeholder="Название"/>
-    @{
-        var publicButtonClass = _isPublic
-            ? "bi-star-fill text-warning"
-            : "bi-star";
-    }
-    <span class="input-group-text bi @publicButtonClass" @onclick="@(() => _isPublic = !_isPublic)"></span>
+    <span class="input-group-text" @onclick="@(() => _isPublic = !_isPublic)">
+        <BookPublicityIcon IsPublic="@_isPublic" />
+    </span>
 </div>
 <div class="input-group mb-2">
     <span class="input-group-text bi bi-person"></span>
