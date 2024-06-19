@@ -19,8 +19,8 @@
 }
 else
 {
-    <h1>Профиль @_user.GetUserName()</h1>
-    <PageTitle>@_user.GetUserName()</PageTitle>
+    <h1>@_user.GetUserName()</h1>
+    <OpenGraph Title="@_user.GetUserName()" />
     
     <div class="container-fluid">
         <div class="row">
@@ -28,7 +28,7 @@ else
                 <h3>Данные</h3>
                 <div class="card">
                     @{
-                        var avatarUrl = _newAvatarUrl ?? _user.GetAvatarUrl() ?? "static/icon-1024.png";
+                        var avatarUrl = _newAvatarUrl ?? _user.GetAvatarUrl() ?? "icon-1024.png";
                     }
                     <div class="avatar-container">
                         <img src="@avatarUrl" class="card-img-top img-thumbnail" alt="Avatar" id="avatar">
