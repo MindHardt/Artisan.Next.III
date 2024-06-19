@@ -27,9 +27,11 @@ else
             <div class="col-xxl-4 col-md-6 col-12 mb-2">
                 <h3>Данные</h3>
                 <div class="card">
+                    @{
+                        var avatarUrl = _newAvatarUrl ?? _user.GetAvatarUrl() ?? "static/icon-1024.png";
+                    }
                     <div class="avatar-container">
-                        <img src="@(_newAvatarUrl ?? _user.GetAvatarUrl())"
-                             class="card-img-top img-thumbnail" alt="Avatar" id="avatar">
+                        <img src="@avatarUrl" class="card-img-top img-thumbnail" alt="Avatar" id="avatar">
                     </div>
                     <div class="card-body">
                         <button class="btn btn-primary w-100" onclick="document.getElementById('AvatarUpload').click()">
