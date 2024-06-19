@@ -46,8 +46,14 @@ else
         <AuthorizeView>
             <NotAuthorized>
                 <div class="alert alert-warning" role="alert">
-                    Если вы авторизуетесь то ваш переход на эту книгу сохранится
-                    и она станет вам доступна всегда.
+                    <p>
+                        Если вы авторизуетесь то ваш переход на эту книгу сохранится
+                        и она станет вам доступна всегда.
+                    </p>
+                    <button class="btn btn-primary" @onclick="() => Services.GetRequiredService<ModalJsInterop>().ShowLoginModal()">
+                        <i class="bi bi-key"></i>
+                        Авторизоваться
+                    </button>
                 </div>
             </NotAuthorized>
         </AuthorizeView>

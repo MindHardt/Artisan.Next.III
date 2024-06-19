@@ -2,6 +2,7 @@
 
 namespace Client.Features.Shared;
 
+[RegisterScoped]
 public class ModalJsInterop(IJSRuntime jsRuntime) : JsInterop(jsRuntime)
 {
     protected override string JsFilePath => "js/modals.local.js";

@@ -1,4 +1,4 @@
-function showModal(modalSelector) {
+export function showModal(modalSelector) {
     const modalElement = document.querySelector(modalSelector);
     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     modal.show();
