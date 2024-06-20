@@ -1,11 +1,15 @@
 ﻿@page "/wiki/effects"
+@using System.Net.NetworkInformation
 @using Client.Features.Shared
 @using Client.Features.Shared.Components
+@using Client.Features.Shared.Toasts
 @using Contracts
+@using Microsoft.Extensions.Caching.Memory
 @using ErrorOr
 @layout WikiLayout
 @inject BackendClient Backend
 @inject PersistentComponentState Persistence
+@inject IServiceProvider Services
 
 <OpenGraph 
     Title="Статусные эффекты"
@@ -13,7 +17,7 @@
 
 <div class="container-fluid">
     <div class="row mb-3">
-        <div class="input-group">
+        <div class="input-group input-group-lg">
             <span class="input-group-text bi bi-search"></span>
             <input type="text" class="form-control" value="@_query" placeholder="Поиск" @onchange="@Search"/>
         </div>
@@ -59,14 +63,16 @@
     private void Search(ChangeEventArgs e)
     {
         _query = e.Value as string;
+        if (Services.GetRequiredService<IMemoryCache>().TryGetValue(GetCacheKey(), out _effects))
+        {
+            return;
+        }
+
         _effects = null;
         _ = Task.Run(async () =>
         {
-            await Backend.Notion.GetStatusEffects(new GetStatusEffects.Request(_query)).ThenDoAsync(async result =>
-            {
-                _effects = result;
-                await InvokeAsync(StateHasChanged);
-            });
+            await FetchStatusEffects();
+            await InvokeAsync(StateHasChanged);
         });
     }
 
@@ -88,14 +94,29 @@
         {
             if (Persistence.TryTakeFromJson(nameof(_effects), out _effects))
             {
+                Services.GetRequiredService<IMemoryCache>().Set(GetCacheKey(), _effects);
                 return;
             }
 
-            await Backend.Notion.GetStatusEffects(new GetStatusEffects.Request(null)).ThenDo(result =>
-            {
-                _effects = result;
-            });
+            await FetchStatusEffects();
         }
     }
+    
+    private async Task FetchStatusEffects() => 
+        _effects = await Services.GetRequiredService<IMemoryCache>().GetOrCreateAsync(GetCacheKey(), async _ =>
+        {
+            var result = await Backend.Notion.GetStatusEffects(new GetStatusEffects.Request(_query));
+            if (result.ErrorsOrEmptyList is not [_, ..] errors)
+            {
+                return result.Value;
+            }
+
+            var errorMessage = $"Ошибка при запросе статус эффектов: {string.Join("; ", errors)}";
+            await Services.GetRequiredService<ToastSender>()
+                .ShowErrorToast(errorMessage);
+            throw new Exception(errorMessage);
+        });
+
+    private string GetCacheKey() => $"{nameof(StatusEffectsPage)}_{_query}";
 
 }

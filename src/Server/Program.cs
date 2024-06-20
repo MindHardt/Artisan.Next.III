@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Server;
-using Server.Components;
 using Server.Data;
 using Server.Features.Auth;
 using Server.Features.Files;
 using Server.Features.Notion;
+using Server.Features.Shared;
 using UserOptions = Server.Features.Auth.UserOptions;
 
 var builder = WebApplication.CreateBuilder(args);

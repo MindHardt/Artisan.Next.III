@@ -13,47 +13,49 @@
 <PageTitle>Книги</PageTitle>
 <OpenGraph Title="Библиотека" Description="Список доступных книг Аркленса"/>
 
-<AuthorizeView Roles="@RoleNames.Admin">
-    <NotAuthorized>
-        <div class="card mb-3" id="UserCallout">
-            <div class="card-header d-flex">
-                <i class="bi bi-info-square-fill text-primary flex-fill"></i>
-                <button class="btn-close" onclick="document.getElementById('UserCallout').hidden = true"></button>
-            </div>
-            <div class="card-body">
-                Вам доступны для поиска только публичные книги и книги к которым вы переходили
-                по ссылке-приглашению.
-                К остальным доступ только по прямой ссылке от администратора.
-            </div>
-        </div>
-    </NotAuthorized>
-</AuthorizeView>
-<div class="input-group input-group-lg mb-2">
-    <span class="input-group-text bi bi-regex"></span>
-    <input class="form-control" type="text" placeholder="[Ии]стория.*" @onchange="@(e => SearchBooks(e.Value as string))" value="@_regex"/>
-    <button class="btn btn-@(_isList ? "primary" : "outline-primary")" @onclick="@(() => _isList = true)">
-        <i class="bi bi-list-ol"></i>
-    </button>
-    <button class="btn btn-@(_isList ? "outline-primary" : "primary")" @onclick="@(() => _isList = false)">
-        <i class="bi bi-card-text"></i>
-    </button>
+<div class="container-fluid">
     <AuthorizeView Roles="@RoleNames.Admin">
-        <Authorized>
-            <a class="btn btn-outline-success" href="wiki/books/new">
-                <i class="bi bi-plus"></i>
-            </a>
-        </Authorized>
+        <NotAuthorized>
+            <div class="card mb-3" id="UserCallout">
+                <div class="card-header d-flex">
+                    <i class="bi bi-info-square-fill text-primary flex-fill"></i>
+                    <button class="btn-close" onclick="document.getElementById('UserCallout').hidden = true"></button>
+                </div>
+                <div class="card-body">
+                    Вам доступны для поиска только публичные книги и книги к которым вы переходили
+                    по ссылке-приглашению.
+                    К остальным доступ только по прямой ссылке от администратора.
+                </div>
+            </div>
+        </NotAuthorized>
     </AuthorizeView>
-</div>
+    <div class="input-group input-group-lg mb-2">
+        <span class="input-group-text bi bi-regex"></span>
+        <input class="form-control" type="text" placeholder="[Ии]стория.*" @onchange="@(e => SearchBooks(e.Value as string))" value="@_regex"/>
+        <button class="btn btn-@(_isList ? "primary" : "outline-primary")" @onclick="@(() => _isList = true)">
+            <i class="bi bi-list-ol"></i>
+        </button>
+        <button class="btn btn-@(_isList ? "outline-primary" : "primary")" @onclick="@(() => _isList = false)">
+            <i class="bi bi-card-text"></i>
+        </button>
+        <AuthorizeView Roles="@RoleNames.Admin">
+            <Authorized>
+                <a class="btn btn-outline-success" href="wiki/books/new">
+                    <i class="bi bi-plus"></i>
+                </a>
+            </Authorized>
+        </AuthorizeView>
+    </div>
 
-@if (_isList)
-{
-    <BooksList Books="_books" />
-}
-else
-{
-    <BookCards Books="_books" />
-}
+    @if (_isList)
+    {
+        <BooksList Books="_books" />
+    }
+    else
+    {
+        <BookCards Books="_books" />
+    }
+</div>
 
 
 @code {
