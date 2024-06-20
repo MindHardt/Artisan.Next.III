@@ -18,7 +18,13 @@ public class NotionClient(HttpClient http, IOptions<JsonSerializerOptions> json)
             query[nameof(request.PartialName)] = request.PartialName;
         }
 
-        return await (await http.GetAsync($"{Contracts.GetStatusEffects.FullPath}?{query}", ct))
+        var uri = Contracts.GetStatusEffects.FullPath;
+        if (query.HasKeys())
+        {
+            uri += $"?{query}";
+        }
+
+        return await (await http.GetAsync(uri, ct))
             .AsErrorOr<GetStatusEffects.Model[]>(json.Value, ct);
     }
 }
