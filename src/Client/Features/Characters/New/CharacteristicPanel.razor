@@ -51,7 +51,7 @@
                         var raceImpact = Character.RaceImpacts?
                             .GetByEmoji(characteristic.Key) ?? RaceImpact.Unaffected;
                     }
-                    <span class="badge text-bg-primary w-100 h-75">
+                    <span class="badge text-bg-primary w-100 h-75 fs-6">
                         @((characteristic.Value + (int)raceImpact).AsModifier())
                     </span>
                 </strong>

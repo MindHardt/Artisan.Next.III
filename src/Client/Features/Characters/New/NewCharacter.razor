@@ -55,10 +55,15 @@
         </div>
         
         <div class="col-12">
-            <button class="btn btn-lg btn-primary w-100 mt-2" disabled="@(_renderedSvg is null)" @onclick="@DownloadPdf">
-                <i class="bi bi-download"></i>
-                Скачать
-            </button>
+            <div class="input-group input-group-lg mt-2">
+                <button class="btn btn-primary flex-fill" disabled="@(_renderedSvg is null)" @onclick="@DownloadPdf">
+                    <i class="bi bi-filetype-pdf"></i>
+                    Скачать
+                </button>
+                <button class="btn btn-outline-primary" disabled="@(_originalSvg is null)" @onclick="@DownloadEmptyPdf">
+                    <i class="bi bi-file-earmark"></i>
+                </button>
+            </div>
             <div class="overflow-x-scroll mt-2 border rounded p-2" id="charSheetContainer">
                 @if (_renderedSvg is null)
                 {
@@ -174,6 +179,16 @@
         _renderedSvg = PrepareSvg();
         await Services.GetRequiredService<IJSRuntime>().InvokeVoidAsync(
             "downloadPdf", $"{GetFileName()}.pdf");
+    }
+
+    private void DownloadEmptyPdf()
+    {
+        _renderedSvg = PrepareEmptySvg();
+        _ = Task.Run(async () =>
+        {
+            await Services.GetRequiredService<IJSRuntime>().InvokeVoidAsync(
+                "downloadPdf", "charsheet_empty.pdf");
+        });
     }
 
     private void StartRender()

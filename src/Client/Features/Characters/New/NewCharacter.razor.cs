@@ -28,6 +28,8 @@ public partial class NewCharacter
             "ХАР" => Character.Characteristics["👄"].AsModifier(),
             _ => null
         } ?? string.Empty);
+
+    private string PrepareEmptySvg() => SvgPreparationRegex().Replace(_originalSvg!, string.Empty);
         
     
     private const string OriginalAvatarBase64 =
