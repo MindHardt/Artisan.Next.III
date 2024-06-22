@@ -79,6 +79,9 @@
       <Compile Update="BookEndpoints.cs">
         <DependentUpon>WikiEndpoints.cs</DependentUpon>
       </Compile>
+      <Compile Update="MonsterEndpoints.cs">
+        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
