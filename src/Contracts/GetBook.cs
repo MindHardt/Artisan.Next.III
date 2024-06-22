@@ -2,8 +2,8 @@
 
 public class GetBook
 {
-    public const string Path = $"books/{{{nameof(Request.UrlName)}}}";
-    public const string FullPath = $"{WikiEndpoints.FullPath}/{Path}";
+    public const string Path = $"{{{nameof(Request.UrlName)}}}";
+    public const string FullPath = $"{BookEndpoints.FullPath}/{Path}";
 
     public record Request(BookUrlName UrlName, BookInviteKey? InviteKey = null);
 

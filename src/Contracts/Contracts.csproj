@@ -38,19 +38,19 @@
         <DependentUpon>AuthEndpoints.cs</DependentUpon>
       </Compile>
       <Compile Update="CreateBook.cs">
-        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+        <DependentUpon>BookEndpoints.cs</DependentUpon>
       </Compile>
       <Compile Update="IWikiClient.cs">
         <DependentUpon>WikiEndpoints.cs</DependentUpon>
       </Compile>
       <Compile Update="GetBook.cs">
-        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+        <DependentUpon>BookEndpoints.cs</DependentUpon>
       </Compile>
       <Compile Update="UpdateBook.cs">
-        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+        <DependentUpon>BookEndpoints.cs</DependentUpon>
       </Compile>
       <Compile Update="SearchBooks.cs">
-        <DependentUpon>WikiEndpoints.cs</DependentUpon>
+        <DependentUpon>BookEndpoints.cs</DependentUpon>
       </Compile>
       <Compile Update="LinkLogin.cs">
         <DependentUpon>AuthEndpoints.cs</DependentUpon>
@@ -74,6 +74,9 @@
         <DependentUpon>NotionEndpoints.cs</DependentUpon>
       </Compile>
       <Compile Update="CreateBookInvite.cs">
+        <DependentUpon>BookEndpoints.cs</DependentUpon>
+      </Compile>
+      <Compile Update="BookEndpoints.cs">
         <DependentUpon>WikiEndpoints.cs</DependentUpon>
       </Compile>
     </ItemGroup>

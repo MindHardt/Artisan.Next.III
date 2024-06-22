@@ -2,8 +2,7 @@
 
 public static class CreateBook
 {
-    public const string Path = "books";
-    public const string FullPath = $"{WikiEndpoints.FullPath}/{Path}";
+    public const string FullPath = BookEndpoints.FullPath;
 
     public record Request(
         string Name,

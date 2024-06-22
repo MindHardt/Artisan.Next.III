@@ -4,8 +4,8 @@ namespace Contracts;
 
 public static class UpdateBook
 {
-    public const string Path = $"books/{{{nameof(Request.UrlName)}}}";
-    public const string FullPath = $"{WikiEndpoints.FullPath}/{Path}";
+    public const string Path = $"{{{nameof(Request.UrlName)}}}";
+    public const string FullPath = $"{BookEndpoints.FullPath}/{Path}";
     
     public record Request(
         [property: JsonIgnore] BookUrlName UrlName,
