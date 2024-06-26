@@ -82,6 +82,9 @@
       <Compile Update="MonsterEndpoints.cs">
         <DependentUpon>WikiEndpoints.cs</DependentUpon>
       </Compile>
+      <Compile Update="MonsterModel.cs">
+        <DependentUpon>MonsterEndpoints.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>
