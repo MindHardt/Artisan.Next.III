@@ -39,6 +39,10 @@ else
             <i class="bi bi-@icon"></i>
             Картинки
         </button>
+        <button class="btn btn-outline-secondary w-100" onclick="printJS('book-container', 'html')">
+            <i class="bi bi-printer-fill"></i>
+            Печатать
+        </button>
     </div>
     
     @if (_book.IsPublic is false)
@@ -95,7 +99,9 @@ else
     }
     else
     {
-        <RenderedMd Markdown="@GetText()"/>
+        <div id="book-container">
+            <RenderedMd Markdown="@GetText()"/>
+        </div>
     }
 }
 
