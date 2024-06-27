@@ -22,10 +22,21 @@
         </div>
         <div class="col-md-6 col-12">
             <div class="m-2 vstack gap-2">
-                <button class="btn btn-lg btn-outline-primary w-100" onclick="document.getElementById('newCharacterPortrait').click()">
-                    <i class="bi bi-upload"></i>
-                    Портрет
-                </button>
+                <div class="input-group input-group-lg">
+                    @{
+                        var outline = Character.AvatarBase64 is null ? "-outline" : string.Empty;
+                    }
+                    <button class="btn btn@(outline)-primary flex-fill" onclick="document.getElementById('newCharacterPortrait').click()">
+                        <i class="bi bi-upload"></i>
+                        Портрет
+                    </button>
+                    @if (Character.AvatarBase64 is not null)
+                    {
+                        <button class="btn btn-outline-secondary" @onclick="@(() => Character.AvatarBase64 = null)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    }
+                </div>
                 <button class="btn btn-lg btn-success w-100" @onclick="@StartRender">
                     <i class="bi bi-arrow-clockwise"></i>
                     Обновить

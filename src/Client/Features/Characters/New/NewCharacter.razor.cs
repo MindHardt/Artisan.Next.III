@@ -11,7 +11,8 @@ public partial class NewCharacter
 
     private string PreparePortrait() =>
         _originalSvg!.Replace(OriginalAvatarBase64, Character.AvatarBase64 ?? OriginalAvatarBase64);
-
+    
+    private string PrepareEmptySvg() => SvgPreparationRegex().Replace(PreparePortrait(), string.Empty);
     private string PrepareSvg() => SvgPreparationRegex().Replace(PreparePortrait(), 
         match => match.Groups["NAME"].Value switch
         {
@@ -46,8 +47,6 @@ public partial class NewCharacter
 
     private string GetSkillMark(ClassSkills skill) =>
         Character.IsClassSkill(skill) ? "+" : string.Empty;
-
-    private string PrepareEmptySvg() => SvgPreparationRegex().Replace(_originalSvg!, string.Empty);
         
     
     private const string OriginalAvatarBase64 =
