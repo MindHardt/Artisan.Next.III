@@ -17,3 +17,8 @@ img.twemoji {
     width: 24px;
     vertical-align: text-bottom;
 }
+
+.svg-container > svg {
+    display: block;
+    margin: auto;
+}
