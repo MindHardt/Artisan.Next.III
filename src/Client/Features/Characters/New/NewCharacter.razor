@@ -100,13 +100,13 @@
                         }
                     };
                     const worker = html2pdf();
-                    console.log(worker);
                     await worker.set(options).from(svg).save();
                     await loadingModal.hide();
                     modalElement.removeEventListener('shown.bs.modal', execute);
                 }
 
                 modalElement.addEventListener('shown.bs.modal', execute);
+                window.scrollTo(0, 0);
                 loadingModal.show();
             }
         </script>
