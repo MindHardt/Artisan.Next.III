@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Arklens;
+using Arklens.Classes;
 
 namespace Client.Features.Characters.New;
 
@@ -26,8 +27,25 @@ public partial class NewCharacter
             "ИНТ" => Character.Characteristics["🧠"].AsModifier(),
             "МДР" => Character.Characteristics["🦉"].AsModifier(),
             "ХАР" => Character.Characteristics["👄"].AsModifier(),
+            "АКР" => GetSkillMark(ClassSkills.Acrobatics),
+            "ВЕР" => GetSkillMark(ClassSkills.HorseRiding),
+            "ВЫЖ" => GetSkillMark(ClassSkills.Survival),
+            "ПЕР" => GetSkillMark(ClassSkills.Diplomacy),
+            "ЗМА" => GetSkillMark(ClassSkills.KnowledgeMagic),
+            "ЗМИ" => GetSkillMark(ClassSkills.KnowledgeWorld),
+            "ЗРЕ" => GetSkillMark(ClassSkills.KnowledgeReligion),
+            "ЗПО" => GetSkillMark(ClassSkills.KnowledgeDungeons),
+            "ЗПР" => GetSkillMark(ClassSkills.KnowledgeNature),
+            "ЛАЗ" => GetSkillMark(ClassSkills.Climbing),
+            "МЕХ" => GetSkillMark(ClassSkills.Mechanics),
+            "МЕД" => GetSkillMark(ClassSkills.FirstAid),
+            "ПЛА" => GetSkillMark(ClassSkills.Swimming),
+            "СКР" => GetSkillMark(ClassSkills.Stealth),
             _ => null
         } ?? string.Empty);
+
+    private string GetSkillMark(ClassSkills skill) =>
+        Character.IsClassSkill(skill) ? "+" : string.Empty;
 
     private string PrepareEmptySvg() => SvgPreparationRegex().Replace(_originalSvg!, string.Empty);
         

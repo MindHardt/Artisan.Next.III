@@ -64,4 +64,7 @@ public record CharacterBuilder
     public int? CharacteristicLimit { get; set; }
     public string? AvatarBase64 { get; set; }
     public CharacteristicsBuilder Characteristics { get; }
+
+    public bool IsClassSkill(ClassSkills skill) =>
+        Class?.ClassSkills.HasFlag(skill) is true;
 }
