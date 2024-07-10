@@ -172,7 +172,7 @@
 
     private Task HandlePage(ChangeEventArgs e)
     {
-        _page = (int)e.Value!;
+        _page = Convert.ToInt32(e.Value);
         return SearchFiles();
     }
 
