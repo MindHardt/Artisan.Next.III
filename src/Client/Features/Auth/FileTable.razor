@@ -78,8 +78,14 @@
         @if (_totalFiles is not null && _files is not null)
         {
             <tfoot>
-            <td colspan="3">
+            <td colspan="2">
                 Файлов: @_files.Length / @_totalFiles
+            </td>
+            <td>
+                <div class="input-group">
+                    <input type="number" class="form-control" step="1" min="0" max="@(_files.Length / _totalFiles)" @onchange="@HandlePage"/>
+                    <span class="input-group-text bi bi-123"></span>
+                </div>
             </td>
             <td colspan="3">
                 Общий размер: @(_usage?.Used.Megabytes.ToString("0.00") ?? "NaN") Мб 
@@ -122,6 +128,7 @@
 
     [CascadingParameter] public Task<AuthenticationState> AuthStateTask { get; set; } = null!;
 
+    private int _page = 0;
     private string? _avatarUrl;
     private string _fileRegex = "";
     private FileScope? _scope;
@@ -156,15 +163,22 @@
         await SearchFiles();
     }
 
-    private async Task HandleRegex(ChangeEventArgs e)
+    private Task HandleRegex(ChangeEventArgs e)
     {
         _fileRegex = (string)e.Value!;
-        await SearchFiles();
+        _page = 0;
+        return SearchFiles();
+    }
+
+    private Task HandlePage(ChangeEventArgs e)
+    {
+        _page = (int)e.Value!;
+        return SearchFiles();
     }
 
     private async Task SearchFiles()
     {
-        await Backend.Files.SearchFiles(new SearchFiles.Request(_fileRegex, _scope))
+        await Backend.Files.SearchFiles(new SearchFiles.Request(_fileRegex, _scope, _page))
             .ThenDo(result =>
             {
                 _files = result.Files;
