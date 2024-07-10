@@ -21,6 +21,13 @@ public record CharacteristicsBuilder(CharacterBuilder Character) : IEnumerable<K
     public int? PointsLimit => Character.CharacteristicLimit;
     public int? PointsLeft => PointsLimit - _values.Sum();
 
+    public int Str { get => _values[0]; set => _values[0] = value; }
+    public int Dex { get => _values[1]; set => _values[1] = value; }
+    public int Con { get => _values[2]; set => _values[2] = value; }
+    public int Int { get => _values[3]; set => _values[3] = value; }
+    public int Wis { get => _values[4]; set => _values[4] = value; }
+    public int Cha { get => _values[5]; set => _values[5] = value; }
+
     public bool IncreaseForbidden(string emoji)
         => this[emoji] >= DefaultRange.Max || PointsLeft <= 0;
 

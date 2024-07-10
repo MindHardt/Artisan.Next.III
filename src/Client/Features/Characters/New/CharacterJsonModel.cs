@@ -66,7 +66,7 @@ public record CharacterJsonModel
     };
 }
 
-public record CharacteristicsJsonModel(
+public readonly record struct CharacteristicsJsonModel(
     int Strength,
     int Dexterity,
     int Constitution,
@@ -75,6 +75,6 @@ public record CharacteristicsJsonModel(
     int Charisma)
 {
     public static CharacteristicsJsonModel FromBuilder(CharacteristicsBuilder builder) => new(
-        builder["💪"], builder["🏃"], builder["🧡"],
-        builder["🧠"], builder["🦉"], builder["👄"]);
+        builder.Str, builder.Dex, builder.Con,
+        builder.Int, builder.Wis, builder.Cha);
 }

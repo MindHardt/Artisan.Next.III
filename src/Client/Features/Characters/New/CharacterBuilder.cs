@@ -67,4 +67,12 @@ public record CharacterBuilder
 
     public bool IsClassSkill(ClassSkills skill) =>
         Class?.ClassSkills.HasFlag(skill) is true;
+
+    public CharacteristicsJsonModel CalculateCharacteristics() => new(
+        Characteristics.Str + (int)(RaceImpacts?.Str ?? default),
+        Characteristics.Dex + (int)(RaceImpacts?.Dex ?? default),
+        Characteristics.Con + (int)(RaceImpacts?.Con ?? default),
+        Characteristics.Int + (int)(RaceImpacts?.Int ?? default),
+        Characteristics.Wis + (int)(RaceImpacts?.Wis ?? default),
+        Characteristics.Cha + (int)(RaceImpacts?.Cha ?? default));
 }
