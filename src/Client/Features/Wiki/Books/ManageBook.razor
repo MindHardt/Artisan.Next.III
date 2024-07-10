@@ -47,7 +47,7 @@ else
     <div hidden="@(!_isPreview)">
         <RenderedMd Markdown="@_text" />
     </div>
-    
+
     <div hidden="@_isPreview">
         <textarea class="form-control" id="bookTextArea" @bind="@_text" style="resize: none"></textarea>
     
@@ -126,8 +126,8 @@ else
 
     private GetBook.Response? Book
     {
-        set => 
-            (_book, _text, _authorName, _description, _bookName, _imageUrl, _isPublic) = 
+        set =>
+            (_book, _text, _authorName, _description, _bookName, _imageUrl, _isPublic) =
             (value, value!.Text, value.Author, value.Description, value.Name, value.ImageUrl ?? string.Empty, value.IsPublic);
     }
 
@@ -146,7 +146,7 @@ else
         {
             return;
         }
-        
+
         if (Persistence.TryTakeFromJson(nameof(_book), out _book))
         {
             Book = _book;
@@ -186,7 +186,7 @@ else
             {
                 var alt = Path.GetFileNameWithoutExtension(e.File.Name);
                 await Services.GetRequiredService<ClipboardJsInterop>().Copy($"![{alt}]({result.Url} =100%x*)");
-                await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована"); 
+                await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована");
             });
     }
 
@@ -221,7 +221,7 @@ else
                 Services.GetRequiredService<IMemoryCache>().Remove("_books");
             });
         }
-        
+
         Services.GetRequiredService<IMemoryCache>().Remove($"book_{UrlName}");
         Services.GetRequiredService<NavigationManager>().NavigateTo(
             $"/wiki/books/read/{UrlName}");

@@ -14,9 +14,9 @@ public record UserModel(
         new Claim(ClaimTypes.NameIdentifier, Id.ToString()),
         new Claim(ClaimTypes.Name, UserName),
         new Claim(CustomClaims.AvatarUrl, AvatarUrl),
-        
+
         ..Roles.Select(x => new Claim(ClaimTypes.Role, x)),
         ..LoginSchemes.Select(x => new Claim(CustomClaims.LoginScheme, x))
-        
+
     ], authenticationType: nameof(UserModel)));
 }

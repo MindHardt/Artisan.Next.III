@@ -19,12 +19,12 @@ public class EnumerationGenerator : IIncrementalGenerator
             static (_, _) => true,
             static (ctx, _) => (TypeDeclarationSyntax)ctx.TargetNode);
         var fullProvider = context.CompilationProvider.Combine(typeProvider.Collect());
-        
+
         context.RegisterSourceOutput(fullProvider, GenerateEnumeration);
     }
 
     private static void GenerateEnumeration(
-        SourceProductionContext context, 
+        SourceProductionContext context,
         (Compilation, ImmutableArray<TypeDeclarationSyntax>) values)
     {
         var (compilation, types) = values;
@@ -44,9 +44,9 @@ public class EnumerationGenerator : IIncrementalGenerator
                     IsStatic: true,
                     IsReadOnly: true
                 });
-        
+
             context.AddSource(
-                type.Identifier.Text + ".g.cs", 
+                type.Identifier.Text + ".g.cs",
                 SourceOf.EnumerationClass(namespaceName, type, properties));
         }
     }

@@ -14,7 +14,7 @@ public record Rogue : Class
         ClassSkills.Acrobatics |
         ClassSkills.Stealth |
         ClassSkills.Climbing;
-    
+
     public Rogue([CallerMemberName] string ownName = "") : base(ownName)
     { }
 }

@@ -7,7 +7,7 @@ namespace Server.Features.Files;
 public static class DependencyInjection
 {
     public static IServiceCollection AddFileStorage(
-        this IServiceCollection services, 
+        this IServiceCollection services,
         FileStorageImplementation implementation = FileStorageImplementation.Auto,
         IHostEnvironment? environment = null)
     {
@@ -20,14 +20,14 @@ public static class DependencyInjection
                     .ValidateOnStart();
                 services.AddScoped<IFileStorage, LocalFileStorage>();
                 break;
-            
+
             case (FileStorageImplementation.S3, _) or (FileStorageImplementation.Auto, false):
                 services.AddScoped<IFileStorage, S3FileStorage>();
                 services.AddOptions<S3FileStorageOptions>()
                     .BindConfiguration(S3FileStorageOptions.Section)
                     .ValidateDataAnnotations()
                     .ValidateOnStart();
-            
+
                 services.AddScoped<IAmazonS3>(sp =>
                 {
                     var options = sp.GetRequiredService<IOptions<S3FileStorageOptions>>().Value;
@@ -39,7 +39,7 @@ public static class DependencyInjection
                         });
                 });
                 break;
-            
+
             default: throw new InvalidOperationException();
         }
 

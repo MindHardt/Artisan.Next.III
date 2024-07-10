@@ -44,7 +44,7 @@ else
             Печатать
         </button>
     </div>
-    
+
     @if (_book.IsPublic is false)
     {
         <AuthorizeView>
@@ -62,10 +62,10 @@ else
             </NotAuthorized>
         </AuthorizeView>
     }
-    
+
     var imageUrl = _book.ImageUrl ?? $"{Navigation.BaseUri}/icon-1024.png";
     <OpenGraph Image="@imageUrl" Title="@_book.Name" Description="@_book.Description"/>
-    
+
     @if (_book.ImageUrl is null)
     {
         <div class="d-flex vstack">
@@ -92,7 +92,7 @@ else
         </div>
     }
     <hr/>
-    
+
     @if (BlazorEnv.IsServer)
     {
         <PlaceholderText/>
@@ -112,7 +112,7 @@ else
 
     [SupplyParameterFromQuery(Name = nameof(GetBook.Request.InviteKey))]
     public string? InviteKey { get; set; }
-    
+
     [Parameter]
     public string UrlName { get; set; } = null!;
 
@@ -133,8 +133,8 @@ else
         else
         {
             var cache = Services.GetRequiredService<IMemoryCache>();
-            
-            if (Persistence.TryTakeFromJson(nameof(_book), out _book) is false && 
+
+            if (Persistence.TryTakeFromJson(nameof(_book), out _book) is false &&
                 cache.TryGetValue($"book_{UrlName}", out _book) is false)
             {
                 await Backend.Wiki.GetBook(CreateRequest())
@@ -145,7 +145,7 @@ else
             {
                 _book = _book with { ImageUrl = null };
             }
-                
+
             cache.Set($"book_{UrlName}", _book, TimeSpan.FromMinutes(30));
         }
 

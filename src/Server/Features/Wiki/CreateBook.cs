@@ -37,7 +37,7 @@ public partial class CreateBook
         {
             return TypedResults.Conflict();
         }
-        
+
         var book = new Book
         {
             UrlName = urlName,
@@ -53,10 +53,10 @@ public partial class CreateBook
         await dataContext.SaveChangesAsync(ct);
 
         return TypedResults.Ok(new BookModel(
-            book.UrlName, 
-            book.Name, 
-            book.Description, 
-            book.ImageUrl, 
+            book.UrlName,
+            book.Name,
+            book.Description,
+            book.ImageUrl,
             book.Author,
             book.IsPublic));
     }

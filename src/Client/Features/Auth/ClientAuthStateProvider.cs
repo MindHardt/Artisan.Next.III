@@ -16,9 +16,9 @@ public class ClientAuthStateProvider(
     {
         if (state.TryTakeFromJson(nameof(UserModel), out UserModel? user) && user is not null)
         {
-            logger.LogInformation("Fetched auth state {User}", 
+            logger.LogInformation("Fetched auth state {User}",
                 JsonSerializer.Serialize(user, jsonOptions.Value));
-            
+
             return Task.FromResult(new AuthenticationState(user.AsPrincipal()));
         }
 

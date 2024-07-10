@@ -15,7 +15,7 @@ public partial record Race(
     [CallerMemberName] string OwnName = "") : IAlidEntity, IArklensEntity
 {
     public Alid Alid { get; } = Alid.OfType<Race>(OwnName);
-    
+
     public static Race Human { get; } = new(
         "Человек",
         "🧑",

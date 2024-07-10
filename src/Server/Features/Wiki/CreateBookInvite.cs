@@ -18,7 +18,7 @@ public partial class CreateBookInvite
 
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) => endpoint
         .RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(WikiEndpoints));
-    
+
     private static async ValueTask<Results<Ok<BookInviteKey>, NotFound>> HandleAsync(
         [AsParameters] Contracts.CreateBookInvite.Request request,
         DataContext dataContext,
@@ -31,7 +31,7 @@ public partial class CreateBookInvite
             return TypedResults.NotFound();
         }
 
-        var existingInvite = await dataContext.BookInvites.FirstOrDefaultAsync(x => 
+        var existingInvite = await dataContext.BookInvites.FirstOrDefaultAsync(x =>
             x.Book == book && x.Status == BookInviteStatus.Active, ct);
         if (existingInvite is not null)
         {
@@ -50,6 +50,6 @@ public partial class CreateBookInvite
         return TypedResults.Ok(invite.Key);
     }
 
-    private static BookInviteKey CreateKey() => 
+    private static BookInviteKey CreateKey() =>
         BookInviteKey.From(RandomNumberGenerator.GetString(KeyChars.AsSpan(), BookInviteKey.MaxLength));
 }

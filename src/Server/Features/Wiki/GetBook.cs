@@ -15,7 +15,7 @@ public partial class GetBook
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.WithTags(nameof(WikiEndpoints));
-    
+
     private static async ValueTask<Results<Ok<Contracts.GetBook.Response>, NotFound, ForbidHttpResult>> HandleAsync(
         Contracts.GetBook.Request request,
         DataContext dataContext,
@@ -56,16 +56,16 @@ public partial class GetBook
             return true;
         }
 
-        var inviteKeyExists = 
-            request.InviteKey is not null && 
+        var inviteKeyExists =
+            request.InviteKey is not null &&
             await dataContext.BookInvites.AnyAsync(x =>
                 x.BookName == request.UrlName && x.Key == request.InviteKey && x.Status == BookInviteStatus.Active, ct);
-        
+
         if (principal.Identity?.IsAuthenticated is not true)
         {
             return inviteKeyExists;
         }
-        
+
         var userId = principal.GetUserId()!.Value;
         var visitExists = await dataContext.BookVisits.AnyAsync(x =>
             x.UserId == userId && x.BookName == request.UrlName, ct);
@@ -78,7 +78,7 @@ public partial class GetBook
         {
             return false;
         }
-        
+
         dataContext.BookVisits.Add(new BookVisit
         {
             BookName = request.UrlName,

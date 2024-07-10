@@ -13,7 +13,7 @@ public partial class GetLoginSchemes
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.WithTags(nameof(AuthEndpoints));
-    
+
     private static async ValueTask<Ok<LoginSchemeModel[]>> HandleAsync(
         EmptyRequest _,
         SignInManager<User> signInManager,

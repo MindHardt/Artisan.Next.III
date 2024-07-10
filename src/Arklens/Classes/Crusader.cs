@@ -13,7 +13,7 @@ public record Crusader : Class
         ClassSkills.KnowledgeReligion |
         ClassSkills.KnowledgeDungeons |
         ClassSkills.Diplomacy;
-    
+
     public Crusader([CallerMemberName] string ownName = "") : base(ownName)
     { }
 }

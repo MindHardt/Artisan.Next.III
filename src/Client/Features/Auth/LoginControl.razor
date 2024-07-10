@@ -109,7 +109,7 @@ else
             Services.GetRequiredService<IMemoryCache>().Set(nameof(LoginSchemeModel), _schemes);
             return;
         }
-        
+
         _schemes = (await Backend.Auth.GetLoginSchemes()).Else([]).Value;
         Persistence.RegisterOnPersisting(() =>
         {

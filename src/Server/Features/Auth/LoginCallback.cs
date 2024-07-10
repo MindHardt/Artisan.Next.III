@@ -18,10 +18,10 @@ public partial class LoginCallback
 
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint)
         => endpoint.ExcludeFromDescription();
-    
+
     public record Request(
         [FromQuery] string ReturnUrl);
-    
+
     private static async ValueTask<Results<RedirectHttpResult, ProblemHttpResult>> HandleAsync(
         Request request,
         SignInManager<User> signInManager,
@@ -36,7 +36,7 @@ public partial class LoginCallback
                 Detail = "An error occured when retrieving external login info"
             });
         }
-        
+
         var user = await userManager.FindByLoginAsync(loginInfo.LoginProvider, loginInfo.ProviderKey);
         if (user is null)
         {

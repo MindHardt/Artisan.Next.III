@@ -10,7 +10,7 @@ public static class GetFile
         Server,
         Original
     }
-    
+
     public record Request(
         FileIdentifier Identifier,
         Name? Name = null);

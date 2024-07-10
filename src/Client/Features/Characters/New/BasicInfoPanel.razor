@@ -131,7 +131,7 @@
 </div>
 
 @code {
-    
+
     [Parameter]
     public CharacterBuilder Character { get; set; } = null!;
     [Parameter]
@@ -139,25 +139,25 @@
 
     private Task SetSubclass(Subclass subclass)
         => CharacterChanged.InvokeAsync(Character with { Subclass = subclass });
-    
+
     private Task SetClass(Class @class)
         => CharacterChanged.InvokeAsync(Character with { Class = @class });
-    
+
     private Task SetName(ChangeEventArgs e)
         => CharacterChanged.InvokeAsync(Character with { Name = (string)e.Value! });
 
     private Task SetRaceImpacts(RaceImpacts impacts)
         => CharacterChanged.InvokeAsync(Character with { RaceImpacts = impacts });
-    
+
     private Task SetRace(Race race)
         => CharacterChanged.InvokeAsync(Character with { Race = race });
-    
+
     private Task SetGender(Gender gender)
         => CharacterChanged.InvokeAsync(Character with { Gender = gender });
 
     private Task SetAlignment(Alignment alignment)
         => CharacterChanged.InvokeAsync(Character with { Alignment = alignment });
-    
+
     private static string? GetRaceImpactEmoji(RaceImpacts impacts) => impacts switch
     {
         { Str: RaceImpact.Increased } => "💪",

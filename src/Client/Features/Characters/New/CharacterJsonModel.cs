@@ -18,7 +18,7 @@ public record CharacterJsonModel
     public Subclass? Subclass { get; set; }
     public required CharacteristicsJsonModel Characteristics { get; set; }
     public string? AvatarBase64 { get; set; }
-    
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true,
@@ -51,9 +51,9 @@ public record CharacterJsonModel
 
         Gender = Gender,
         Alignment = Alignment,
-        
+
         AvatarBase64 = AvatarBase64,
-        
+
         Characteristics =
         {
             ["💪"] = Characteristics.Strength,

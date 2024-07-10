@@ -14,7 +14,7 @@ public partial class UpdateBook
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(WikiEndpoints));
-    
+
     public record Request(
         [FromRoute] BookUrlName UrlName,
         [FromBody] Contracts.UpdateBook.Request Body);
@@ -37,7 +37,7 @@ public partial class UpdateBook
         book.ImageUrl = request.Body.ImageUrl;
         book.LastUpdated = DateTimeOffset.UtcNow;
         book.IsPublic = request.Body.IsPublic;
-        
+
         await dataContext.SaveChangesAsync(ct);
 
         return TypedResults.Ok(new BookModel(

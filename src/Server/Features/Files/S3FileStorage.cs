@@ -43,10 +43,10 @@ public class S3FileStorage(IAmazonS3 s3, IOptions<S3FileStorageOptions> options)
 public record S3FileStorageOptions
 {
     public const string Section = "S3";
-    
+
     public required string AccessKeyId { get; set; }
     public required string SecretAccessKey { get; set; }
     public required string BucketName { get; set; }
-    
+
     public string ServiceUrl { get; set; } = "https://s3.yandexcloud.net";
 }

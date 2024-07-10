@@ -19,7 +19,7 @@ public partial record WizardSchool : Subclass
 
     public override string Emoji { get; }
     public override string Name { get; }
-    
+
     public static WizardSchool Animaturgy { get; } = new("👻", "Аниматургия");
     public static WizardSchool Illusion { get; } = new("👁️", "Иллюзия");
     public static WizardSchool Divination { get; } = new("🔮", "Прорицание");

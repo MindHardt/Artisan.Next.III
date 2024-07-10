@@ -16,7 +16,7 @@ public partial class DeleteFile
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.WithTags(nameof(FileEndpoints));
-    
+
     private static async ValueTask<Results<NotFound, ForbidHttpResult, Ok<FileModel>>> HandleAsync(
         Contracts.DeleteFile.Request request,
         DataContext dataContext,
@@ -47,12 +47,12 @@ public partial class DeleteFile
         {
             await fileStorage.DeleteFile(file.Hash, ct);
         }
-        
+
         return TypedResults.Ok(new FileModel(
-            file.Identifier, 
-            file.Hash, 
-            file.OriginalName, 
-            FileSize.From(file.Size), 
+            file.Identifier,
+            file.Hash,
+            file.OriginalName,
+            FileSize.From(file.Size),
             file.Scope));
     }
 }

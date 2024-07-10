@@ -24,7 +24,7 @@ public readonly partial struct AlidName([NotNull] string? value) : IEquatable<Al
 
     public static bool operator ==(AlidName left, AlidName right) => left.Equals(right);
     public static bool operator !=(AlidName left, AlidName right) => left.Equals(right) is false;
-    
+
     #endregion
 
     private static bool TryNormalize(string? value, [NotNullWhen(true)] out string? result)

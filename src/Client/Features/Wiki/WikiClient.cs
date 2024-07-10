@@ -42,7 +42,7 @@ public class WikiClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
             return await http.GetAsync(Contracts.SearchBooks.FullPath, ct)
                 .AsErrorOr<BookModel[]>(jsonOptions.Value, ct);
         }
-        
+
         var query = HttpUtility.ParseQueryString(string.Empty);
         query[nameof(request.Regex)] = request.Regex;
 

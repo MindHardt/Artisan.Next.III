@@ -16,7 +16,7 @@ public class WikiClient(IServiceProvider sp) : IWikiClient
     public async Task<ErrorOr<BookModel>> UpdateBook(Contracts.UpdateBook.Request request, CancellationToken ct = default)
     {
         var innerRequest = new UpdateBook.Request(request.UrlName, request);
-        
+
         var handler = sp.GetRequiredService<UpdateBook.Handler>();
         return (await handler.HandleAsync(innerRequest, ct)).AsErrorOr<BookModel>();
     }

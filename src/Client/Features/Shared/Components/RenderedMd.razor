@@ -14,10 +14,10 @@
 @code {
 
     private readonly string _id = $"md_{Guid.NewGuid()}";
-    
+
     [Parameter, EditorRequired]
     public string Markdown { get; set; } = null!;
-    
+
     /// <summary>
     /// If set to <see langword="false"/>, component displays placeholder while rerendering,
     /// otherwise it changes its content after a delay.

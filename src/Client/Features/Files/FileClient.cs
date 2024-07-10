@@ -23,7 +23,7 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
                     : new MediaTypeHeaderValue(request.File.ContentType)
             }
         }, nameof(request.File), request.File.FileName);
-        
+
         form.Add(new StringContent(request.Scope.ToString()), nameof(request.Scope));
 
         return await http.PostAsync(Contracts.UploadFile.FullPath, form, ct)
@@ -35,7 +35,7 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
         var query = HttpUtility.ParseQueryString(string.Empty);
         query[nameof(request.Page)] = request.Page.ToString();
         query[nameof(request.PageSize)] = request.PageSize.ToString();
-        
+
         if (string.IsNullOrEmpty(request.Regex) is false)
         {
             query[nameof(request.Regex)] = request.Regex;
@@ -45,7 +45,7 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
         {
             query[nameof(request.RestrictedToScope)] = scope.ToString();
         }
-        
+
         return await http.GetAsync($"{Contracts.SearchFiles.FullPath}?{query}", ct)
             .AsErrorOr<SearchFiles.Response>(jsonOptions.Value, ct);
     }

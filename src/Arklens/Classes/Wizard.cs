@@ -15,7 +15,7 @@ public record Wizard : Class
         ClassSkills.KnowledgeNature;
 
     public override IReadOnlyCollection<Subclass> Subclasses => WizardSchool.AllValues;
-    
+
     public Wizard([CallerMemberName] string ownName = "") : base(ownName)
     { }
 }

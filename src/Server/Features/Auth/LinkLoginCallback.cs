@@ -18,10 +18,10 @@ public partial class LinkLoginCallback
 
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint)
         => endpoint.ExcludeFromDescription().RequireAuthorization();
-    
+
     public record Request(
         [FromQuery] string ReturnUrl);
-    
+
     private static async ValueTask<Results<RedirectHttpResult, ProblemHttpResult>> HandleAsync(
         Request request,
         SignInManager<User> signInManager,
@@ -31,7 +31,7 @@ public partial class LinkLoginCallback
     {
         var loginInfo = await signInManager.GetExternalLoginInfoAsync();
         var user = (await userManager.GetUserAsync(principal))!;
-        
+
         await userManager.AddLoginAsync(user, loginInfo!);
 
         var logins = await userManager.GetLoginsAsync(user);

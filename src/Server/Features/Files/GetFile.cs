@@ -18,7 +18,7 @@ public partial class GetFile
         (endpoint as RouteHandlerBuilder)?
         .Produces(StatusCodes.Status410Gone)
         .WithTags(nameof(FileEndpoints));
-    
+
     private static async ValueTask<Results<FileStreamHttpResult, NotFound, StatusCodeHttpResult>> HandleAsync(
         [AsParameters] Contracts.GetFile.Request request,
         DataContext dataContext,
@@ -32,7 +32,7 @@ public partial class GetFile
         {
             return TypedResults.NotFound();
         }
-        
+
         response.Headers.CacheControl = CacheControlHeaderValue.PublicString;
         var fileName = request.Name switch
         {
@@ -43,8 +43,8 @@ public partial class GetFile
         var fileStream = await fs.GetFileStream(file.Hash, ct);
         return TypedResults.File(
             fileStream,
-            file.ContentType, 
-            fileName, 
+            file.ContentType,
+            fileName,
             file.CreatedAt);
     }
 }

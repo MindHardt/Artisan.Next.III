@@ -16,7 +16,7 @@ public partial class SearchBooks
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.WithTags(nameof(WikiEndpoints));
-    
+
     private static async ValueTask<Ok<BookModel[]>> HandleAsync(
         Contracts.SearchBooks.Request request,
         ClaimsPrincipal principal,
@@ -33,7 +33,7 @@ public partial class SearchBooks
                 ? query.Where(book => book.IsPublic || book.Visits!.Any(visit => visit.UserId == userId))
                 : query.Where(book => book.IsPublic);
         }
-        
+
         if (string.IsNullOrWhiteSpace(request.Regex) is false)
         {
             // ReSharper disable once EntityFramework.UnsupportedServerSideFunctionCall

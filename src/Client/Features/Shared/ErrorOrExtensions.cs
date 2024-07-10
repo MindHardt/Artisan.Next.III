@@ -20,20 +20,20 @@ public static class ErrorOrExtensions
     };
 
     public static async Task<Error?> AsPossibleError(
-        this Task<HttpResponseMessage> responseTask) 
+        this Task<HttpResponseMessage> responseTask)
         => (await responseTask).AsPossibleError();
-    
+
     public static async Task<ErrorOr<T>> AsErrorOr<T>(
         this HttpResponseMessage response,
         JsonSerializerOptions jsonOptions,
-        CancellationToken ct = default) 
-        => response.AsPossibleError() ?? 
+        CancellationToken ct = default)
+        => response.AsPossibleError() ??
            await response.Content.ReadFromJsonAsync<T>(jsonOptions, ct) ??
            (ErrorOr<T>)Error.Unexpected();
 
     public static async Task<ErrorOr<T>> AsErrorOr<T>(
         this Task<HttpResponseMessage> task,
         JsonSerializerOptions jsonOptions,
-        CancellationToken ct = default) 
+        CancellationToken ct = default)
         => await (await task).AsErrorOr<T>(jsonOptions, ct);
 }

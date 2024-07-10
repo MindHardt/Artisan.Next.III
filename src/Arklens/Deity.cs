@@ -7,7 +7,7 @@ namespace Arklens;
 
 [AlidDomain]
 [GenerateEnumeration]
-public partial record Deity(string Emoji, string Name, Alignment Alignment, [CallerMemberName] string OwnName = "") :   
+public partial record Deity(string Emoji, string Name, Alignment Alignment, [CallerMemberName] string OwnName = "") :
     IAlidEntity,
     IArklensEntity
 {
@@ -21,5 +21,5 @@ public partial record Deity(string Emoji, string Name, Alignment Alignment, [Cal
     public static Deity Mortess { get; } = new("💋", "Мортисса", Alignment.ChaoticNeutral);
     public static Deity Archivarius { get; } = new("💀", "Архивариус", Alignment.LawfulEvil);
     public static Deity Asterio { get; } = new("👑", "Астерио", Alignment.NeutralEvil);
-    public static Deity Sanguise { get; } = new("🦷", "Сангиз", Alignment.ChaoticEvil);    
+    public static Deity Sanguise { get; } = new("🦷", "Сангиз", Alignment.ChaoticEvil);
 }

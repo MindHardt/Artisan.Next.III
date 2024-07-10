@@ -9,7 +9,7 @@ public record CharacteristicsBuilder(CharacterBuilder Character) : IEnumerable<K
     [
         "💪", "🏃", "🧡", "🧠", "🦉", "👄"
     ];
-    
+
     private readonly int[] _values = new int[6];
 
     public int this[string emoji]

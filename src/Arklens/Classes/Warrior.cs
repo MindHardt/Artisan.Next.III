@@ -12,7 +12,7 @@ public record Warrior : Class
         ClassSkills.HorseRiding |
         ClassSkills.Climbing |
         ClassSkills.Swimming;
-    
+
     public Warrior([CallerMemberName] string ownName = "") : base(ownName)
     { }
 }

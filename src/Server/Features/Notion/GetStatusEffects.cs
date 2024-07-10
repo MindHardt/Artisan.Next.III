@@ -14,7 +14,7 @@ public partial class GetStatusEffects
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.WithTags(nameof(NotionEndpoints));
-    
+
     private static async ValueTask<Ok<Contracts.GetStatusEffects.Model[]>> HandleAsync(
         [AsParameters] Contracts.GetStatusEffects.Request request,
         IOptions<NotionConfiguration> configuration,
@@ -25,7 +25,7 @@ public partial class GetStatusEffects
         var filter = request.PartialName is not null
             ? new TitleFilter(statusEffects.Title, contains: request.PartialName)
             : null;
-        
+
         var pages = await notion.Databases.QueryAsync(statusEffects.DatabaseId,
             new DatabasesQueryParameters
             {

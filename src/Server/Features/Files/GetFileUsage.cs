@@ -32,7 +32,7 @@ public partial class GetFileUsage
             .Select(x => new
             {
                 x.CustomStorageLimit,
-                
+
                 TotalFileSize = x.Files
                     .Select(file => new { file.Hash, file.Size })
                     .Distinct()

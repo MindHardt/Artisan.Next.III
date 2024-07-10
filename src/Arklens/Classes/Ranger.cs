@@ -15,7 +15,7 @@ public record Ranger : Class
         ClassSkills.KnowledgeNature |
         ClassSkills.HorseRiding |
         ClassSkills.FirstAid;
-    
+
     public Ranger([CallerMemberName] string ownName = "") : base(ownName)
     { }
 }

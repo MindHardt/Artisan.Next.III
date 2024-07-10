@@ -13,7 +13,7 @@ public partial class Logout
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.WithTags(nameof(AuthEndpoints));
-    
+
     private static async ValueTask<RedirectHttpResult> HandleAsync(
         Contracts.Logout.Request request,
         SignInManager<User> signInManager,

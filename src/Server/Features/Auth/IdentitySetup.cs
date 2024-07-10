@@ -43,7 +43,7 @@ public static class IdentitySetup
                 options.ClientSecret = configuration["OAuth:Yandex:ClientSecret"]!;
                 options.SignInScheme = IdentityConstants.ExternalScheme;
                 options.CallbackPath = "/signin-yandex";
-                options.ClaimActions.Add(new CustomJsonClaimAction(CustomClaims.AvatarUrl, 
+                options.ClaimActions.Add(new CustomJsonClaimAction(CustomClaims.AvatarUrl,
                     ClaimValueTypes.String, json =>
                     {
                         var avatarId = json.GetProperty("default_avatar_id").GetString()!;
@@ -76,7 +76,7 @@ public static class IdentitySetup
                     return Task.CompletedTask;
                 };
             }));
-        
+
         services.AddAuthorization();
         services.AddScoped<AuthenticationStateProvider, ServerAuthStateProvider>();
 

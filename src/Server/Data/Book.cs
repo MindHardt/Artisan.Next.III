@@ -13,7 +13,7 @@ public record Book
     public required string Text { get; set; }
     public required string? ImageUrl { get; set; }
     public required bool IsPublic { get; set; }
-    
+
     public required DateTimeOffset LastUpdated { get; set; }
 
     public ICollection<BookInvite>? Invites { get; set; }

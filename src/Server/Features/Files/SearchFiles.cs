@@ -24,7 +24,7 @@ public partial class SearchFiles
         [FromQuery] int Page = 0,
         [FromQuery] int PageSize = 10)
         : Contracts.SearchFiles.Request(Regex, RestrictedToScope, Page, PageSize);
-    
+
     private static async ValueTask<Ok<Contracts.SearchFiles.Response>> HandleAsync(
         Request request,
         ClaimsPrincipal principal,
@@ -37,7 +37,7 @@ public partial class SearchFiles
             var userId = principal.GetUserId()!.Value;
             query = query.Where(x => x.UploaderId == userId);
         }
-        
+
         if (request.Regex is not null)
         {
             // ReSharper disable once EntityFramework.UnsupportedServerSideFunctionCall

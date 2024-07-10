@@ -26,7 +26,7 @@ public readonly partial struct BookUrlName
 
     [StringSyntax(StringSyntaxAttribute.Regex)]
     public const string ValidationRegexText = @"[a-z\-0-9]";
-    
+
     [GeneratedRegex(ValidationRegexText)]
     public static partial Regex ValidationRegex();
 
@@ -37,7 +37,7 @@ public readonly partial struct BookUrlName
 
         _ when ValidationRegex().IsMatch(urlName)
             => Validation.Ok,
-        
+
         _ => Validation.Invalid($"Url name {urlName} does not match regex {ValidationRegexText}")
     };
 }

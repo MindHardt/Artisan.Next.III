@@ -15,7 +15,7 @@ public class FileClient(IServiceProvider sp) : IFileClient
             request.File.Content.Length,
             nameof(request.File),
             request.File.FileName);
-        
+
         return (await handler.HandleAsync(new UploadFile.Request(formFile, request.Scope), ct)).AsErrorOr<FileModel>();
     }
 

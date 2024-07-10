@@ -8,10 +8,10 @@ namespace Server.Data;
 public record BookInvite
 {
     public required BookInviteKey Key { get; set; }
-    
+
     public BookUrlName BookName { get; set; }
     public Book? Book { get; set; }
-    
+
     public BookInviteStatus Status { get; set; }
 
     public class EntityConfiguration : IEntityTypeConfiguration<BookInvite>

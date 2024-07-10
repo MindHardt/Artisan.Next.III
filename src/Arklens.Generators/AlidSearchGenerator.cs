@@ -15,7 +15,7 @@ public class AlidSearchGenerator : IIncrementalGenerator
                 Transform)
             .Where(static x => x is not null)
             .Select(static (x, _) => x!);
-        
+
         context.RegisterSourceOutput(provider.Collect(), (ctx, nodes) =>
         {
             ctx.AddSource("IAlidEntity.g.cs", SourceOf.AlidLookup(nodes));
@@ -30,7 +30,7 @@ public class AlidSearchGenerator : IIncrementalGenerator
             return null;
         }
 
-        var isIEnumeration = 
+        var isIEnumeration =
             typeSymbol.Interfaces.Any(x => x.Name == "IEnumeration") ||
             typeSymbol.GetAttributes().Any(x => x.AttributeClass?.Name == "GenerateEnumerationAttribute");
         if (isIEnumeration is false)

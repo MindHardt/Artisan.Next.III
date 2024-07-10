@@ -11,9 +11,9 @@ public partial class NewCharacter
 
     private string PreparePortrait() =>
         _originalSvg!.Replace(OriginalAvatarBase64, Character.AvatarBase64 ?? OriginalAvatarBase64);
-    
+
     private string PrepareEmptySvg() => SvgPreparationRegex().Replace(PreparePortrait(), string.Empty);
-    private string PrepareSvg() => SvgPreparationRegex().Replace(PreparePortrait(), 
+    private string PrepareSvg() => SvgPreparationRegex().Replace(PreparePortrait(),
         match => match.Groups["NAME"].Value switch
         {
             "ИМЯ" => Character.Name,
@@ -47,8 +47,8 @@ public partial class NewCharacter
 
     private string GetSkillMark(ClassSkills skill) =>
         Character.IsClassSkill(skill) ? "+" : string.Empty;
-        
-    
+
+
     private const string OriginalAvatarBase64 =
         "/9j/4AAQSkZJRgABAQEAYABgAAD/4QBmRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAAExAAIAAAAQAAAATgA" +
         "AAAAAAABgAAAAAQAAAGAAAAABcGFpbnQubmV0IDUuMC45AP/bAEMAAwICAwICAwMDAwQDAwQFCAUFBAQFCgcHBggMCgwMCwoLCw0OEhANDhEOCwsQFhAREx" +

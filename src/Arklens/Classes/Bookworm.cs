@@ -16,7 +16,7 @@ public record Bookworm : Class
         ClassSkills.Diplomacy |
         ClassSkills.Mechanics |
         ClassSkills.FirstAid;
-    
+
     public Bookworm([CallerMemberName] string ownName = "") : base(ownName)
     { }
 }

@@ -101,8 +101,8 @@
             await FetchStatusEffects();
         }
     }
-    
-    private async Task FetchStatusEffects() => 
+
+    private async Task FetchStatusEffects() =>
         _effects = await Services.GetRequiredService<IMemoryCache>().GetOrCreateAsync(GetCacheKey(), async _ =>
         {
             var result = await Backend.Notion.GetStatusEffects(new GetStatusEffects.Request(_query));

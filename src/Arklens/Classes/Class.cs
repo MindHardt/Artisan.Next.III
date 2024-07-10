@@ -11,7 +11,7 @@ public abstract partial record Class : IAlidEntity, IArklensEntity
 {
     public Alid Alid { get; }
     public abstract ClassSkills ClassSkills { get; }
-    
+
     public virtual IReadOnlyCollection<Alignment>? AllowedAlignments => null;
     public virtual IReadOnlyCollection<Subclass> Subclasses { get; } = [];
     public abstract string Emoji { get; }

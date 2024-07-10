@@ -29,6 +29,6 @@ public class LocalFileStorage(IOptions<LocalFileStorageOptions> options) : IFile
 public record LocalFileStorageOptions
 {
     public const string Section = "FileStorage";
-    
+
     public string Directory { get; set; } = "FileStorage";
 }

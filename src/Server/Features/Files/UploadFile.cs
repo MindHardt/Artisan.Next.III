@@ -19,7 +19,7 @@ public partial class UploadFile
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint)
         => endpoint.DisableAntiforgery().RequireAuthorization().WithTags(nameof(FileEndpoints));
-    
+
     public record Request(
         [FromForm] IFormFile File,
         [FromForm] FileScope Scope)

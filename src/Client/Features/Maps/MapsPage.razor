@@ -85,10 +85,10 @@
 
 
 @code {
-    
+
     private Point? _currentPoint;
     private Dictionary<Guid, NamedArea> _areas = [];
-    
+
     private int _randomSeed;
     private int RandomSeed
     {
@@ -99,7 +99,7 @@
             _currentPoint = _currentArea!.Area.GetRandomPoint(new Random(_randomSeed));
         }
     }
-    
+
     private NamedArea? _currentArea;
     private NamedArea? CurrentArea
     {
@@ -110,7 +110,7 @@
             ResetRandomSeed();
         }
     }
-    
+
     private void ResetRandomSeed()
         => RandomSeed = Random.Shared.Next();
 
@@ -124,13 +124,13 @@
     private static readonly NamedArea[] DefaultAreas =
     [
         new NamedArea(
-            Id: Guid.NewGuid(), 
-            Name: "Москва", 
+            Id: Guid.NewGuid(),
+            Name: "Москва",
             Area: new EllipsoidArea((37.625f, 55.75f), 0.75f, 0.4f)),
-        
+
         new NamedArea(
-            Id: Guid.NewGuid(), 
-            Name: "Москва+", 
+            Id: Guid.NewGuid(),
+            Name: "Москва+",
             Area: new EllipsoidArea((37.625f, 55.75f), 1.25f, 0.8f))
     ];
 

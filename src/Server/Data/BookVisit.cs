@@ -8,10 +8,10 @@ public record BookVisit
 {
     public BookUrlName BookName { get; set; }
     public Book? Book { get; set; }
-    
+
     public int UserId { get; set; }
     public User? User { get; set; }
-    
+
     public class EntityConfiguration : IEntityTypeConfiguration<BookVisit>
     {
         public void Configure(EntityTypeBuilder<BookVisit> builder)

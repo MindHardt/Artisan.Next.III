@@ -8,7 +8,7 @@ public class RoleSeeder(RoleManager<IdentityRole<int>> roleManager, ILogger<Role
 {
     public async Task SeedAsync(CancellationToken ct = default)
     {
-        HashSet<string> existingRoleNames = 
+        HashSet<string> existingRoleNames =
         [
             ..await roleManager.Roles.Select(x => x.Name!).ToArrayAsync(ct)
         ];
@@ -21,7 +21,7 @@ public class RoleSeeder(RoleManager<IdentityRole<int>> roleManager, ILogger<Role
         {
             await roleManager.CreateAsync(role);
         }
-        
+
         logger.LogInformation("Roles seeded");
     }
 }

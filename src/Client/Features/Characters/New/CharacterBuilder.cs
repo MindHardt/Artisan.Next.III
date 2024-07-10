@@ -10,9 +10,9 @@ public record CharacterBuilder
     {
         Characteristics = new CharacteristicsBuilder(this);
     }
-    
+
     public string? Name { get; set; }
-    
+
     private Race? _race;
     public Race? Race
     {
@@ -23,10 +23,10 @@ public record CharacterBuilder
             _raceImpactsOverride = null;
         }
     }
-    
+
     private RaceImpacts? _raceImpactsOverride;
     private Class? _class;
-    
+
     public Class? Class
     {
         get => _class;
@@ -50,7 +50,7 @@ public record CharacterBuilder
             _raceImpactsOverride = value;
         }
     }
-    
+
     public Gender? Gender { get; set; }
     public Alignment? Alignment { get; set; }
 
@@ -60,7 +60,7 @@ public record CharacterBuilder
         Alignment.AllValues;
 
     public Subclass? Subclass { get; set; }
-    
+
     public int? CharacteristicLimit { get; set; }
     public string? AvatarBase64 { get; set; }
     public CharacteristicsBuilder Characteristics { get; }

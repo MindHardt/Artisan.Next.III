@@ -14,11 +14,11 @@ public readonly struct AlidNameCollection : IEquatable<AlidNameCollection>, IRea
         ? new AlidNameCollection(values)
         : Empty;
 
-    public static AlidNameCollection Create(IEnumerable<string> names) => 
+    public static AlidNameCollection Create(IEnumerable<string> names) =>
         new(names.Select(x => new AlidName(x)));
-    public static AlidNameCollection Create(params string[] names) => 
+    public static AlidNameCollection Create(params string[] names) =>
         Create(names.AsEnumerable());
-    
+
     public AlidNameCollection(IEnumerable<AlidName> values) => Values = [..values];
     public AlidNameCollection(ReadOnlySpan<AlidName> values) => Values = [..values];
 
@@ -33,12 +33,12 @@ public readonly struct AlidNameCollection : IEquatable<AlidNameCollection>, IRea
         (null, not null) or (not null, null) => false,
         _ => Values.SequenceEqual(other.Values)
     };
-    
+
     public override int GetHashCode() => Values?.Select(x => x.GetHashCode()).Aggregate(HashCode.Combine) ?? default;
 
     public static bool operator ==(AlidNameCollection left, AlidNameCollection right) => left.Equals(right);
     public static bool operator !=(AlidNameCollection left, AlidNameCollection right) => left.Equals(right) is false;
-    
+
     #endregion
 
     #region IReadOnlyList

@@ -10,8 +10,8 @@ public partial record Alignment(Lawfulness Lawfulness, Goodness Goodness) : IAli
 {
     public Alid Alid { get; } = Alid.OfType<Alignment>($"{Lawfulness}{Goodness}");
 
-    public int DistanceTo(Alignment other) => 
-        int.Abs(Goodness - other.Goodness) + 
+    public int DistanceTo(Alignment other) =>
+        int.Abs(Goodness - other.Goodness) +
         int.Abs(Lawfulness - other.Lawfulness);
 
     public string Emoji { get; } =
@@ -29,8 +29,8 @@ public partial record Alignment(Lawfulness Lawfulness, Goodness Goodness) : IAli
             Goodness.Evil => "😠",
             _ => throw new UnreachableException()
         };
-    
-    public string Name { get; } = 
+
+    public string Name { get; } =
         Lawfulness switch
         {
             Lawfulness.Lawful => "Законное ",
@@ -45,7 +45,7 @@ public partial record Alignment(Lawfulness Lawfulness, Goodness Goodness) : IAli
             Goodness.Evil => "Злое",
             _ => throw new UnreachableException()
         };
-    
+
     public static Alignment LawfulGood { get; } = new(Lawfulness.Lawful, Goodness.Good);
     public static Alignment NeutralGood { get; } = new(Lawfulness.Neutral, Goodness.Good);
     public static Alignment ChaoticGood { get; } = new(Lawfulness.Chaotic, Goodness.Good);

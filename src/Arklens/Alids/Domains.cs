@@ -9,7 +9,7 @@ public static class Domains
 
     /// <inheritdoc cref="Of"/>
     public static AlidNameCollection Of<T>() => Of(typeof(T));
-    
+
     /// <summary>
     /// Creates an <see cref="AlidNameCollection"/> for a provided type.
     /// This method caches its result to improve performance.

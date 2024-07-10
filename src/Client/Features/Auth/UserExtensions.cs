@@ -9,7 +9,7 @@ public static class UserExtensions
         => int.TryParse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId)
             ? userId
             : null;
-    
+
     public static string? GetAvatarUrl(this ClaimsPrincipal principal)
         => principal.FindFirst(CustomClaims.AvatarUrl)?.Value;
 

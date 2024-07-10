@@ -15,7 +15,7 @@ public record Priest : Class
         ClassSkills.KnowledgeMagic |
         ClassSkills.Diplomacy |
         ClassSkills.KnowledgeDungeons;
-    
+
     public Priest([CallerMemberName] string ownName = "") : base(ownName)
     { }
 }
