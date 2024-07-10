@@ -83,7 +83,7 @@
             </td>
             <td>
                 <div class="input-group">
-                    <input type="number" class="form-control" step="1" min="0" max="@(_files.Length / _totalFiles)" @onchange="@HandlePage"/>
+                    <input type="number" class="form-control" step="1" min="0" max="@(_files.Length / _totalFiles)" value="@_page" @onchange="@HandlePage"/>
                     <span class="input-group-text bi bi-123"></span>
                 </div>
             </td>
@@ -172,8 +172,7 @@
 
     private Task HandlePage(ChangeEventArgs e)
     {
-        Console.WriteLine(e.Value!.GetType().Name);
-        _page = Convert.ToInt32(e.Value);
+        _page = int.Parse((string)e.Value!);
         return SearchFiles();
     }
 
