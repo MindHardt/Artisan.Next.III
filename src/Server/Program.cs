@@ -52,7 +52,7 @@ builder.Services.AddSwaggerGen( options =>
     options.CustomSchemaIds(x => x.FullName?.Replace("+", ".", StringComparison.Ordinal));
 });
 
-builder.Services.AddFileStorage(environment: builder.Environment);
+builder.Services.AddFileStorage(builder.Environment);
 builder.Services.AddOptions<UserOptions>()
     .BindConfiguration(UserOptions.Section)
     .ValidateDataAnnotations()

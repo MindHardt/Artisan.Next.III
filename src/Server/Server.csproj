@@ -46,11 +46,11 @@
     <Content Include="..\.dockerignore">
       <Link>.dockerignore</Link>
     </Content>
+    <Content Remove="FileStorage\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
-    <Folder Include="FileStorage\" />
     <Folder Include="wwwroot\static\effects\" />
     <Folder Include="wwwroot\static\portraits\" />
   </ItemGroup>
@@ -76,6 +76,15 @@
     <Compile Update="Data\BookVisit.cs">
       <DependentUpon>Book.cs</DependentUpon>
     </Compile>
+    <Compile Remove="FileStorage\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="FileStorage\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="FileStorage\**" />
   </ItemGroup>
 
 </Project>
