@@ -9,6 +9,7 @@
     twemoji.parse(element, {
         folder: 'svg',
         ext: '.svg',
-        className: 'twemoji'
+        className: 'twemoji',
+        base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
     })
 }
