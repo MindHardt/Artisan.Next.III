@@ -78,25 +78,26 @@
     </table>
     @if (_totalFiles is not null && _files is not null)
     {
-        <div class="d-flex justify-content-between">
-            <div class="flex-grow-1">
-                <span>Файлов: @_files.Length / @_totalFiles</span>
+        <div class="d-flex justify-content-between gap-1">
+            <div class="input-group">
+                <input type="number" class="form-control" step="1" min="0" max="@(_totalFiles / _pageSize)" value="@_page" @onchange="@HandlePage"/>
+                <span class="input-group-text bi bi-123"></span>
             </div>
-            <div>
+            <div class="input-group">
+                <input type="number" class="form-control" step="1" min="1" value="@_pageSize" @onchange="@HandlePageSize"/>
+                <span class="input-group-text bi bi-list-ol"></span>
+            </div>
+            <div class="input-group">
+                <span class="input-group-text bi bi-asterisk"></span>
+                <input class="form-control" readonly value="@_totalFiles"/>
+            </div>
+            @if (_usage is not null)
+            {
                 <div class="input-group">
-                    <input type="number" class="form-control" step="1" min="0" max="@(_totalFiles / _pageSize)" value="@_page" @onchange="@HandlePage"/>
-                    <span class="input-group-text bi bi-123"></span>
+                    <span class="input-group-text bi bi-hdd-stack-fill"></span>
+                    <input class="form-control" readonly value="@($"{_usage.Used.Megabytes:0.00} МБ")"/>
                 </div>
-            </div>
-            <div>
-                <div class="input-group">
-                    <input type="number" class="form-control" step="1" min="1" value="@_pageSize" @onchange="@HandlePageSize"/>
-                    <span class="input-group-text bi bi-list-ol"></span>
-                </div>
-            </div>
-            <div class="flex-grow-1">
-                <span>Общий размер: @(_usage?.Used.Megabytes.ToString("0.00") ?? "NaN") Мб</span>
-            </div>
+            }
         </div>
     }
 </div>
