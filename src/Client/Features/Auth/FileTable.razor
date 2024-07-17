@@ -83,11 +83,17 @@
             </td>
             <td>
                 <div class="input-group">
-                    <input type="number" class="form-control" step="1" min="0" max="@(_totalFiles / PageSize)" value="@_page" @onchange="@HandlePage"/>
+                    <input type="number" class="form-control" step="1" min="0" max="@(_totalFiles / _pageSize)" value="@_page" @onchange="@HandlePage"/>
                     <span class="input-group-text bi bi-123"></span>
                 </div>
             </td>
-            <td colspan="3">
+            <td>
+                <div class="input-group">
+                    <input type="number" class="form-control" step="1" min="1" value="@_pageSize" @onchange="@HandlePageSize"/>
+                    <span class="input-group-text bi bi-list-ol"></span>
+                </div>
+            </td>
+            <td colspan="2">
                 Общий размер: @(_usage?.Used.Megabytes.ToString("0.00") ?? "NaN") Мб 
             </td>
             </tfoot>
@@ -126,11 +132,10 @@
                 
 @code {
 
-    private const int PageSize = 15;
-
     [CascadingParameter]
     public Task<AuthenticationState> AuthStateTask { get; set; } = null!;
 
+    private int _pageSize = 10;
     private int _page = 0;
     private string? _avatarUrl;
     private string _fileRegex = "";
@@ -179,9 +184,15 @@
         return SearchFiles();
     }
 
+    private Task HandlePageSize(ChangeEventArgs e)
+    {
+        _pageSize = int.Parse((string)e.Value!);
+        return SearchFiles();
+    }
+
     private async Task SearchFiles()
     {
-        await Backend.Files.SearchFiles(new SearchFiles.Request(_fileRegex, _scope, _page, PageSize))
+        await Backend.Files.SearchFiles(new SearchFiles.Request(_fileRegex, _scope, _page, _pageSize))
             .ThenDo(result =>
             {
                 _files = result.Files;
