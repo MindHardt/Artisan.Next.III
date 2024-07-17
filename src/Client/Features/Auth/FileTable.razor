@@ -37,7 +37,7 @@
         @foreach (var row in (_files ?? []).Select((file, index) => (file, index)))
         {
             <tr>
-                <th scope="row">@(row.index + 1)</th>
+                <th scope="row">@(_page * _pageSize + row.index + 1)</th>
                 <td>@row.file.Identifier</td>
                 <td class="text-truncate">@row.file.OriginalName</td>
                 <td>@row.file.Size.Megabytes.ToString("0.00") МБ</td>
@@ -81,21 +81,21 @@
         <div class="d-flex justify-content-between gap-1">
             <div class="input-group">
                 <input type="number" class="form-control" step="1" min="0" max="@(_totalFiles / _pageSize)" value="@_page" @onchange="@HandlePage"/>
-                <span class="input-group-text bi bi-123"></span>
+                <span class="input-group-text bi bi-file-earmark"></span>
             </div>
             <div class="input-group">
                 <input type="number" class="form-control" step="1" min="1" value="@_pageSize" @onchange="@HandlePageSize"/>
                 <span class="input-group-text bi bi-list-ol"></span>
             </div>
             <div class="input-group">
-                <span class="input-group-text bi bi-asterisk"></span>
-                <input class="form-control" readonly value="@_totalFiles"/>
+                <span class="input-group-text bi bi-info-square"></span>
+                <input class="form-control" readonly disabled value="@_totalFiles"/>
             </div>
             @if (_usage is not null)
             {
                 <div class="input-group">
-                    <span class="input-group-text bi bi-hdd-stack-fill"></span>
-                    <input class="form-control" readonly value="@($"{_usage.Used.Megabytes:0.00} МБ")"/>
+                    <span class="input-group-text bi bi-hdd-stack"></span>
+                    <input class="form-control" readonly disabled value="@($"{_usage.Used.Megabytes:0.00} МБ")"/>
                 </div>
             }
         </div>
