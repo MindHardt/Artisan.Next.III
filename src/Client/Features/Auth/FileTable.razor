@@ -75,30 +75,22 @@
             </tr>
         }
         </tbody>
-        @if (_totalFiles is not null && _files is not null)
-        {
-            <tfoot>
-            <td colspan="2">
-                Файлов: @_files.Length / @_totalFiles
-            </td>
-            <td>
-                <div class="input-group">
-                    <input type="number" class="form-control" step="1" min="0" max="@(_totalFiles / _pageSize)" value="@_page" @onchange="@HandlePage"/>
-                    <span class="input-group-text bi bi-123"></span>
-                </div>
-            </td>
-            <td>
-                <div class="input-group">
-                    <input type="number" class="form-control" step="1" min="1" value="@_pageSize" @onchange="@HandlePageSize"/>
-                    <span class="input-group-text bi bi-list-ol"></span>
-                </div>
-            </td>
-            <td colspan="2">
-                Общий размер: @(_usage?.Used.Megabytes.ToString("0.00") ?? "NaN") Мб 
-            </td>
-            </tfoot>
-        }
     </table>
+    @if (_totalFiles is not null && _files is not null)
+    {
+        <div class="d-flex justify-content-between">
+            <span>Файлов: @_files.Length / @_totalFiles</span>
+            <div class="input-group">
+                <input type="number" class="form-control" step="1" min="0" max="@(_totalFiles / _pageSize)" value="@_page" @onchange="@HandlePage"/>
+                <span class="input-group-text bi bi-123"></span>
+            </div>
+            <div class="input-group">
+                <input type="number" class="form-control" step="1" min="1" value="@_pageSize" @onchange="@HandlePageSize"/>
+                <span class="input-group-text bi bi-list-ol"></span>
+            </div>
+            <span>Общий размер: @(_usage?.Used.Megabytes.ToString("0.00") ?? "NaN") Мб</span>
+        </div>
+    }
 </div>
 @if (_usage is not null)
 {
