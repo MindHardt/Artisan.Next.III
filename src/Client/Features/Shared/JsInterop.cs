@@ -47,5 +47,6 @@ public abstract class JsInterop : IAsyncDisposable
             var module = await GetModuleAsync();
             await module.DisposeAsync();
         }
+        GC.SuppressFinalize(this);
     }
 }
