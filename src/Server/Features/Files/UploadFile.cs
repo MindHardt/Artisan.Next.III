@@ -21,7 +21,7 @@ public partial class UploadFile
         => endpoint.DisableAntiforgery().RequireAuthorization().WithTags(nameof(FileEndpoints));
 
     public record Request(
-        [FromForm] IFormFile File,
+        IFormFile File,
         [FromForm] FileScope Scope)
         : Contracts.UploadFile.Request<IFormFile>(File, Scope);
 
