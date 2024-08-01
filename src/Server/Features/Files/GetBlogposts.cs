@@ -21,7 +21,7 @@ public partial class GetBlogposts
         var blogpostDir = new DirectoryInfo(Path.Combine(hostEnvironment.WebRootPath, RelativePath));
         var blogposts = blogpostDir
             .GetFiles()
-            .OrderBy(x => x.Name)
+            .OrderByDescending(x => x.Name)
             .Select(x => FileIdentifier.From(Path.Combine(RelativePath, x.Name)))
             .ToArray();
         

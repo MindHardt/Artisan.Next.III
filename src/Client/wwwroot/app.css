@@ -22,3 +22,20 @@ img.twemoji {
     display: block;
     margin: auto;
 }
+
+.blogpost-hidden {
+    max-height: 250px;
+}
+
+.blogpost-expand {
+    animation: ease blogpost-expand 1s;
+}
+
+@keyframes blogpost-expand {
+    0% {
+        max-height: 250px;
+    }
+    100% {
+        max-height: 100vh;
+    }
+}

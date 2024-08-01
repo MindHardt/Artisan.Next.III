@@ -23,9 +23,15 @@
 {
     <hr/>
     <div class="vstack gap-3">
-        @foreach (var post in posts)
+        @foreach (var (post, i) in posts.Select((post, i) => (post, i)))
         {
-            <RenderedMd Markdown="@post" />
+            <div class="card shadow overflow-y-hidden blogpost-hidden" 
+                 onclick="this.classList.replace('blogpost-hidden', 'blogpost-expand')" 
+                 onmouseover="this.classList.replace('blogpost-hidden', 'blogpost-expand')">
+                <div class="card-body">
+                    <RenderedMd Markdown="@post" />
+                </div>
+            </div>
         }
     </div>
 }
