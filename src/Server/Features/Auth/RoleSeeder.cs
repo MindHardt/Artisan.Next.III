@@ -1,4 +1,4 @@
-﻿using Contracts;
+﻿using Client.Features.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

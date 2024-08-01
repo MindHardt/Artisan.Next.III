@@ -1,6 +1,5 @@
-﻿using System.Net;
-using System.Security.Claims;
-using Contracts;
+﻿using System.Security.Claims;
+using Client.Features.Auth;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -66,15 +65,12 @@ public static class IdentitySetup
             .AddIdentityCookies(options => options.ApplicationCookie!.Configure(cookie =>
             {
                 cookie.Events.OnRedirectToLogin = context =>
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                    return Task.CompletedTask;
-                };
+                    TypedResults.Problem(statusCode: StatusCodes.Status401Unauthorized)
+                        .ExecuteAsync(context.HttpContext);
+                
                 cookie.Events.OnRedirectToAccessDenied = context =>
-                {
-                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                    return Task.CompletedTask;
-                };
+                    TypedResults.Problem(statusCode: StatusCodes.Status403Forbidden)
+                        .ExecuteAsync(context.HttpContext);
             }));
 
         services.AddAuthorization();

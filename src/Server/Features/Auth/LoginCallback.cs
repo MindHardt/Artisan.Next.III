@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Contracts;
+using Client.Features.Auth;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -10,11 +10,10 @@ using Server.Data;
 namespace Server.Features.Auth;
 
 [Handler]
-[MapGet(FullPath)]
+[MapGet(Path)]
 public partial class LoginCallback
 {
-    public const string Path = "login-callback";
-    public const string FullPath = $"{AuthEndpoints.FullPath}/{Path}";
+    public const string Path = $"{IAuthClient.Prefix}/login-callback";
 
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint)
         => endpoint.ExcludeFromDescription();

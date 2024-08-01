@@ -1,15 +1,16 @@
 ﻿@page "/wiki/effects"
-@using System.Net.NetworkInformation
+@using System.Text.Json
+@using Client.Features.Notion
 @using Client.Features.Shared
 @using Client.Features.Shared.Components
 @using Client.Features.Shared.Toasts
-@using Contracts
 @using Microsoft.Extensions.Caching.Memory
 @using ErrorOr
 @layout WikiLayout
 @inject BackendClient Backend
 @inject PersistentComponentState Persistence
 @inject IServiceProvider Services
+@inject NavigationManager Navigation
 
 <OpenGraph 
     Title="Статусные эффекты"
@@ -19,7 +20,7 @@
     <div class="row mb-3">
         <div class="input-group input-group-lg">
             <span class="input-group-text bi bi-search"></span>
-            <input type="text" class="form-control" value="@_query" placeholder="Поиск" @onchange="@Search"/>
+            <input type="text" class="form-control" value="@Query" placeholder="Поиск" @onchange="@Search"/>
         </div>
     </div>
     <div class="row">
@@ -42,13 +43,19 @@
                         </h5>
                         <p class="card-text">@((MarkupString)effect.Description)</p>
                     </div>
-                    @if (effect.PageUrl is not null)
-                    {
-                        <div class="card-footer">
-                            <i class="bi bi-box-arrow-up-right"></i>
-                            <a href="@effect.PageUrl">Notion</a>
-                        </div>
-                    }
+                    <div class="card-footer d-flex justify-content-between">
+                        <span>
+                            <i class="bi bi-link-45-deg"></i>
+                            <a href="@GetStatusEffectPageUrl(effect)">Ссылка</a>
+                        </span>
+                        @if (effect.PageUrl is not null)
+                        {
+                            <span>
+                                <i class="bi bi-box-arrow-up-right"></i>
+                                <a href="@effect.PageUrl">Notion</a>
+                            </span>
+                        }
+                    </div>
                 </div>
             </div>
         }
@@ -57,12 +64,13 @@
 
 @code {
 
-    private GetStatusEffects.Model[]? _effects;
-    private string? _query;
+    private IReadOnlyCollection<StatusEffectModel>? _effects;
+
+    public string? Query { get; set; } = null!;
 
     private void Search(ChangeEventArgs e)
     {
-        _query = e.Value as string;
+        Query = e.Value as string;
         if (Services.GetRequiredService<IMemoryCache>().TryGetValue(GetCacheKey(), out _effects))
         {
             return;
@@ -80,7 +88,7 @@
     {
         if (BlazorEnv.IsServer)
         {
-            await Backend.Notion.GetStatusEffects(new GetStatusEffects.Request(null)).ThenDo(result =>
+            await Backend.Notion.GetStatusEffects(new INotionClient.GetStatusEffectsRequest(null)).ThenDo(result =>
             {
                 _effects = result;
                 Persistence.RegisterOnPersisting(() =>
@@ -102,10 +110,13 @@
         }
     }
 
+    private string GetStatusEffectPageUrl(StatusEffectModel model) 
+        => Navigation.GetUriWithQueryParameter(nameof(Query), model.Name);
+
     private async Task FetchStatusEffects() =>
         _effects = await Services.GetRequiredService<IMemoryCache>().GetOrCreateAsync(GetCacheKey(), async _ =>
         {
-            var result = await Backend.Notion.GetStatusEffects(new GetStatusEffects.Request(_query));
+            var result = await Backend.Notion.GetStatusEffects(new INotionClient.GetStatusEffectsRequest(Query));
             if (result.ErrorsOrEmptyList is not [_, ..] errors)
             {
                 return result.Value;
@@ -117,6 +128,6 @@
             throw new Exception(errorMessage);
         });
 
-    private string GetCacheKey() => $"{nameof(StatusEffectsPage)}_{_query}";
+    private string GetCacheKey() => $"{nameof(StatusEffectsPage)}_{Query}";
 
 }

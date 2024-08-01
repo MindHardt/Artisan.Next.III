@@ -64,11 +64,11 @@
     <Compile Update="Features\Notion\StatusEffectsConfiguration.cs">
       <DependentUpon>NotionConfiguration.cs</DependentUpon>
     </Compile>
-    <Compile Update="Features\Files\S3FileStorage.cs">
-      <DependentUpon>IFileStorage.cs</DependentUpon>
+    <Compile Update="Features\Files\S3FileContentStorage.cs">
+      <DependentUpon>IFileContentStorage.cs</DependentUpon>
     </Compile>
-    <Compile Update="Features\Files\LocalFileStorage.cs">
-      <DependentUpon>IFileStorage.cs</DependentUpon>
+    <Compile Update="Features\Files\LocalFileContentStorage.cs">
+      <DependentUpon>IFileContentStorage.cs</DependentUpon>
     </Compile>
     <Compile Update="Data\BookInvite.cs">
       <DependentUpon>Book.cs</DependentUpon>
@@ -77,6 +77,12 @@
       <DependentUpon>Book.cs</DependentUpon>
     </Compile>
     <Compile Remove="FileStorage\**" />
+    <Compile Update="Features\Auth\LoginCallback.cs">
+      <DependentUpon>Login.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Auth\LinkLoginCallback.cs">
+      <DependentUpon>LinkLogin.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

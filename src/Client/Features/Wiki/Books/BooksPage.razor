@@ -1,7 +1,7 @@
 ﻿@page "/wiki/books"
 @layout WikiLayout
+@using Client.Features.Auth
 @using Client.Features.Shared
-@using Contracts
 @using Microsoft.Extensions.Caching.Memory
 @using Client.Features.Shared.Components
 @using ErrorOr
@@ -59,7 +59,7 @@
 
 
 @code {
-    private BookModel[]? _books;
+    private IReadOnlyCollection<BookModel>? _books;
     private string? _regex;
 
     private bool _isList = false;
@@ -67,7 +67,7 @@
     private async Task SearchBooks(string? regex)
     {
         _regex = regex;
-        await Backend.Wiki.SearchBooks(new SearchBooks.Request(regex))
+        await Backend.Wiki.SearchBooks(new IWikiClient.SearchBooksRequest(regex))
             .ThenDo(result => _books = result);
         if (BlazorEnv.IsWasm)
         {

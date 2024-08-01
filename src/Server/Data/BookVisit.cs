@@ -1,4 +1,4 @@
-﻿using Contracts;
+﻿using Client.Features.Wiki.Books;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

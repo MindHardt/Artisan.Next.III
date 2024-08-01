@@ -1,4 +1,4 @@
-﻿using Contracts;
+﻿using Client.Features.Auth;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -9,15 +9,15 @@ using Server.Data;
 namespace Server.Features.Auth;
 
 [Handler]
-[MapGet(Contracts.LinkLogin.FullPath)]
+[MapGet(IAuthClient.LinkLoginPath)]
 public partial class LinkLogin
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.RequireAuthorization().WithTags(nameof(AuthEndpoints));
+        endpoint.RequireAuthorization().WithTags(nameof(IAuthClient));
 
 
     private static ValueTask<ChallengeHttpResult> HandleAsync(
-        Contracts.LinkLogin.Request request,
+        [AsParameters] IAuthClient.LinkLoginRequest request,
         SignInManager<User> signInManager,
         HttpRequest httpRequest,
         CancellationToken ct)
@@ -25,7 +25,7 @@ public partial class LinkLogin
         var query = QueryString.Create(nameof(request.ReturnUrl), request.ReturnUrl);
         var redirectUrl = UriHelper.BuildRelative(
             httpRequest.PathBase,
-            LinkLoginCallback.FullPath,
+            LinkLoginCallback.Path,
             query);
 
         var authProperties = signInManager.ConfigureExternalAuthenticationProperties(request.Scheme, redirectUrl);

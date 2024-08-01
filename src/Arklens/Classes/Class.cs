@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Arklens.Alids;
+﻿using Arklens.Alids;
 using Arklens.Core;
 using Arklens.Generators;
 

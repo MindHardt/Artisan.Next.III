@@ -1,23 +1,27 @@
 ﻿using System.Security.Claims;
 using Client.Features.Auth;
-using Contracts;
+using Client.Features.Wiki;
+using ErrorOr;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
+using Server.Infrastructure;
 
 namespace Server.Features.Wiki;
 
 [Handler]
-[MapGet(Contracts.GetBook.FullPath)]
+[MapGet(IWikiClient.GetBookPath)]
 public partial class GetBook
 {
+    internal static Results<Ok<IWikiClient.GetBookResponse>, ProblemHttpResult> TransformResult(
+        ErrorOr<IWikiClient.GetBookResponse> value) => value.GetHttpResult();
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.WithTags(nameof(WikiEndpoints));
+        endpoint.WithTags(nameof(IWikiClient));
 
-    private static async ValueTask<Results<Ok<Contracts.GetBook.Response>, NotFound, ForbidHttpResult>> HandleAsync(
-        Contracts.GetBook.Request request,
+    private static async ValueTask<ErrorOr<IWikiClient.GetBookResponse>> HandleAsync(
+        [AsParameters] IWikiClient.GetBookRequest request,
         DataContext dataContext,
         ClaimsPrincipal principal,
         CancellationToken ct)
@@ -26,27 +30,27 @@ public partial class GetBook
             .FirstOrDefaultAsync(x => x.UrlName == request.UrlName, ct);
         if (book is null)
         {
-            return TypedResults.NotFound();
+            return Error.NotFound($"Book {request.UrlName} not found.");
         }
 
         var canView = book.IsPublic || await CheckCanView(request, dataContext, principal, ct);
         if (canView is false)
         {
-            return TypedResults.Forbid();
+            return Error.Forbidden($"You cannot view book {request.UrlName}");
         }
 
-        return TypedResults.Ok(new Contracts.GetBook.Response(
+        return new IWikiClient.GetBookResponse(
             book.UrlName,
             book.Name,
             book.Description,
             book.Author,
-            book.Text,
             book.ImageUrl,
-            book.IsPublic));
+            book.IsPublic,
+            book.Text);
     }
 
     private static async ValueTask<bool> CheckCanView(
-        Contracts.GetBook.Request request,
+        [AsParameters] IWikiClient.GetBookRequest request,
         DataContext dataContext,
         ClaimsPrincipal principal,
         CancellationToken ct)

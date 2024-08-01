@@ -1,41 +1,41 @@
-﻿using Contracts;
+﻿using Client.Features.Auth;
+using Client.Features.Wiki;
+using Client.Features.Wiki.Books;
+using ErrorOr;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NickBuhro.Translit;
 using Server.Data;
-using Vogen;
+using Server.Infrastructure;
 
 namespace Server.Features.Wiki;
 
 [Handler]
-[MapPost(Contracts.CreateBook.FullPath)]
+[MapPost(IWikiClient.CreateBookPath)]
 public partial class CreateBook
 {
+    internal static Results<Ok<BookModel>, ProblemHttpResult> TransformResult(
+        ErrorOr<BookModel> value) => value.GetHttpResult();
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(WikiEndpoints));
+        endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(IWikiClient));
 
-    private static async ValueTask<Results<Ok<BookModel>, Conflict, ProblemHttpResult>> HandleAsync(
-        Contracts.CreateBook.Request request,
+    private static async ValueTask<ErrorOr<BookModel>> HandleAsync(
+        [FromBody] IWikiClient.CreateBookRequest request,
         DataContext dataContext,
         CancellationToken ct)
     {
-        BookUrlName urlName;
-        try
+        if (BookUrlName.TryFrom(request.Name, out var urlName) is false)
         {
-            urlName = CreateUrlName(request.Name);
-        }
-        catch (ValueObjectValidationException)
-        {
-            return TypedResults.Problem($"Failed to create {nameof(BookUrlName)} from name '{request.Name}'");
+            return Error.Validation($"Name {request.Name} could not be transformed to book url name");
         }
 
         var urlNameTaken = await dataContext.Books
             .AnyAsync(x => x.UrlName == urlName, ct);
         if (urlNameTaken)
         {
-            return TypedResults.Conflict();
+            return Error.Conflict($"Url name {urlName} is already taken!");
         }
 
         var book = new Book
@@ -52,24 +52,12 @@ public partial class CreateBook
         dataContext.Books.Add(book);
         await dataContext.SaveChangesAsync(ct);
 
-        return TypedResults.Ok(new BookModel(
+        return new BookModel(
             book.UrlName,
             book.Name,
             book.Description,
             book.ImageUrl,
             book.Author,
-            book.IsPublic));
-    }
-
-    private static BookUrlName CreateUrlName(string name)
-    {
-        var rawValue = new string(
-            Transliteration.CyrillicToLatin(name, Language.Russian)
-            .Replace(' ', '-')
-            .ToLower()
-            .Where(x => x is >= 'a' and <= 'z' or >= '0' and <= '9' or '-')
-            .ToArray());
-
-        return BookUrlName.From(rawValue);
+            book.IsPublic);
     }
 }

@@ -1,6 +1,4 @@
-﻿@using Contracts
-
-<div class="container-fluid ps-0 pe-0">
+﻿<div class="container-fluid ps-0 pe-0">
     <div class="row">
         @foreach (var book in Books ?? [])
         {
@@ -28,5 +26,5 @@
 @code {
 
     [Parameter, EditorRequired]
-    public BookModel[]? Books { get; set; }
+    public IReadOnlyCollection<BookModel>? Books { get; set; }
 }

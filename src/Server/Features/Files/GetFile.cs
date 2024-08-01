@@ -1,44 +1,38 @@
-﻿using Contracts;
+﻿using Client.Features.Files;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Server.Data;
 using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 
 namespace Server.Features.Files;
 
 [Handler]
-[MapGet(Contracts.GetFile.FullPath)]
+[MapGet(IFileClient.GetFilePath)]
 public partial class GetFile
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        (endpoint as RouteHandlerBuilder)?
-        .Produces(StatusCodes.Status410Gone)
-        .WithTags(nameof(FileEndpoints));
+        endpoint.WithTags(nameof(IFileClient));
 
     private static async ValueTask<Results<FileStreamHttpResult, NotFound, StatusCodeHttpResult>> HandleAsync(
-        [AsParameters] Contracts.GetFile.Request request,
+        [AsParameters] IFileClient.GetFileRequest request,
         DataContext dataContext,
-        IFileStorage fs,
+        IFileContentStorage fs,
         HttpResponse response,
         CancellationToken ct)
     {
         var file = await dataContext.Files
-            .FirstOrDefaultAsync(x => x.Identifier == request.Identifier, ct);
+            .FirstOrDefaultAsync(x => x.Identifier == request.FileName, ct);
         if (file is null)
         {
             return TypedResults.NotFound();
         }
 
         response.Headers.CacheControl = CacheControlHeaderValue.PublicString;
-        var fileName = request.Name switch
-        {
-            Contracts.GetFile.Name.Original => file.OriginalName,
-            _ => file.Identifier.Value
-        };
+        var fileName = request.OriginalName
+            ? file.OriginalName
+            : file.Identifier.Value;
 
         var fileStream = await fs.GetFileStream(file.Hash, ct);
         return TypedResults.File(

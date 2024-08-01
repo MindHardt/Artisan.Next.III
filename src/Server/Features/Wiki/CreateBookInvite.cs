@@ -1,26 +1,27 @@
-﻿using System.Collections.Immutable;
-using System.Security.Cryptography;
-using Contracts;
+﻿using Client.Features.Auth;
+using Client.Features.Wiki;
+using Client.Features.Wiki.Books;
+using ErrorOr;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
+using Server.Infrastructure;
 
 namespace Server.Features.Wiki;
 
 [Handler]
-[MapPost(Contracts.CreateBookInvite.FullPath)]
+[MapPost(IWikiClient.CreateBookInvitePath)]
 public partial class CreateBookInvite
 {
-    private static readonly ImmutableArray<char> KeyChars = [..BookInviteKey.AllowedSymbols];
-
+    internal static Results<Ok<BookInviteKey>, ProblemHttpResult> TransformResult(
+        ErrorOr<BookInviteKey> value) => value.GetHttpResult();
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) => endpoint
-        .RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(WikiEndpoints));
+        .RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(IWikiClient));
 
-    private static async ValueTask<Results<Ok<BookInviteKey>, NotFound>> HandleAsync(
-        [AsParameters] Contracts.CreateBookInvite.Request request,
+    private static async ValueTask<ErrorOr<BookInviteKey>> HandleAsync(
+        [AsParameters] IWikiClient.CreateBookInviteRequest request,
         DataContext dataContext,
         CancellationToken ct = default)
     {
@@ -28,28 +29,25 @@ public partial class CreateBookInvite
             .FirstOrDefaultAsync(x => x.UrlName == request.UrlName, ct);
         if (book is null)
         {
-            return TypedResults.NotFound();
+            return Error.NotFound($"Book {request.UrlName} not found");
         }
 
         var existingInvite = await dataContext.BookInvites.FirstOrDefaultAsync(x =>
             x.Book == book && x.Status == BookInviteStatus.Active, ct);
         if (existingInvite is not null)
         {
-            return TypedResults.Ok(existingInvite.Key);
+            return existingInvite.Key;
         }
 
         var invite = new BookInvite
         {
-            Key = CreateKey(),
+            Key =BookInviteKey.Create(),
             BookName = book.UrlName,
             Status = BookInviteStatus.Active
         };
         dataContext.BookInvites.Add(invite);
         await dataContext.SaveChangesAsync(ct);
 
-        return TypedResults.Ok(invite.Key);
+        return invite.Key;
     }
-
-    private static BookInviteKey CreateKey() =>
-        BookInviteKey.From(RandomNumberGenerator.GetString(KeyChars.AsSpan(), BookInviteKey.MaxLength));
 }

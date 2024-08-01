@@ -1,5 +1,4 @@
 ﻿@using Client.Features.Shared
-@using Contracts
 @using Microsoft.Extensions.Caching.Memory
 @inject BackendClient Backend
 @inject PersistentComponentState Persistence
@@ -42,7 +41,7 @@ else
                                     @foreach (var scheme in _schemes)
                                     {
                                         var iconFile = $"/icons/{scheme.Name.ToLower()}.svg";
-                                        <a class="btn btn-lg btn-primary flex-fill" href="@Backend.Auth.BuildLoginUrl(new Login.Request(scheme.Name, Navigation.Uri))">
+                                        <a class="btn btn-lg btn-primary flex-fill" href="@Backend.Auth.BuildLoginUrl(new IAuthClient.LoginRequest(scheme.Name, Navigation.Uri))">
                                             <img src="@iconFile" alt="@scheme.Name" style="height: 32px; width: 32px; filter: brightness(0) saturate(100%) invert(83%) sepia(100%) saturate(1%) hue-rotate(260deg) brightness(104%) contrast(101%);" />
                                         </a>
                                     }
@@ -79,7 +78,7 @@ else
                                     </a>
                                 </div>
                                 <div class="card-footer bg-dark">
-                                    <a class="btn btn-lg btn-secondary w-100" href="@Backend.Auth.BuildLogoutUrl(new Logout.Request(Navigation.Uri))">
+                                    <a class="btn btn-lg btn-secondary w-100" href="@Backend.Auth.BuildLogoutUrl(new IAuthClient.LogoutRequest(Navigation.Uri))">
                                         <i class="bi bi-door-open"></i>
                                         Выйти
                                     </a>
@@ -100,11 +99,11 @@ else
 }
 
 @code {
-    private LoginSchemeModel[]? _schemes;
+    private IReadOnlyCollection<LoginSchemeModel>? _schemes;
 
     protected override async Task OnInitializedAsync()
     {
-        if (Persistence.TryTakeFromJson(nameof(GetLoginSchemes), out _schemes))
+        if (Persistence.TryTakeFromJson(nameof(IAuthClient.GetLoginSchemes), out _schemes))
         {
             Services.GetRequiredService<IMemoryCache>().Set(nameof(LoginSchemeModel), _schemes);
             return;
@@ -113,7 +112,7 @@ else
         _schemes = (await Backend.Auth.GetLoginSchemes()).Else([]).Value;
         Persistence.RegisterOnPersisting(() =>
         {
-            Persistence.PersistAsJson(nameof(GetLoginSchemes), _schemes);
+            Persistence.PersistAsJson(nameof(IAuthClient.GetLoginSchemes), _schemes);
             return Task.CompletedTask;
         });
     }

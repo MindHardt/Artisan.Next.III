@@ -1,24 +1,29 @@
-﻿using Contracts;
+﻿using Client.Features.Notion;
+using ErrorOr;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
 using Notion.Client;
-using INotionClient = Notion.Client.INotionClient;
+using Server.Infrastructure;
+using INotionApiClient = Notion.Client.INotionClient;
+using INotionClient = Client.Features.Notion.INotionClient;
 
 namespace Server.Features.Notion;
 
 [Handler]
-[MapGet(Contracts.GetStatusEffects.FullPath)]
+[MapGet(INotionClient.GetStatusEffectsPath)]
 public partial class GetStatusEffects
 {
+    internal static Results<Ok<IReadOnlyCollection<StatusEffectModel>>, ProblemHttpResult> TransformResult(
+        ErrorOr<IReadOnlyCollection<StatusEffectModel>> value) => value.GetHttpResult();
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.WithTags(nameof(NotionEndpoints));
+        endpoint.WithTags(nameof(INotionClient));
 
-    private static async ValueTask<Ok<Contracts.GetStatusEffects.Model[]>> HandleAsync(
-        [AsParameters] Contracts.GetStatusEffects.Request request,
+    private static async ValueTask<ErrorOr<IReadOnlyCollection<StatusEffectModel>>> HandleAsync(
+        [AsParameters] INotionClient.GetStatusEffectsRequest request,
         IOptions<NotionConfiguration> configuration,
-        INotionClient notion,
+        INotionApiClient notionApi,
         CancellationToken ct)
     {
         var statusEffects = configuration.Value.StatusEffects;
@@ -26,19 +31,19 @@ public partial class GetStatusEffects
             ? new TitleFilter(statusEffects.Title, contains: request.PartialName)
             : null;
 
-        var pages = await notion.Databases.QueryAsync(statusEffects.DatabaseId,
+        var pages = await notionApi.Databases.QueryAsync(statusEffects.DatabaseId,
             new DatabasesQueryParameters
             {
                 Filter = filter
             }, ct);
 
-        return TypedResults.Ok(pages.Results
-            .Select(x => new Contracts.GetStatusEffects.Model(
+        return pages.Results
+            .Select(x => new StatusEffectModel(
                 (x.Cover as ExternalFile)?.External.Url,
                 x.GetTitle().Title.ToPlainText(),
                 ((EmojiObject)x.Icon).Emoji,
                 ((RichTextPropertyValue)x.Properties[statusEffects.Description]).RichText.ToHtml().Value,
                 x.PublicUrl))
-            .ToArray());
+            .ToArray();
     }
 }

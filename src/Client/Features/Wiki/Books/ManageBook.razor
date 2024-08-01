@@ -1,7 +1,7 @@
 ﻿@page "/wiki/books/new"
+@using Client.Features.Auth
 @using Client.Features.Files
 @using Client.Features.Shared
-@using Contracts
 @using Client.Features.Shared.Components
 @using Client.Features.Shared.Toasts
 @using ErrorOr
@@ -122,9 +122,9 @@ else
 
 @code {
 
-    private GetBook.Response? _book;
+    private IWikiClient.GetBookResponse? _book;
 
-    private GetBook.Response? Book
+    private IWikiClient.GetBookResponse? Book
     {
         set =>
             (_book, _text, _authorName, _description, _bookName, _imageUrl, _isPublic) =
@@ -153,7 +153,7 @@ else
         }
         else
         {
-            await Backend.Wiki.GetBook(new GetBook.Request(BookUrlName.From(UrlName)))
+            await Backend.Wiki.GetBook(new IWikiClient.GetBookRequest(BookUrlName.From(UrlName)))
                 .ThenDo(result => Book = result);
             if (BlazorEnv.IsServer)
             {
@@ -173,19 +173,19 @@ else
 
     private async Task HandleThumbnailImage(InputFileChangeEventArgs e)
     {
-        await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
+        await Backend.Files.UploadFile(new IFileClient.UploadFileRequest(
             e.File,
             FileScope.Attachment))
-            .ThenDo(result => _imageUrl = result.Url);
+            .ThenDo(result => _imageUrl = Backend.Files.BuildFileUrl(result));
     }
 
     private async Task HandleAttachmentImage(InputFileChangeEventArgs e)
     {
-        await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(e.File, FileScope.Attachment))
+        await Backend.Files.UploadFile(new IFileClient.UploadFileRequest(e.File, FileScope.Attachment))
             .ThenDoAsync(async result =>
             {
                 var alt = Path.GetFileNameWithoutExtension(e.File.Name);
-                await Services.GetRequiredService<ClipboardJsInterop>().Copy($"![{alt}]({result.Url} =100%x*)");
+                await Services.GetRequiredService<ClipboardJsInterop>().Copy($"![{alt}]({Backend.Files.BuildFileUrl(result)} =100%x*)");
                 await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована");
             });
     }
@@ -197,7 +197,7 @@ else
             : _imageUrl;
         if (Editing)
         {
-            var request = new UpdateBook.Request(
+            var request = new IWikiClient.UpdateBookRequest(
                 BookUrlName.From(UrlName),
                 _authorName,
                 _description,
@@ -208,7 +208,7 @@ else
         }
         else
         {
-            var request = new CreateBook.Request(
+            var request = new IWikiClient.CreateBookRequest(
                 _bookName,
                 _description,
                 _authorName,

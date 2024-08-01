@@ -1,4 +1,4 @@
-﻿using Contracts;
+﻿using Client.Features.Auth;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -8,14 +8,14 @@ using Server.Data;
 namespace Server.Features.Auth;
 
 [Handler]
-[MapGet(Contracts.Logout.FullPath)]
+[MapGet(IAuthClient.LogoutPath)]
 public partial class Logout
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.WithTags(nameof(AuthEndpoints));
+        endpoint.WithTags(nameof(IAuthClient));
 
     private static async ValueTask<RedirectHttpResult> HandleAsync(
-        Contracts.Logout.Request request,
+        [AsParameters] IAuthClient.LogoutRequest request,
         SignInManager<User> signInManager,
         CancellationToken ct)
     {

@@ -1,7 +1,7 @@
 ﻿@attribute [Route($"/wiki/books/read/{{{nameof(UrlName)}}}")]
 @layout WikiLayout
+@using Client.Features.Auth
 @using Client.Features.Shared
-@using Contracts
 @using Client.Features.Shared.Components
 @using Client.Features.Shared.Toasts
 @using ErrorOr
@@ -108,9 +108,9 @@ else
 @code {
 
     private bool _includeImages = true;
-    private GetBook.Response? _book;
+    private IWikiClient.GetBookResponse? _book;
 
-    [SupplyParameterFromQuery(Name = nameof(GetBook.Request.InviteKey))]
+    [SupplyParameterFromQuery(Name = nameof(IWikiClient.GetBookRequest.InviteKey))]
     public string? InviteKey { get; set; }
 
     [Parameter]
@@ -155,16 +155,16 @@ else
         }
     }
 
-    private GetBook.Request CreateRequest() => new(
+    private IWikiClient.GetBookRequest CreateRequest() => new(
         BookUrlName.From(UrlName),
         InviteKey is not null
             ? BookInviteKey.From(InviteKey)
             : null);
 
     private Task CopyInviteLink() =>
-        Backend.Wiki.CreateInviteKey(new CreateBookInvite.Request(BookUrlName.From(UrlName))).ThenDoAsync(async key =>
+        Backend.Wiki.CreateInvite(new IWikiClient.CreateBookInviteRequest(BookUrlName.From(UrlName))).ThenDoAsync(async key =>
         {
-            var inviteLink = Navigation.GetUriWithQueryParameter(nameof(GetBook.Request.InviteKey), key.Value);
+            var inviteLink = Navigation.GetUriWithQueryParameter(nameof(IWikiClient.GetBookRequest.InviteKey), key.Value);
             await Services.GetRequiredService<ClipboardJsInterop>().Copy(inviteLink);
             await Services.GetRequiredService<ToastSender>().ShowInfoToast("Ссылка скопирована");
         });

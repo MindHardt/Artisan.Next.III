@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Contracts;
 
 namespace Client.Features.Auth;
 
@@ -9,6 +8,8 @@ public static class UserExtensions
         => int.TryParse(principal.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId)
             ? userId
             : null;
+    public static int GetRequiredUserId(this ClaimsPrincipal principal) 
+        => GetUserId(principal) ?? throw new InvalidOperationException("Cannot retrieve user information");
 
     public static string? GetAvatarUrl(this ClaimsPrincipal principal)
         => principal.FindFirst(CustomClaims.AvatarUrl)?.Value;

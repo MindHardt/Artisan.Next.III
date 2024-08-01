@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Contracts;
+using Client.Features.Files;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using FileHashString = Client.Features.Files.FileHashString;
+using FileIdentifier = Client.Features.Files.FileIdentifier;
 
 namespace Server.Data;
 

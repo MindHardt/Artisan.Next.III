@@ -1,7 +1,8 @@
 ﻿using System.Security.Claims;
 using System.Security.Cryptography;
 using Client.Features.Auth;
-using Contracts;
+using Client.Features.Files;
+using ErrorOr;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -10,30 +11,35 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Server.Data;
 using Server.Features.Auth;
+using Server.Infrastructure;
+using FileHashString = Client.Features.Files.FileHashString;
+using FileIdentifier = Client.Features.Files.FileIdentifier;
+using FileSize = Client.Features.Files.FileSize;
 
 namespace Server.Features.Files;
 
 [Handler]
-[MapPost(Contracts.UploadFile.FullPath)]
+[MapPost(IFileClient.UploadFilePath)]
 public partial class UploadFile
 {
+    internal static Results<Ok<FileModel>, ProblemHttpResult> TransformResult(
+        ErrorOr<FileModel> value) => value.GetHttpResult();
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint)
-        => endpoint.DisableAntiforgery().RequireAuthorization().WithTags(nameof(FileEndpoints));
+        => endpoint.DisableAntiforgery().RequireAuthorization().WithTags(nameof(IFileClient));
 
-    public record Request(
-        [FromForm] IFormFile File,
-        [FromForm] FileScope Scope)
-        : Contracts.UploadFile.Request<IFormFile>(File, Scope);
-
-    private static async ValueTask<Results<Ok<FileModel>, ForbidHttpResult>> HandleAsync(
-        [AsParameters] Request request,
+    public record InnerRequest(
+        [FromForm(Name = nameof(IFileClient.UploadFileRequest.File))] IFormFile File,
+        [FromForm(Name = nameof(IFileClient.UploadFileRequest.Scope))] FileScope Scope);
+    
+    private static async ValueTask<ErrorOr<FileModel>> HandleAsync(
+        [AsParameters] InnerRequest request,
         DataContext dataContext,
         ClaimsPrincipal principal,
         IOptions<UserOptions> userOptions,
-        IFileStorage fileStorage,
+        IFileContentStorage fileContentStorage,
         CancellationToken ct)
     {
-        var userId = principal.GetUserId()!.Value;
+        var userId = principal.GetRequiredUserId();
         await using var contentStream = request.File.OpenReadStream();
 
         var hash = FileHashString.From(Convert.ToHexString(await SHA256.HashDataAsync(contentStream, ct)));
@@ -41,7 +47,7 @@ public partial class UploadFile
 
         var identifier = FileIdentifier.From(Path.GetRandomFileName() + Path.GetExtension(request.File.FileName));
 
-        var fileExists = await fileStorage.FileExists(hash, ct);
+        var fileExists = await fileContentStorage.FileExists(hash, ct);
         if (fileExists is false)
         {
             var totalFileSizes = await dataContext.Files
@@ -57,10 +63,10 @@ public partial class UploadFile
 
             if (totalFileSizes + contentStream.Length > storageLimit)
             {
-                return TypedResults.Forbid();
+                return Error.Forbidden("You have exceeded your file storage limit");
             }
 
-            await fileStorage.SaveFile(contentStream, hash, ct);
+            await fileContentStorage.SaveFile(contentStream, hash, ct);
         }
 
         var fileRecord = new StorageFile
@@ -77,11 +83,11 @@ public partial class UploadFile
         dataContext.Files.Add(fileRecord);
         await dataContext.SaveChangesAsync(ct);
 
-        return TypedResults.Ok(new FileModel(
+        return new FileModel(
             fileRecord.Identifier,
             fileRecord.Hash,
             fileRecord.OriginalName,
             FileSize.From(fileRecord.Size),
-            fileRecord.Scope));
+            fileRecord.Scope);
     }
 }

@@ -1,6 +1,4 @@
-﻿@using Contracts
-
-<ul class="list-group list-group-numbered">
+﻿<ul class="list-group list-group-numbered">
     @foreach (var book in Books ?? [])
     {
         <li class="list-group-item d-flex">
@@ -20,5 +18,5 @@
 @code {
 
     [Parameter, EditorRequired]
-    public BookModel[]? Books { get; set; }
+    public IReadOnlyCollection<BookModel>? Books { get; set; }
 }

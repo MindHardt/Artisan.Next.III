@@ -1,32 +1,29 @@
 ﻿using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Client.Features.Auth;
-using Contracts;
+using Client.Features.Files;
+using ErrorOr;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
+using Server.Infrastructure;
+using FileSize = Client.Features.Files.FileSize;
 
 namespace Server.Features.Files;
 
 [Handler]
-[MapGet(Contracts.SearchFiles.FullPath)]
+[MapGet(IFileClient.SearchFilesPath)]
 public partial class SearchFiles
 {
+    internal static Results<Ok<IFileClient.SearchFilesResponse>, ProblemHttpResult> TransformResult(
+        ErrorOr<IFileClient.SearchFilesResponse> value) => value.GetHttpResult();
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.RequireAuthorization().WithTags(nameof(FileEndpoints));
+        endpoint.RequireAuthorization().WithTags(nameof(IFileClient));
 
-    public record Request(
-        [FromQuery] string? Regex = null,
-        [FromQuery] FileScope? RestrictedToScope = null,
-        [FromQuery] int Page = 0,
-        [FromQuery] int PageSize = 10)
-        : Contracts.SearchFiles.Request(Regex, RestrictedToScope, Page, PageSize);
-
-    private static async ValueTask<Ok<Contracts.SearchFiles.Response>> HandleAsync(
-        Request request,
+    private static async ValueTask<ErrorOr<IFileClient.SearchFilesResponse>> HandleAsync(
+        [AsParameters] IFileClient.SearchFilesRequest request,
         ClaimsPrincipal principal,
         DataContext dataContext,
         CancellationToken ct)
@@ -34,7 +31,7 @@ public partial class SearchFiles
         var query = dataContext.Files.AsQueryable();
         if (principal.IsInRole(RoleNames.Admin) is false)
         {
-            var userId = principal.GetUserId()!.Value;
+            var userId = principal.GetRequiredUserId();
             query = query.Where(x => x.UploaderId == userId);
         }
 
@@ -61,6 +58,6 @@ public partial class SearchFiles
                 file.Scope))
             .ToArrayAsync(ct);
         var totalCount = await query.CountAsync(ct);
-        return TypedResults.Ok(new Contracts.SearchFiles.Response(files, totalCount));
+        return new IFileClient.SearchFilesResponse(files, totalCount);
     }
 }

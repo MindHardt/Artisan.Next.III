@@ -10,20 +10,21 @@
 
   <ItemGroup>
     <PackageReference Include="AutoRegisterInject" Version="1.4.0" />
+    <PackageReference Include="ErrorOr" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.6" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="NickBuhro.Translit" Version="1.4.5" />
+    <PackageReference Include="Refit" Version="7.1.2" />
+    <PackageReference Include="Refit.HttpClientFactory" Version="7.1.2" />
+    <PackageReference Include="Vogen" Version="4.0.15" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Update="wwwroot\appsettings.Development.json">
       <DependentUpon>appsettings.json</DependentUpon>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Contracts\Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,10 +43,76 @@
     <Compile Update="Features\Shared\DownloadJsInterop.cs">
       <DependentUpon>JsInterop.cs</DependentUpon>
     </Compile>
+    <Compile Update="Features\Auth\IAuthClient.GetLoginSchemes.cs">
+      <DependentUpon>IAuthClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Auth\IAuthClient.UpdateProfile.cs">
+      <DependentUpon>IAuthClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Auth\IAuthClient.Login.cs">
+      <DependentUpon>IAuthClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Auth\IAuthClient.LinkLogin.cs">
+      <DependentUpon>IAuthClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Auth\IAuthClient.Logout.cs">
+      <DependentUpon>IAuthClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Files\IFileClient.UploadFile.cs">
+      <DependentUpon>IFileClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Files\IFileClient.GetFile.cs">
+      <DependentUpon>IFileClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Files\IFileClient.GetFileUsage.cs">
+      <DependentUpon>IFileClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Files\IFileClient.SearchFiles.cs">
+      <DependentUpon>IFileClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Files\IFileClient.DeleteFile.cs">
+      <DependentUpon>IFileClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Maps\RectangularArea.cs">
+      <DependentUpon>IArea.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Maps\EllipsoidArea.cs">
+      <DependentUpon>IArea.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Maps\CircularArea.cs">
+      <DependentUpon>IArea.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Maps\YandexMapFramesProvider.cs">
+      <DependentUpon>IMapFramesProvider.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Wiki\IWikiClient.CreateBook.cs">
+      <DependentUpon>IWikiClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Wiki\Books\BookUrlName.cs">
+      <DependentUpon>BookModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Wiki\Books\BookInviteKey.cs">
+      <DependentUpon>BookModel.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Wiki\IWikiClient.CreateBookInvite.cs">
+      <DependentUpon>IWikiClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Wiki\IWikiClient.GetBook.cs">
+      <DependentUpon>IWikiClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Wiki\IWikiClient.SearchBooks.cs">
+      <DependentUpon>IWikiClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Wiki\IWikiClient.UpdateBook.cs">
+      <DependentUpon>IWikiClient.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Notion\INotionClient.GetStatusEffects.cs">
+      <DependentUpon>INotionClient.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Wiki\Monsters\" />
+    <ProjectReference Include="..\Arklens\Arklens.csproj" />
   </ItemGroup>
 
 </Project>

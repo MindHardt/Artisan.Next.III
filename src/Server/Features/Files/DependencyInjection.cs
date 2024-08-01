@@ -40,13 +40,13 @@ public static class DependencyInjection
             .BindConfiguration(LocalFileStorageOptions.Section)
             .ValidateDataAnnotations()
             .ValidateOnStart();
-        services.AddScoped<IFileStorage, LocalFileStorage>();
+        services.AddScoped<IFileContentStorage, LocalFileContentStorage>();
         return services;
     }
 
     private static IServiceCollection AddS3FileStorage(this IServiceCollection services)
     {
-        services.AddScoped<IFileStorage, S3FileStorage>();
+        services.AddScoped<IFileContentStorage, S3FileContentStorage>();
         services.AddOptions<S3FileStorageOptions>()
             .BindConfiguration(S3FileStorageOptions.Section)
             .ValidateDataAnnotations()

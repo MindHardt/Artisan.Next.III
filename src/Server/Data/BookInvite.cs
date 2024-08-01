@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Contracts;
+﻿using Client.Features.Wiki.Books;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -5,7 +5,6 @@
 @using Client.Features.Shared
 @using Microsoft.AspNetCore.Authorization
 @using Client.Features.Shared.Components
-@using Contracts
 @using Microsoft.Extensions.Caching.Memory
 @attribute [Authorize]
 @inject BackendClient Backend
@@ -72,7 +71,7 @@ else
                                 }
                                 else
                                 {
-                                    <a href="@Backend.Auth.BuildLinkLoginUrl(new LinkLogin.Request(scheme, Navigation.Uri))">
+                                    <a href="@Backend.Auth.BuildLinkLoginUrl(new IAuthClient.LinkLoginRequest(scheme, Navigation.Uri))">
                                         <i class="bi bi-link-45deg text-primary"></i>
                                     </a>
                                 }
@@ -120,12 +119,12 @@ else
     {
         var newAvatar = await e.File.RequestImageFileAsync(MediaTypeNames.Image.Jpeg, 1024, 1024);
 
-        var uploadResult = await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(
+        var uploadResult = await Backend.Files.UploadFile(new IFileClient.UploadFileRequest(
             newAvatar,
             FileScope.Avatar));
         if (uploadResult.IsError is false)
         {
-            _newAvatarUrl = uploadResult.Value.Url;
+            _newAvatarUrl = Backend.Files.BuildFileUrl(uploadResult.Value);
         }
     }
 
@@ -134,7 +133,7 @@ else
         var username = string.IsNullOrWhiteSpace(_newUserName)
             ? null
             : _newUserName;
-        var request = new UpdateProfile.Request(_newAvatarUrl, username);
+        var request = new IAuthClient.UpdateProfileRequest(_newAvatarUrl, username);
         await Backend.Auth.UpdateProfile(request);
         Navigation.Refresh(forceReload: true);
     }

@@ -1,4 +1,7 @@
-﻿using Contracts;
+﻿using Client.Features.Auth;
+using Client.Features.Files;
+using Client.Features.Notion;
+using Client.Features.Wiki;
 
 namespace Client.Features.Shared;
 

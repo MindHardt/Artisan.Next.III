@@ -1,24 +1,29 @@
 ﻿using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Client.Features.Auth;
-using Contracts;
+using Client.Features.Wiki;
+using Client.Features.Wiki.Books;
+using ErrorOr;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
+using Server.Infrastructure;
 
 namespace Server.Features.Wiki;
 
 [Handler]
-[MapGet(Contracts.SearchBooks.FullPath)]
+[MapGet(IWikiClient.SearchBooksPath)]
 public partial class SearchBooks
 {
+    internal static Results<Ok<IReadOnlyCollection<BookModel>>, ProblemHttpResult> TransformResult(
+        ErrorOr<IReadOnlyCollection<BookModel>> value) => value.GetHttpResult();
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.WithTags(nameof(WikiEndpoints));
+        endpoint.WithTags(nameof(IWikiClient));
 
-    private static async ValueTask<Ok<BookModel[]>> HandleAsync(
-        Contracts.SearchBooks.Request request,
+    private static async ValueTask<ErrorOr<IReadOnlyCollection<BookModel>>> HandleAsync(
+        [AsParameters] IWikiClient.SearchBooksRequest request,
         ClaimsPrincipal principal,
         DataContext dataContext,
         CancellationToken ct)
@@ -40,7 +45,7 @@ public partial class SearchBooks
             query = query.Where(book => Regex.IsMatch(book.Name, request.Regex));
         }
 
-        return TypedResults.Ok(await query
+        return await query
             .Select(book => new BookModel(
                 book.UrlName,
                 book.Name,
@@ -48,6 +53,6 @@ public partial class SearchBooks
                 book.ImageUrl,
                 book.Author,
                 book.IsPublic))
-            .ToArrayAsync(ct));
+            .ToArrayAsync(ct);
     }
 }

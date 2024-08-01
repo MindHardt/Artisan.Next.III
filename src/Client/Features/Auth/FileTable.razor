@@ -3,7 +3,6 @@
 @using Client.Features.Shared
 @using Client.Features.Shared.Toasts
 @using ErrorOr
-@using Contracts
 @inject BackendClient Backend
 @inject IServiceProvider Services
 
@@ -53,11 +52,11 @@
                     <i class="bi bi-@icon" title="@GetName(row.file.Scope)"></i>
                 </td>
                 <td>
-                    <a class="btn btn-sm btn-outline-primary me-1" href="@row.file.GetUrl(GetFile.Name.Original)">
+                    <a class="btn btn-sm btn-outline-primary me-1" href="@Backend.Files.BuildFileUrl(row.file)">
                         <i class="bi bi-link-45deg"></i>
                     </a>
                     @{
-                        var isCurrentAvatar = row.file.Url == _avatarUrl;
+                        var isCurrentAvatar = Backend.Files.BuildFileUrl(row.file) == _avatarUrl;
                     }
                     @if (isCurrentAvatar)
                     {
@@ -141,9 +140,9 @@
     private string? _avatarUrl;
     private string _fileRegex = "";
     private FileScope? _scope;
-    private FileModel[]? _files;
+    private IReadOnlyCollection<FileModel>? _files;
     private int? _totalFiles;
-    private GetFileUsage.Response? _usage;
+    private IFileClient.GetFileUsageResponse? _usage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -154,7 +153,7 @@
 
     private async Task DeleteFile(FileModel file)
     {
-        await Backend.Files.DeleteFile(new DeleteFile.Request(file.Identifier)).ThenDoAsync(async _ =>
+        await Backend.Files.DeleteFile(new IFileClient.DeleteFileRequest(file.Identifier)).ThenDoAsync(async _ =>
         {
             await SearchFiles();
             await UpdateUsage();
@@ -193,7 +192,7 @@
 
     private async Task SearchFiles()
     {
-        await Backend.Files.SearchFiles(new SearchFiles.Request(_fileRegex, _scope, _page, _pageSize))
+        await Backend.Files.SearchFiles(new IFileClient.SearchFilesRequest(_fileRegex, _scope, _page, _pageSize))
             .ThenDo(result =>
             {
                 _files = result.Files;
@@ -203,7 +202,7 @@
 
     private async Task UpdateUsage()
     {
-        await Backend.Files.GetUsage().ThenDo(result => _usage = result);
+        await Backend.Files.GetFileUsage().ThenDo(result => _usage = result);
     }
 
     private string GetName(FileScope scope) => scope switch
@@ -221,10 +220,10 @@
 
         foreach (var file in e.GetMultipleFiles(int.MaxValue))
         {
-            await Backend.Files.UploadFile(new UploadFile.Request<IBrowserFile>(file, FileScope.Unknown)).SwitchAsync(
+            await Backend.Files.UploadFile(new IFileClient.UploadFileRequest(file, FileScope.Unknown)).SwitchAsync(
                 async result =>
                 {
-                    await toasts.ShowInfoToast($"Файл <a href=\"{result.GetUrl(GetFile.Name.Original)}\">{result.OriginalName}</a> загружен!");
+                    await toasts.ShowInfoToast($"Файл <a href=\"{Backend.Files.BuildFileUrl(result)}\">{result.OriginalName}</a> загружен!");
                 },
                 async error =>
                 {
