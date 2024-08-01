@@ -30,11 +30,11 @@ else
                     <i class="bi bi-key-fill"></i>
                     Авторизация
                 </button>
-                <div class="modal fade" id="LoginModal" tabindex="-1" aria-hidden="true" aria-labelledby="LoginModalName" data-bs-theme="dark">
+                <div class="modal fade" id="LoginModal" tabindex="-1" aria-hidden="true" aria-labelledby="LoginModalName">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title text-light fs-5" id="LoginModalName">Выберите способ авторизации</h1>
+                                <h1 class="modal-title fs-5" id="LoginModalName">Выберите способ авторизации</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -55,14 +55,14 @@ else
         </NotAuthorized>
         <Authorized>
             <img src="@context.User.GetAvatarUrl()" alt="avatar" class="rounded" style="height: 48px; width: 48px;" />
-            <button type="button" class="btn btn-lg btn-outline-light" @onclick="() => Services.GetRequiredService<ModalJsInterop>().ShowProfileModal()">
+            <button type="button" class="btn btn-lg text-body-emphasis" @onclick="() => Services.GetRequiredService<ModalJsInterop>().ShowProfileModal()">
                 Обо мне
             </button>
-            <div class="modal fade" id="UserInfoModal" tabindex="-1" aria-hidden="true" aria-labelledby="UserInfoModalName" data-bs-theme="dark">
+            <div class="modal fade" id="UserInfoModal" tabindex="-1" aria-hidden="true" aria-labelledby="UserInfoModalName">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title text-light fs-5" id="UserInfoModalName">Информация о пользователе</h1>
+                            <h1 class="modal-title fs-5" id="UserInfoModalName">Информация о пользователе</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
                         </div>
                         <div class="modal-body">
@@ -71,14 +71,12 @@ else
                                     <img src="@context.User.GetAvatarUrl()"
                                          class="card-img-top rounded" alt="Avatar" id="avatar">
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body vstack gap-3">
                                     <h1 class="card-title text-center">@context.User.GetUserName()</h1>
                                     <a class="btn btn-lg btn-primary w-100 mt-1" href="/profile" onclick="document.getElementById('closeModal').click()">
                                         <i class="bi bi-person"></i>
                                         Профиль
                                     </a>
-                                </div>
-                                <div class="card-footer bg-dark">
                                     <a class="btn btn-lg btn-secondary w-100" href="@Backend.Auth.BuildLogoutUrl(new Logout.Request(Navigation.Uri))">
                                         <i class="bi bi-door-open"></i>
                                         Выйти

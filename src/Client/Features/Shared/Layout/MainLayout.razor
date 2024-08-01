@@ -5,7 +5,7 @@
 @layout ErrorHandlingLayout
 
 <OpenGraph Title="Artisan.Next.III" Description="Личный сайт Игоря Un1ver5e Бабина." />
-<nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow" data-bs-theme="dark">
+<nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow">
     <div class="container-fluid">
         <a class="navbar-brand d-flex" href="" style="height: 46px; width: 46px;">
             @if (BlazorEnv.IsServer)
@@ -26,31 +26,68 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <div class="navbar-nav">
-                <NavLink href="" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1" Match="NavLinkMatch.All">
-                    <i class="bi bi-house-door-fill"></i>
-                    Главная
-                </NavLink>
-                <NavLink href="wiki" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1">
-                    <i class="bi bi-database-fill"></i>
-                    Wiki
-                </NavLink>
-                <NavLink href="charsheet" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1">
-                    <i class="bi bi-file-person-fill"></i>
-                    Персонажи
-                </NavLink>
-                <NavLink href="maps" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1">
-                    <i class="bi bi-signpost-2-fill"></i>
-                    Панорамы
-                </NavLink>
-
-                @if (BlazorEnv.IsDebug)
-                {
-                    <a href="swagger" class="btn btn-success fw-bold btn-lg m-1">
-                        <i class="bi bi-file-earmark-bar-graph-fill"></i>
-                        Swagger
-                    </a>
+            <div class="navbar-nav gap-1">
+                @{
+                    List<NavLinkInfo> navLinks =
+                    [
+                        new NavLinkInfo("Главная", "", "bi-house-door-fill", NavLinkMatch.All),
+                        new NavLinkInfo("Wiki", "wiki", "bi-database-fill"),
+                        new NavLinkInfo("Персонажи", "charsheet", "bi-file-person-fill"),
+                        new NavLinkInfo("Панорамы","maps", "bi-signpost-2-fill"),
+                    ];
+                    @if (BlazorEnv.IsDebug)
+                    {
+                        navLinks.Add(new NavLinkInfo("Swagger", "swagger", "bi-file-earmark-bar-graph-fill"));
+                    }
                 }
+                @foreach (var navLink in navLinks)
+                {
+                    <NavLink href="@navLink.Href"
+                             class="btn btn-lg text-body-emphasis"
+                             Match="@navLink.Match" 
+                             ActiveClass="btn-info">
+                        <i class="bi @navLink.Icon"></i>
+                        @navLink.Label
+                    </NavLink>
+                }
+                @* <NavLink href="" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1" Match="NavLinkMatch.All"> *@
+                @*     <i class="bi bi-house-door-fill"></i> *@
+                @*     Главная *@
+                @* </NavLink> *@
+                @* <NavLink href="wiki" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1"> *@
+                @*     <i class="bi bi-database-fill"></i> *@
+                @*     Wiki *@
+                @* </NavLink> *@
+                @* <NavLink href="charsheet" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1"> *@
+                @*     <i class="bi bi-file-person-fill"></i> *@
+                @*     Персонажи *@
+                @* </NavLink> *@
+                @* <NavLink href="maps" ActiveClass="btn-light text-dark fw-bold" class="btn btn-lg btn-outline-light m-1"> *@
+                @*     <i class="bi bi-signpost-2-fill"></i> *@
+                @*     Панорамы *@
+                @* </NavLink> *@
+                @* *@
+                @* @if (BlazorEnv.IsDebug) *@
+                @* { *@
+                @*     <a href="swagger" class="btn btn-success fw-bold btn-lg m-1"> *@
+                @*         <i class="bi bi-file-earmark-bar-graph-fill"></i> *@
+                @*         Swagger *@
+                @*     </a> *@
+                @* } *@
+                <script>
+                    function changeTheme(element) {
+                        const themeAttr = document.body.attributes.getNamedItem('data-bs-theme');
+                        const theme = themeAttr.value;
+                        const [newTheme, newIcon] = theme === 'light'
+                            ? ['dark', 'bi-moon-fill']
+                            : ['light', 'bi-sun-fill'];
+                        themeAttr.value = newTheme;
+                        element.querySelector('i').className = 'text-warning bi ' + newIcon;
+                    }
+                </script>
+                <button class="btn" onclick="changeTheme(this)">
+                    <i class="text-warning bi bi-sun-fill"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -65,3 +102,13 @@
         <ToastDisplay />
     }
 </main>
+
+@code {
+
+    private readonly record struct NavLinkInfo(
+        string Label,
+        string Href,
+        string Icon,
+        NavLinkMatch Match = NavLinkMatch.Prefix);
+
+}
