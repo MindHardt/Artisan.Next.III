@@ -50,20 +50,13 @@
                         @navLink.Label
                     </NavLink>
                 }
-                <script>
-                    function changeTheme(element) {
-                        const themeAttr = document.body.attributes.getNamedItem('data-bs-theme');
-                        const theme = themeAttr.value;
-                        const [newTheme, newIcon] = theme === 'light'
-                            ? ['dark', 'bi-moon-fill']
-                            : ['light', 'bi-sun-fill'];
-                        themeAttr.value = newTheme;
-                        element.querySelector('i').className = 'text-warning bi ' + newIcon;
-                    }
-                </script>
-                <button class="btn" onclick="changeTheme(this)">
-                    <i class="text-warning bi bi-sun-fill"></i>
+                <button class="btn" onclick="changeTheme()">
+                    <i id="themeIcon"></i>
                 </button>
+                <!--suppress JSUnresolvedReference -->
+                <script>
+                    fixThemeIcon();
+                </script>
             </div>
         </div>
     </div>
