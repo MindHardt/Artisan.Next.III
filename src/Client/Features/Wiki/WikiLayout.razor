@@ -5,19 +5,25 @@
     <div class="row">
         <div class="col-xl-2">
             <nav class="d-flex flex-xl-column flex-row gap-2 pb-2 flex-wrap">
-                <NavLink href="/wiki/" class="btn btn-outline-dark" ActiveClass="btn-dark text-light" Match="NavLinkMatch.All">
-                    <i class="bi bi-house"></i>
-                    Главная
-                </NavLink>
-                <NavLink href="/wiki/books" class="btn btn-outline-dark" ActiveClass="btn-dark text-light">
-                    <i class="bi bi-book"></i>
-                    Книги
-                </NavLink>
-                <NavLink href="/wiki/effects" class="btn btn-outline-dark" ActiveClass="btn-dark text-light">
-                    <i class="bi bi-emoji-dizzy"></i>
-                    Эффекты
-                </NavLink>
-                
+                @{
+                    NavLinkInfo[] navLinks =
+                    [
+                        new NavLinkInfo("Главная", "wiki", "bi-house", NavLinkMatch.All),
+                        new NavLinkInfo("Книги", "wiki/books", "bi-book"),
+                        new NavLinkInfo("Эффекты", "wiki/effects", "bi-emoji-dizzy")
+                    ];
+                }
+                @foreach (var navLink in navLinks)
+                {
+                    <NavLink href="@navLink.Href" 
+                             class="btn text-body-emphasis"
+                             ActiveClass="bg-body-secondary shadow-sm"
+                             Match="@navLink.Match">
+                        <i class="bi @navLink.Icon"></i>
+                        @navLink.Label
+                    </NavLink>
+                } 
+
                 <a class="btn btn-outline-primary" href="https://un1ver5e.notion.site/724decf43a11419aa240f0ab42c37559?pvs=4" target="_blank">
                     <i class="bi bi-box-arrow-up-right"></i>
                     Notion
