@@ -51,7 +51,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
-    <Folder Include="wwwroot\static\effects\" />
+    <Folder Include="wwwroot\static\images\" />
     <Folder Include="wwwroot\static\portraits\" />
   </ItemGroup>
 

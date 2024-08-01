@@ -57,8 +57,13 @@ public class FileClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOpt
         return await http.DeleteAsync(url, ct).AsErrorOr<FileModel>(jsonOptions.Value, ct);
     }
 
-    public async Task<ErrorOr<GetFileUsage.Response>> GetUsage(CancellationToken ct = default)
+    public async Task<ErrorOr<GetFileUsage.Response>> GetFileUsage(CancellationToken ct = default)
     {
-        return await http.GetAsync(GetFileUsage.FullPath, ct).AsErrorOr<GetFileUsage.Response>(jsonOptions.Value, ct);
+        return await http.GetAsync(Contracts.GetFileUsage.FullPath, ct).AsErrorOr<GetFileUsage.Response>(jsonOptions.Value, ct);
+    }
+
+    public async Task<ErrorOr<IReadOnlyCollection<FileIdentifier>>> GetBlogposts(CancellationToken ct = default)
+    {
+        return await http.GetAsync(Contracts.GetBlogposts.FullPath, ct).AsErrorOr<IReadOnlyCollection<FileIdentifier>>(jsonOptions.Value, ct);
     }
 }

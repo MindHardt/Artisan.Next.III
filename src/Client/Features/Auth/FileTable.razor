@@ -203,7 +203,7 @@
 
     private async Task UpdateUsage()
     {
-        await Backend.Files.GetUsage().ThenDo(result => _usage = result);
+        await Backend.Files.GetFileUsage().ThenDo(result => _usage = result);
     }
 
     private string GetName(FileScope scope) => scope switch

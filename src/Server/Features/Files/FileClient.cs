@@ -33,9 +33,15 @@ public class FileClient(IServiceProvider sp) : IFileClient
         return (await handler.HandleAsync(request, ct)).AsErrorOr<FileModel>();
     }
 
-    public async Task<ErrorOr<Contracts.GetFileUsage.Response>> GetUsage(CancellationToken ct = default)
+    public async Task<ErrorOr<Contracts.GetFileUsage.Response>> GetFileUsage(CancellationToken ct = default)
     {
         var handler = sp.GetRequiredService<GetFileUsage.Handler>();
         return (await handler.HandleAsync(new EmptyRequest(), ct)).AsErrorOr<Contracts.GetFileUsage.Response>();
+    }
+
+    public async Task<ErrorOr<IReadOnlyCollection<FileIdentifier>>> GetBlogposts(CancellationToken ct = default)
+    {
+        var handler = sp.GetRequiredService<GetBlogposts.Handler>();
+        return (await handler.HandleAsync(new EmptyRequest(), ct)).AsErrorOr<IReadOnlyCollection<FileIdentifier>>();
     }
 }

@@ -1,6 +1,68 @@
 ﻿@page "/"
+@using Contracts
+@using ErrorOr
+@using Client.Features.Shared.Components
+@using Microsoft.Extensions.Caching.Memory
+@inject IServiceProvider Services
+@inject PersistentComponentState Persistence
 
 <PageTitle>Главная</PageTitle>
 <h1>Artisan.Next.III</h1>
 
-Здесь будет что-то крутое
+@if (_blogposts is null)
+{
+    <Spinner />
+}
+@if (_blogposts?.ErrorsOrEmptyList is [var error, ..])
+{
+    <div class="alert alert-danger">
+        @error.Description
+    </div>
+}
+@if (_blogposts is { IsError: false, Value: var posts })
+{
+    <hr/>
+    <div class="vstack gap-3">
+        @foreach (var post in posts)
+        {
+            <RenderedMd Markdown="@post" />
+        }
+    </div>
+}
+
+@code {
+
+    private ErrorOr<string[]>? _blogposts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (BlazorEnv.IsServer)
+        {
+            return;
+        }
+
+        var cache = Services.GetRequiredService<IMemoryCache>();
+        if (cache.TryGetValue(nameof(_blogposts), out _blogposts))
+        {
+            return;
+        }
+
+        var filePaths = await Services.GetRequiredService<IFileClient>().GetBlogposts();
+        if (filePaths.IsError)
+        {
+            _blogposts = Error.Failure(description: "Произошла ошибка при загрузке постов");
+            return;
+        }
+
+        var http = Services.GetRequiredService<HttpClient>();
+        var blogpostLoadTasks = filePaths.Value
+            .Select(async x => await http.GetStringAsync(x.Value))
+            .ToArray();
+
+        await Task.WhenAll(blogpostLoadTasks);
+
+        _blogposts = blogpostLoadTasks.Select(x => x.Result).ToArray();
+        cache.Set(nameof(_blogposts), _blogposts);
+    }
+
+}
