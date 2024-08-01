@@ -1,5 +1,7 @@
 function getTheme() {
-    return localStorage.getItem('theme') ?? 'light';
+    let theme = localStorage.getItem('theme');
+    theme ??= window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return theme;
 }
 function fixThemeIcon() {
     const themeIcon = document.getElementById('themeIcon');
@@ -14,7 +16,7 @@ function setTheme(theme) {
     document.body.getAttributeNode('data-bs-theme').value = theme;
     localStorage.setItem('theme', theme);
     fixThemeIcon();
-    console.log('Theme set to ', theme)
+    console.log('Theme set to', theme)
 }
 function changeTheme() {
     const currentTheme = getTheme();
