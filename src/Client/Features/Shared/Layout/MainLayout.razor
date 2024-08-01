@@ -3,10 +3,9 @@
 @using Client.Features.Shared.Components
 @inherits LayoutComponentBase
 @layout ErrorHandlingLayout
-@inject IServiceProvider Services
 
-<OpenGraph Title="Artisan.Next.III" Description="Сайт с информацией по Аркленсу и другими фичами" />
-<nav class="navbar navbar-expand-lg bg-dark sticky-top" data-bs-theme="dark">
+<OpenGraph Title="Artisan.Next.III" Description="Личный сайт Игоря Un1ver5e Бабина." />
+<nav class="navbar navbar-expand-lg sticky-top shadow" data-bs-theme="dark">
     <div class="container-fluid">
         <a class="navbar-brand d-flex" href="" style="height: 46px; width: 46px;">
             @if (BlazorEnv.IsServer)
@@ -56,8 +55,8 @@
         </div>
     </div>
 </nav>
-<main class="container-xxl mt-3 my-md-4">
-    <article class="content px-4">
+<main class="container-lg">
+    <article class="content p-4">
         @Body
     </article>
     
