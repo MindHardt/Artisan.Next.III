@@ -1,8 +1,8 @@
-﻿@inject IServiceProvider Services
-@inject NavigationManager Navigation
+﻿@inject NavigationManager Navigation
+@rendermode InteractiveWebAssembly
 
-<CascadingAuthenticationState>
-    <Router AppAssembly="typeof(Program).Assembly">
+<CascadingAuthenticationState>    
+    <Router AppAssembly="@GetType().Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
                 <NotAuthorized>
@@ -13,5 +13,10 @@
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="routeData" Selector="h1"/>
         </Found>
+        <NotFound>
+            <div class="position-absolute top-50 start-50 translate-middle">
+                <img alt="Not Found" src="https://http.cat/status/404.jpg"/>
+            </div>
+        </NotFound>
     </Router>
 </CascadingAuthenticationState>

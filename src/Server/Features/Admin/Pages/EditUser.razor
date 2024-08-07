@@ -1,0 +1,128 @@
+@page "/admin/users/{UserId:int}"
+@using Microsoft.Extensions.Options
+@using UserOptions = Server.Features.Auth.UserOptions
+@inject IServiceScopeFactory ScopeFactory
+@inject IOptions<UserOptions> UserOptions
+
+<div class="vstack gap-2">
+    <a href="admin/users" class="btn btn-sm btn-outline-info w-100">
+        <i class="bi bi-arrow-left"></i>
+        Назад
+    </a>
+
+    @if (_user is null)
+    {
+    <Spinner />
+    }
+    else
+    {
+    <PageTitle>@_user.UserName</PageTitle>
+    <div class="card" style="max-width: 20rem;">
+        <img alt="avatar" src="@_user.AvatarUrl" class="card-img-top"/>
+        <div class="card-body">
+            <h3 class="card-title">@_user.UserName</h3>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title bi bi-person-badge-fill">Роли</h5>
+            <div class="vstack gap-1">
+                @foreach (var role in RoleNames.Collection)
+                {
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="check-@role"
+                           checked="@(_roles.Contains(role))"
+                           @onchange="@(e => SetRole(role, (bool)e.Value!))">
+                    <label class="form-check-label" for="check-@role">@role</label>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title bi bi-database-fill">Лимит хранилища</h5>
+            @if (_user.CustomStorageLimit is null)
+            {
+                <input class="form-control" type="number" step="1" max="@long.MaxValue" min="0"
+                       placeholder="@UserOptions.Value.FileStorageLimit"
+                       @onchange="@SetStorageLimit"/>
+            }
+            else
+            {
+                <input class="form-control" type="number" step="1" max="@long.MaxValue" min="0"
+                       value="@_user.CustomStorageLimit.Value"
+                       @onchange="@SetStorageLimit"/>
+            }
+        </div>
+    </div>
+    }
+</div>
+
+@code {
+    
+    private User? _user;
+    private string[] _roles = null!;
+    
+    [Parameter]
+    public int UserId { get; set; }
+
+    protected override Task OnInitializedAsync()
+        => LoadUser();
+
+    private async Task LoadUser()
+    {
+        await using var scope = ScopeFactory.CreateAsyncScope();
+        var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+        _user = await dataContext.Users
+            .Where(x => x.Id == UserId)
+            .FirstAsync();
+        _roles = await dataContext.UserRoles
+            .Where(ur => ur.UserId == _user.Id)
+            .Select(ur => dataContext.Roles
+                .Where(role => role.Id == ur.RoleId)
+                .Select(role => role.Name!)
+                .First())
+            .ToArrayAsync();
+    }
+
+    private async Task SetStorageLimit(ChangeEventArgs e)
+    {
+        await using var scope = ScopeFactory.CreateAsyncScope();
+        var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+        var value = e.Value?.ToString();
+        var limit = string.IsNullOrEmpty(value)
+            ? (long?)null
+            : long.Parse(value);
+
+        await dataContext.Users.ExecuteUpdateAsync(x =>
+            x.SetProperty(user => user.CustomStorageLimit, limit));
+    }
+
+    private async Task SetRole(string role, bool add)
+    {
+        await using var scope = ScopeFactory.CreateAsyncScope();
+        var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+        
+        var roleId = await dataContext.Roles
+            .Where(x => x.Name == role)
+            .Select(x => x.Id)
+            .FirstAsync();
+
+        var userRole = new IdentityUserRole<int>
+        {
+            UserId = UserId,
+            RoleId = roleId
+        };
+        if (add)
+        {
+            dataContext.UserRoles.Add(userRole);
+        }
+        else
+        {
+            dataContext.UserRoles.Remove(userRole);
+        }
+
+        await dataContext.SaveChangesAsync();
+        
+        await LoadUser();
+    }
+}

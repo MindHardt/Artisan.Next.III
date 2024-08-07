@@ -26,7 +26,9 @@ else
             }
             else
             {
-                <button type="button" class="btn btn-lg btn-outline-light" @onclick="() => Services.GetRequiredService<ModalJsInterop>().ShowLoginModal()">
+                <button type="button" 
+                        class="btn btn-lg text-body-emphasis bg-body-secondary shadow-sm" 
+                        @onclick="() => Services.GetRequiredService<ModalJsInterop>().ShowLoginModal()">
                     <i class="bi bi-key-fill"></i>
                     Авторизация
                 </button>

@@ -1,0 +1,14 @@
+@layout AdminLayout
+@rendermode Microsoft.AspNetCore.Components.Web.RenderMode.InteractiveServer
+@attribute [Authorize(Roles = RoleNames.Admin)]
+
+@using Contracts
+@using Immediate.Handlers.Shared
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Forms
+@using Server.Data
+@using Server.Features.Auth
+@using Client.Features.Shared.Components

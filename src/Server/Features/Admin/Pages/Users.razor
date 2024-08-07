@@ -1,0 +1,126 @@
+@page "/admin/users"
+@inject IServiceScopeFactory ScopeFactory
+<h3>Управление пользователями</h3>
+<PageTitle>Управление пользователями</PageTitle>
+
+<div class="vstack gap-3">
+    
+    <div class="input-group">
+        <InputText class="form-control" 
+                   placeholder="Поиск..."
+                   @bind-Value="@_query"
+                   @bind-Value:after="@Search" />
+        <button class="btn btn-primary" @onclick="@Search">
+            <i class="bi bi-search"></i>
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Юзернейм</th>
+                <th scope="col"></th>
+                <th scope="col">Аватар</th>
+                <th scope="col">Роли</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var (user, i) in _users.Select((user, i) => (user, i)))
+            {
+                <tr>
+                    <th scope="row">@(i + 1)</th>
+                    <td>@user.UserName</td>
+                    <td>
+                        <a href="admin/users/@user.Id" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="@user.AvatarUrl">
+                            <i class="bi bi-box-arrow-up-right text-link"></i>
+                        </a>
+                    </td>
+                    <td>@string.Join(", ", user.Roles)</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="input-group">
+        <button @onclick="@(_ => SetPage(1))" class="btn" disabled="@(_pageNum == 1)">
+            <i class="bi bi-chevron-double-left"></i>
+        </button>
+        <button @onclick="@(_ => SetPage(_pageNum - 1))" class="btn" disabled="@(_pageNum == 1)">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <InputNumber class="form-control" step="1" min="1" max="@_pageCount"
+                     @bind-Value="@_pageNum"
+                     @bind-Value:after="@Search"/>
+        <span class="input-group-text">/ @_pageCount</span>
+        <button @onclick="@(_ => SetPage(_pageNum + 1))" class="btn" disabled="@(_pageNum == _pageCount)">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+        <button @onclick="@(_ => SetPage(_pageCount))" class="btn" disabled="@(_pageNum == _pageCount)">
+            <i class="bi bi-chevron-double-right"></i>
+        </button>
+    </div>
+
+</div>
+
+@code {
+
+    const int PageSize = 10;
+    private int _pageCount;
+    private UserModel[] _users = [];
+    private int _totalCount;
+    private int _pageNum = 1;
+    
+    private string? _query;
+
+    private async Task SetPage(int page)
+    {
+        _pageNum = page;
+        await Search();
+    }
+
+    private async Task Search()
+    {
+        await using var scope = ScopeFactory.CreateAsyncScope();
+        var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+        var query = userManager.Users.AsQueryable();
+
+        if (string.IsNullOrEmpty(_query) is false)
+        {
+            var normalizedQuery = userManager.NormalizeName(_query);
+            query = query
+                .Where(x => EF.Functions.ILike(x.NormalizedUserName!, $"%{normalizedQuery}%"));
+        }
+
+        _totalCount = await query.CountAsync();
+        _pageCount = (int)Math.Ceiling((double)_totalCount / PageSize);
+        
+        var skip = (_pageNum - 1) * PageSize;
+
+        _users = await query
+            .Skip(skip)
+            .Take(PageSize)
+            .ProjectToUserModel(dataContext)
+            .ToArrayAsync();
+
+        if (_pageCount < _pageNum)
+        {
+            _pageNum = 1;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Search();
+    }
+
+}

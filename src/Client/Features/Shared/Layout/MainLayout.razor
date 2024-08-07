@@ -1,6 +1,7 @@
 ﻿@using Client.Features.Shared.Toasts
 @using Client.Features.Auth
 @using Client.Features.Shared.Components
+@using Contracts
 @inherits LayoutComponentBase
 @layout ErrorHandlingLayout
 
@@ -35,9 +36,14 @@
                         new NavLinkInfo("Персонажи", "charsheet", "bi-file-person-fill"),
                         new NavLinkInfo("Панорамы","maps", "bi-signpost-2-fill"),
                     ];
-                    @if (BlazorEnv.IsDebug)
+                    if (BlazorEnv.IsDebug)
                     {
                         navLinks.Add(new NavLinkInfo("Swagger", "swagger", "bi-file-earmark-bar-graph-fill"));
+                    }
+
+                    if (_isAdmin)
+                    {
+                        navLinks.Add(new NavLinkInfo("Админка", "admin/users", "bi-people-fill"));
                     }
                 }
                 @foreach (var navLink in navLinks)
@@ -53,7 +59,6 @@
                 <button class="btn" onclick="changeTheme()">
                     <i id="themeIcon"></i>
                 </button>
-                <!--suppress JSUnresolvedReference -->
                 <script>
                     fixThemeIcon();
                 </script>
@@ -71,3 +76,18 @@
         <ToastDisplay />
     }
 </main>
+
+@code {
+    
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationStateTask { get; set; } = null!;
+
+    private bool _isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isAdmin = (await AuthenticationStateTask).User.IsInRole(RoleNames.Admin);
+        StateHasChanged();
+    }
+
+}

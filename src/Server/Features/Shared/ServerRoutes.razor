@@ -1,0 +1,22 @@
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="@GetType().Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
+                <NotAuthorized>
+                    @{
+                        Navigation.NavigateTo(Navigation.BaseUri);
+                    }
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="routeData" Selector="h1"/>
+        </Found>
+        <NotFound>
+            <div class="position-absolute top-50 start-50 translate-middle">
+                <img alt="Not Found" src="https://http.cat/status/404.jpg"/>
+            </div>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

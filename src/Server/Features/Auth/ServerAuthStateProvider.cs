@@ -42,33 +42,12 @@ public class ServerAuthStateProvider : ServerAuthenticationStateProvider, IDispo
         }
 
         var userId = principal.GetUserId()!.Value;
-        var queryResult = await _dataContext.Users
+        var userModel = await _dataContext.Users
             .Where(user => user.Id == userId)
-            .Select(user => new
-            {
-                User = user,
-
-                Roles = _dataContext.UserRoles
-                    .Where(ur => ur.UserId == user.Id)
-                    .Select(ur => _dataContext.Roles
-                        .First(role => role.Id == ur.RoleId).Name!)
-                    .ToArray(),
-
-                Logins = _dataContext.UserLogins
-                    .Where(login => login.UserId == user.Id)
-                    .Select(login => login.LoginProvider)
-                    .ToArray()
-
-            })
-            .AsSingleQuery()
+            .ProjectToUserModel(_dataContext)
             .FirstAsync();
 
-        _persistence.PersistAsJson(nameof(UserModel), new UserModel(
-            queryResult.User.Id,
-            queryResult.User.UserName!,
-            queryResult.User.AvatarUrl,
-            queryResult.Roles,
-            queryResult.Logins));
+        _persistence.PersistAsJson(nameof(UserModel), userModel);
     }
 
     public void Dispose()
