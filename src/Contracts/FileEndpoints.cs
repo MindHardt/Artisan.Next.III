@@ -66,6 +66,10 @@ public readonly partial struct FileSize
     private static Validation Validate(long size) => size > 0
         ? Validation.Ok
         : Validation.Invalid("File size cannot be negative");
+
+    public static FileSize FromKilobytes(double value) => From((long)(value * 1024d));
+    public static FileSize FromMegabytes(double value) => FromKilobytes(value * 1024d);
+    public static FileSize FromGigabytes(double value) => FromMegabytes(value * 1024);
 }
 
 public enum FileScope

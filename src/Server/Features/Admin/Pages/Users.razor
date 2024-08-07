@@ -20,6 +20,7 @@
             <thead>
             <tr>
                 <th scope="col">#</th>
+                <th scope="col">ID</th>
                 <th scope="col">Юзернейм</th>
                 <th scope="col"></th>
                 <th scope="col">Аватар</th>
@@ -31,6 +32,7 @@
             {
                 <tr>
                     <th scope="row">@(i + 1)</th>
+                    <td>@user.Id</td>
                     <td>@user.UserName</td>
                     <td>
                         <a href="admin/users/@user.Id" class="btn btn-sm btn-outline-warning">
@@ -107,6 +109,7 @@
         var skip = (_pageNum - 1) * PageSize;
 
         _users = await query
+            .OrderBy(x => x.Id)
             .Skip(skip)
             .Take(PageSize)
             .ProjectToUserModel(dataContext)
@@ -118,9 +121,7 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Search();
-    }
+    protected override Task OnInitializedAsync()
+        => Search();
 
 }

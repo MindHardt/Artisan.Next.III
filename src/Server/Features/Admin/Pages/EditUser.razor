@@ -12,46 +12,49 @@
 
     @if (_user is null)
     {
-    <Spinner />
+        <Spinner />
     }
     else
     {
-    <PageTitle>@_user.UserName</PageTitle>
-    <div class="card" style="max-width: 20rem;">
-        <img alt="avatar" src="@_user.AvatarUrl" class="card-img-top"/>
-        <div class="card-body">
-            <h3 class="card-title">@_user.UserName</h3>
-        </div>
-        <div class="card-body">
-            <h5 class="card-title bi bi-person-badge-fill">Роли</h5>
-            <div class="vstack gap-1">
-                @foreach (var role in RoleNames.Collection)
-                {
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="check-@role"
-                           checked="@(_roles.Contains(role))"
-                           @onchange="@(e => SetRole(role, (bool)e.Value!))">
-                    <label class="form-check-label" for="check-@role">@role</label>
+        <PageTitle>@_user.UserName</PageTitle>
+        <div class="card" style="max-width: 20rem;">
+            <img alt="avatar" src="@_user.AvatarUrl" class="card-img-top"/>
+            <div class="card-body">
+                <h3 class="card-title">@_user.UserName</h3>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title bi bi-person-badge-fill">Роли</h5>
+                <div class="vstack gap-1">
+                    @foreach (var role in RoleNames.Collection)
+                    {
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="check-@role"
+                                   checked="@(_roles.Contains(role))"
+                                   @onchange="@(e => SetRole(role, (bool)e.Value!))">
+                            <label class="form-check-label" for="check-@role">@role</label>
+                        </div>
+                    }
                 </div>
-                }
+            </div>
+            <div class="card-body">
+                <h5 class="card-title bi bi-database-fill">Лимит хранилища</h5>
+                <div class="input-group">
+                    @if (_user.CustomStorageLimit is null)
+                    {
+                        <input class="form-control" type="number" step="1" max="@long.MaxValue" min="0"
+                               placeholder="@FileSize.From(UserOptions.Value.FileStorageLimit).Megabytes"
+                               @onchange="@SetStorageLimit"/>
+                    }
+                    else
+                    {
+                        <input class="form-control" type="number" step="1" max="@long.MaxValue" min="0"
+                               value="@FileSize.From(_user.CustomStorageLimit.Value).Megabytes"
+                               @onchange="@SetStorageLimit"/>
+                    }
+                    <span class="input-group-text">MB</span>
+                </div>
             </div>
         </div>
-        <div class="card-body">
-            <h5 class="card-title bi bi-database-fill">Лимит хранилища</h5>
-            @if (_user.CustomStorageLimit is null)
-            {
-                <input class="form-control" type="number" step="1" max="@long.MaxValue" min="0"
-                       placeholder="@UserOptions.Value.FileStorageLimit"
-                       @onchange="@SetStorageLimit"/>
-            }
-            else
-            {
-                <input class="form-control" type="number" step="1" max="@long.MaxValue" min="0"
-                       value="@_user.CustomStorageLimit.Value"
-                       @onchange="@SetStorageLimit"/>
-            }
-        </div>
-    </div>
     }
 </div>
 
@@ -89,12 +92,16 @@
         var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
 
         var value = e.Value?.ToString();
-        var limit = string.IsNullOrEmpty(value)
+        var limitBytes = string.IsNullOrEmpty(value)
             ? (long?)null
-            : long.Parse(value);
+            : FileSize.FromMegabytes(long.Parse(value)).Bytes;
 
-        await dataContext.Users.ExecuteUpdateAsync(x =>
-            x.SetProperty(user => user.CustomStorageLimit, limit));
+        await dataContext.Users
+            .Where(x => x.Id == _user!.Id)
+            .ExecuteUpdateAsync(x =>
+            x.SetProperty(user => user.CustomStorageLimit, limitBytes));
+        
+        await LoadUser();
     }
 
     private async Task SetRole(string role, bool add)
