@@ -99,7 +99,7 @@
         await dataContext.Users
             .Where(x => x.Id == _user!.Id)
             .ExecuteUpdateAsync(x =>
-            x.SetProperty(user => user.CustomStorageLimit, limitBytes));
+                x.SetProperty(user => user.CustomStorageLimit, limitBytes));
         
         await LoadUser();
     }
