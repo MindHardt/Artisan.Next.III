@@ -103,10 +103,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-}
 
 app.UseHttpsRedirection();
 
@@ -117,7 +113,7 @@ app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapServerEndpoints();
-app.MapRazorComponents<App>()
+app.MapRazorComponents<App>()   
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
