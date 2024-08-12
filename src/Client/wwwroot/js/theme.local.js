@@ -13,6 +13,11 @@ function fixThemeIcon() {
     themeIcon.className = 'text-warning bi ' + icon;
 }
 function setTheme(theme) {
+    let attr = document.body.getAttributeNode('data-bs-theme');
+    if (attr === null) {
+        attr ??= document.createAttribute('data-bs-theme');
+        document.body.attributes.setNamedItem(attr);
+    }
     document.body.getAttributeNode('data-bs-theme').value = theme;
     localStorage.setItem('theme', theme);
     fixThemeIcon();
