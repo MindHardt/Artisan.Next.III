@@ -25,6 +25,12 @@
     [Parameter]
     public bool SmoothRerender { get; set; } = true;
 
+    /// <summary>
+    /// Defines whether output html should be sanitized.
+    /// </summary>
+    [Parameter]
+    public bool Sanitize { get; set; } = true;
+
     private MarkupString? _html;
 
     protected override void OnParametersSet()
@@ -35,7 +41,12 @@
         }
         _ = Task.Run(async () =>
         {
-            _html = await Showdown.RenderMd(Markdown);
+            var html = await Showdown.RenderMd(Markdown);
+            if (Sanitize)
+            {
+                html = await Showdown.Sanitize(html);
+            }
+            _html = html;
             await InvokeAsync(StateHasChanged);
         });
     }

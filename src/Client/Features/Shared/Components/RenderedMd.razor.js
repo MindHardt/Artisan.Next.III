@@ -15,6 +15,6 @@ export function renderMd(md) {
     return result.innerHTML;
 }
 
-export function renderTo(md, elementId) {
-    document.getElementById(elementId).innerHTML = renderMd(md);
+export function sanitize(html) {
+    return DOMPurify.sanitize(html)
 }

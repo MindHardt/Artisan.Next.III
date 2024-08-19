@@ -11,6 +11,6 @@ public class ShowdownJsInterop(IJSRuntime jsRuntime) : JsInterop(jsRuntime)
     public async ValueTask<MarkupString> RenderMd(string markdown)
         => (MarkupString)await (await GetModuleAsync()).InvokeAsync<string>("renderMd", markdown);
 
-    public async ValueTask RenderTo(string markdown, string elementId)
-        => await (await GetModuleAsync()).InvokeVoidAsync("renderTo", markdown, elementId);
+    public async ValueTask<MarkupString> Sanitize(MarkupString html)
+        => (MarkupString)await (await GetModuleAsync()).InvokeAsync<string>("sanitize", html.Value);
 }

@@ -6,7 +6,16 @@
 @layout ErrorHandlingLayout
 
 <OpenGraph Title="Artisan.Next.III" Description="Личный сайт Игоря Un1ver5e Бабина." />
-<nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow">
+@if (BlazorEnv.IsServer)
+{
+    <div class="position-absolute top-50 start-50 translate-middle">
+        <Spinner />
+    </div>
+}
+@{
+    var hidden = BlazorEnv.IsServer ? "visually-hidden" : string.Empty;
+}
+<nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top shadow @hidden">
     <div class="container-fluid">
         <a class="navbar-brand d-flex" href="" style="height: 46px; width: 46px;">
             @if (BlazorEnv.IsServer)
@@ -50,7 +59,7 @@
                 {
                     <NavLink href="@navLink.Href"
                              class="btn btn-lg text-body-emphasis"
-                             Match="@navLink.Match" 
+                             Match="@navLink.Match"
                              ActiveClass="bg-body-secondary shadow-sm">
                         <i class="bi @navLink.Icon"></i>
                         @navLink.Label
@@ -66,11 +75,11 @@
         </div>
     </div>
 </nav>
-<main class="container-lg">
+<main class="container-lg @hidden">
     <article class="content p-4">
         @Body
     </article>
-    
+
     @if (BlazorEnv.IsWasm)
     {
         <ToastDisplay />
