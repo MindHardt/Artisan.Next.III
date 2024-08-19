@@ -35,18 +35,18 @@
             <InputText class="form-control" placeholder="[Ии]стория.*" @bind-Value="@_regex" @bind-Value:after="@SearchBooks" />
         </div>
         <div class="input-group flex-fill">
-            <button class="flex-fill btn btn-@(_isList ? "primary" : "outline-primary")" @onclick="@(() => _isList = true)">
-                <i class="bi bi-list-ol"></i>
-                <span class="d-none d-lg-inline">Список</span>
-            </button>
             <button class="flex-fill btn btn-@(_isList ? "outline-primary" : "primary")" @onclick="@(() => _isList = false)">
                 <i class="bi bi-card-text"></i>
                 <span class="d-none d-lg-inline">Каталог</span>
             </button>
+            <button class="flex-fill btn btn-@(_isList ? "primary" : "outline-primary")" @onclick="@(() => _isList = true)">
+                <i class="bi bi-list-ol"></i>
+                <span class="d-none d-lg-inline">Список</span>
+            </button>
         </div>
         <AuthorizeView Roles="@RoleNames.Writer">
             <Authorized>
-                <a class="btn btn-outline-success" href="wiki/books/new">
+                <a class="btn btn-success" href="wiki/books/new">
                     <i class="bi bi-plus"></i>
                 </a>
             </Authorized>

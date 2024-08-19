@@ -5,14 +5,7 @@
     {
         <li class="list-group-item d-flex">
             <a class="text-truncate flex-fill text-decoration-none text-link mx-2" href="wiki/books/read/@book.UrlName.Value">@book.Name</a>
-            @if (book.IsPublic)
-            {
-                <span class="bi bi-star-fill text-warning" title="Публичная книга"></span>
-            }
-            else
-            {
-                <span class="bi bi-star"></span>
-            }
+            <BookPublicityIcon IsPublic="@book.IsPublic" />
         </li>
     }
 </ul>
