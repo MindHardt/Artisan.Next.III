@@ -34,4 +34,4 @@ jobs:
           
       - name: Calling portainer webhook
         run: |
-          curl -X POST ${{ secrets.WEBHOOK_URL }}
+          curl -X -fail POST ${{ secrets.WEBHOOK_URL }}
