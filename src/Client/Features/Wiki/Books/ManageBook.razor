@@ -8,7 +8,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Caching.Memory
 @attribute [Route($"/wiki/books/edit/{{{nameof(UrlName)}}}")]
-@attribute [Authorize(Roles = RoleNames.Admin)]
+@attribute [Authorize(Roles = RoleNames.Writer)]
 @layout WikiLayout
 @inject BackendClient Backend
 @inject PersistentComponentState Persistence
@@ -195,6 +195,8 @@ else
         var imageUrl = string.IsNullOrWhiteSpace(_imageUrl)
             ? null
             : _imageUrl;
+
+        ErrorOr<BookModel> result;
         if (Editing)
         {
             var request = new UpdateBook.Request(
@@ -204,7 +206,7 @@ else
                 _text,
                 imageUrl,
                 _isPublic);
-            await Backend.Wiki.UpdateBook(request);
+            result = await Backend.Wiki.UpdateBook(request);
         }
         else
         {
@@ -215,16 +217,24 @@ else
                 _text,
                 imageUrl,
                 _isPublic);
-            await Backend.Wiki.CreateBook(request).ThenDo(result =>
+            result = await Backend.Wiki.CreateBook(request).ThenDo(book =>
             {
-                UrlName = result.UrlName.Value;
+                UrlName = book.UrlName.Value;
                 Services.GetRequiredService<IMemoryCache>().Remove("_books");
             });
         }
 
-        Services.GetRequiredService<IMemoryCache>().Remove($"book_{UrlName}");
-        Services.GetRequiredService<NavigationManager>().NavigateTo(
-            $"/wiki/books/read/{UrlName}");
+        await result.SwitchAsync(_ =>
+        {
+            Services.GetRequiredService<IMemoryCache>().Remove($"book_{UrlName}");
+            Services.GetRequiredService<NavigationManager>().NavigateTo(
+                $"/wiki/books/read/{UrlName}");
+            return Task.CompletedTask;
+        }, async errors =>
+        {
+            var errorMessages = string.Join("; ", errors.Select(x => x.Description));
+            await Services.GetRequiredService<ToastSender>().ShowErrorToast($"Произошла ошибка: {errorMessages}");
+        });
     }
 
     [Parameter]

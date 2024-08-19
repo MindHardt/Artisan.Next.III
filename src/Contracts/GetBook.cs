@@ -14,6 +14,7 @@ public class GetBook
         string Author,
         string Text,
         string? ImageUrl,
-        bool IsPublic)
-        : BookModel(UrlName, Name, Description, ImageUrl, Author, IsPublic);
+        bool IsPublic,
+        bool IsEditable)
+        : BookModel(UrlName, Name, Description, ImageUrl, Author, IsPublic, IsEditable);
 }

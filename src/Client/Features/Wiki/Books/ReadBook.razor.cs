@@ -2,7 +2,7 @@
 
 namespace Client.Features.Wiki.Books;
 
-public partial class ReadBookPage
+public partial class ReadBook
 {
     private string GetText() => _includeImages
         ? _book!.Text

@@ -23,14 +23,15 @@ public partial class SearchBooks
         DataContext dataContext,
         CancellationToken ct)
     {
+        var userId = principal.GetUserId();
         var query = dataContext.Books
             .OrderByDescending(x => x.LastUpdated)
             .AsQueryable();
 
         if (principal.IsInRole(RoleNames.Admin) is false)
         {
-            query = principal.GetUserId() is { } userId
-                ? query.Where(book => book.IsPublic || book.Visits!.Any(visit => visit.UserId == userId))
+            query = userId.HasValue
+                ? query.Where(book => book.IsPublic || book.OwnerId == userId || book.Visits!.Any(visit => visit.UserId == userId))
                 : query.Where(book => book.IsPublic);
         }
 
@@ -40,6 +41,7 @@ public partial class SearchBooks
             query = query.Where(book => Regex.IsMatch(book.Name, request.Regex));
         }
 
+        var userIsAdmin = principal.IsInRole(RoleNames.Admin);
         return TypedResults.Ok(await query
             .Select(book => new BookModel(
                 book.UrlName,
@@ -47,7 +49,8 @@ public partial class SearchBooks
                 book.Description,
                 book.ImageUrl,
                 book.Author,
-                book.IsPublic))
+                book.IsPublic,
+                userIsAdmin || userId.HasValue && userId == book.OwnerId))
             .ToArrayAsync(ct));
     }
 }

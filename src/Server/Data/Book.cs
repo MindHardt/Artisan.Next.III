@@ -13,9 +13,11 @@ public record Book
     public required string Text { get; set; }
     public required string? ImageUrl { get; set; }
     public required bool IsPublic { get; set; }
-
     public required DateTimeOffset LastUpdated { get; set; }
-
+    
+    public required int? OwnerId { get; set; }
+    public User? Owner { get; set; }
+    
     public ICollection<BookInvite>? Invites { get; set; }
     public ICollection<BookVisit>? Visits { get; set; }
 
@@ -29,6 +31,12 @@ public record Book
                     x => x.Value,
                     x => BookUrlName.From(x))
                 .HasMaxLength(BookUrlName.MaxLength);
+
+            builder.HasOne(x => x.Owner)
+                .WithMany(x => x.Books)
+                .HasForeignKey(x => x.OwnerId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

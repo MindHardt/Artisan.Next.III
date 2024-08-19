@@ -1,5 +1,7 @@
 ﻿using System.Collections.Immutable;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using Client.Features.Auth;
 using Contracts;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
@@ -17,10 +19,11 @@ public partial class CreateBookInvite
     private static readonly ImmutableArray<char> KeyChars = [..BookInviteKey.AllowedSymbols];
 
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) => endpoint
-        .RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(WikiEndpoints));
+        .RequireAuthorization(policy => policy.RequireRole(RoleNames.Writer)).WithTags(nameof(WikiEndpoints));
 
-    private static async ValueTask<Results<Ok<BookInviteKey>, NotFound>> HandleAsync(
+    private static async ValueTask<Results<Ok<BookInviteKey>, NotFound, ForbidHttpResult>> HandleAsync(
         [AsParameters] Contracts.CreateBookInvite.Request request,
+        ClaimsPrincipal principal,
         DataContext dataContext,
         CancellationToken ct = default)
     {
@@ -29,6 +32,13 @@ public partial class CreateBookInvite
         if (book is null)
         {
             return TypedResults.NotFound();
+        }
+
+        var canAddInvite = principal.GetUserId() is { } userId && book.OwnerId == userId ||
+                           principal.IsInRole(RoleNames.Admin);
+        if (canAddInvite is false)
+        {
+            return TypedResults.Forbid();
         }
 
         var existingInvite = await dataContext.BookInvites.FirstOrDefaultAsync(x =>

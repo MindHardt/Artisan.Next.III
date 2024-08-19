@@ -1,4 +1,6 @@
-﻿using Contracts;
+﻿using System.Security.Claims;
+using Client.Features.Auth;
+using Contracts;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -13,7 +15,7 @@ namespace Server.Features.Wiki;
 public partial class UpdateBook
 {
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
-        endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Admin)).WithTags(nameof(WikiEndpoints));
+        endpoint.RequireAuthorization(policy => policy.RequireRole(RoleNames.Writer)).WithTags(nameof(WikiEndpoints));
 
     public record Request(
         [FromRoute] BookUrlName UrlName,
@@ -21,6 +23,7 @@ public partial class UpdateBook
 
     private static async ValueTask<Results<NotFound, Ok<BookModel>, ForbidHttpResult>> HandleAsync(
         [AsParameters] Request request,
+        ClaimsPrincipal principal,
         DataContext dataContext,
         CancellationToken ct)
     {
@@ -29,6 +32,14 @@ public partial class UpdateBook
         if (book is null)
         {
             return TypedResults.NotFound();
+        }
+
+        var userId = principal.GetRequiredUserId();
+        var isEditedByOwner = book.OwnerId == userId;
+        var isEditedByAdmin = principal.IsInRole(RoleNames.Admin);
+        if (isEditedByOwner is false && isEditedByAdmin is false)
+        {
+            return TypedResults.Forbid();
         }
 
         book.Author = request.Body.Author;
@@ -40,13 +51,15 @@ public partial class UpdateBook
 
         await dataContext.SaveChangesAsync(ct);
 
+        var editable = book.OwnerId == userId || principal.IsInRole(RoleNames.Admin);
         return TypedResults.Ok(new BookModel(
             book.UrlName,
             book.Name,
             book.Description,
             book.ImageUrl,
             book.Author,
-            book.IsPublic));
+            book.IsPublic,
+            editable));
     }
 
 }

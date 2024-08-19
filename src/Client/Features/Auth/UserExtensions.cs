@@ -10,6 +10,9 @@ public static class UserExtensions
             ? userId
             : null;
 
+    public static int GetRequiredUserId(this ClaimsPrincipal principal)
+        => GetUserId(principal) ?? throw new InvalidOperationException("Cannot retrieve required user id");
+
     public static string? GetAvatarUrl(this ClaimsPrincipal principal)
         => principal.FindFirst(CustomClaims.AvatarUrl)?.Value;
 

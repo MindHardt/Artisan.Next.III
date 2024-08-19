@@ -13,32 +13,38 @@
 <PageTitle>Книги</PageTitle>
 <OpenGraph Title="Библиотека" Description="Список доступных книг Аркленса"/>
 
-<div class="container-fluid">
+<div class="vstack gap-3">
     <AuthorizeView Roles="@RoleNames.Admin">
         <NotAuthorized>
-            <div class="card mb-3" id="UserCallout">
+            <div class="card" id="UserCallout">
                 <div class="card-header d-flex">
                     <i class="bi bi-info-square-fill text-primary flex-fill"></i>
                     <button class="btn-close" onclick="document.getElementById('UserCallout').hidden = true"></button>
                 </div>
                 <div class="card-body">
-                    Вам доступны для поиска только публичные книги и книги к которым вы переходили
+                    Вам доступны для поиска только публичные книги, ваши собственные и книги к которым вы переходили
                     по ссылке-приглашению.
                     К остальным доступ только по прямой ссылке от администратора.
                 </div>
             </div>
         </NotAuthorized>
     </AuthorizeView>
-    <div class="input-group input-group-lg mb-2">
-        <span class="input-group-text bi bi-regex"></span>
-        <input class="form-control" type="text" placeholder="[Ии]стория.*" @onchange="@(e => SearchBooks(e.Value as string))" value="@_regex"/>
-        <button class="btn btn-@(_isList ? "primary" : "outline-primary")" @onclick="@(() => _isList = true)">
-            <i class="bi bi-list-ol"></i>
-        </button>
-        <button class="btn btn-@(_isList ? "outline-primary" : "primary")" @onclick="@(() => _isList = false)">
-            <i class="bi bi-card-text"></i>
-        </button>
-        <AuthorizeView Roles="@RoleNames.Admin">
+    <div class="d-flex flex-column flex-lg-row gap-2">
+        <div class="input-group flex-fill">
+            <span class="input-group-text bi bi-regex"></span>
+            <InputText class="form-control" placeholder="[Ии]стория.*" @bind-Value="@_regex" @bind-Value:after="@SearchBooks" />
+        </div>
+        <div class="input-group flex-fill">
+            <button class="flex-fill btn btn-@(_isList ? "primary" : "outline-primary")" @onclick="@(() => _isList = true)">
+                <i class="bi bi-list-ol"></i>
+                <span class="d-none d-lg-inline">Список</span>
+            </button>
+            <button class="flex-fill btn btn-@(_isList ? "outline-primary" : "primary")" @onclick="@(() => _isList = false)">
+                <i class="bi bi-card-text"></i>
+                <span class="d-none d-lg-inline">Каталог</span>
+            </button>
+        </div>
+        <AuthorizeView Roles="@RoleNames.Writer">
             <Authorized>
                 <a class="btn btn-outline-success" href="wiki/books/new">
                     <i class="bi bi-plus"></i>
@@ -62,12 +68,11 @@
     private BookModel[]? _books;
     private string? _regex;
 
-    private bool _isList = false;
+    private bool _isList;
 
-    private async Task SearchBooks(string? regex)
+    private async Task SearchBooks()
     {
-        _regex = regex;
-        await Backend.Wiki.SearchBooks(new SearchBooks.Request(regex))
+        await Backend.Wiki.SearchBooks(new SearchBooks.Request(_regex))
             .ThenDo(result => _books = result);
         if (BlazorEnv.IsWasm)
         {
@@ -93,7 +98,7 @@
 
         if (_books?.Any() is not true)
         {
-            await SearchBooks(_regex);
+            await SearchBooks();
         }
         if (BlazorEnv.IsServer)
         {

@@ -18,18 +18,17 @@
 else
 {
     <div class="d-flex flex-column flex-md-row gap-2 mb-2">
-        <AuthorizeView Roles="@RoleNames.Admin">
-            <Authorized>
-                <a href="/wiki/books/edit/@UrlName" class="btn btn-warning w-100">
-                    <i class="bi bi-pencil"></i>
-                    Редактировать
-                </a>
-                <button class="btn btn-primary w-100" @onclick="@CopyInviteLink">
-                    <i class="bi bi-share-fill"></i>
-                    Ссылка-приглашение
-                </button>
-            </Authorized>
-        </AuthorizeView>
+        @if (_book.IsEditable)
+        {
+            <a href="/wiki/books/edit/@UrlName" class="btn btn-warning w-100">
+                <i class="bi bi-pencil"></i>
+                Редактировать
+            </a>
+            <button class="btn btn-primary w-100" @onclick="@CopyInviteLink">
+                <i class="bi bi-share-fill"></i>
+                Ссылка-приглашение
+            </button>
+        }
         <button class="btn btn-outline-primary w-100" @onclick="@(() => _includeImages = !_includeImages)">
             @{
                 var icon = _includeImages

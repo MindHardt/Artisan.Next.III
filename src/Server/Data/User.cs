@@ -10,6 +10,7 @@ public class User : IdentityUser<int>
     public long? CustomStorageLimit { get; set; }
 
     public ICollection<StorageFile> Files { get; set; } = null!;
+    public ICollection<Book> Books { get; set; } = null!;
 
     internal class EntityConfiguration : IEntityTypeConfiguration<User>
     {

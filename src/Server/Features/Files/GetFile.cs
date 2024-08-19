@@ -19,11 +19,12 @@ public partial class GetFile
         .Produces(StatusCodes.Status410Gone)
         .WithTags(nameof(FileEndpoints));
 
-    private static async ValueTask<Results<FileStreamHttpResult, NotFound, StatusCodeHttpResult>> HandleAsync(
+    private static async ValueTask<Results<FileStreamHttpResult, NotFound,ProblemHttpResult>> HandleAsync(
         [AsParameters] Contracts.GetFile.Request request,
         DataContext dataContext,
         IFileStorage fs,
         HttpResponse response,
+        ILogger<GetFile> logger,
         CancellationToken ct)
     {
         var file = await dataContext.Files
@@ -40,11 +41,23 @@ public partial class GetFile
             _ => file.Identifier.Value
         };
 
-        var fileStream = await fs.GetFileStream(file.Hash, ct);
-        return TypedResults.File(
-            fileStream,
-            file.ContentType,
-            fileName,
-            file.CreatedAt);
+        try
+        {
+            var fileStream = await fs.GetFileStream(file.Hash, ct);
+            return TypedResults.File(
+                fileStream,
+                file.ContentType,
+                fileName,
+                file.CreatedAt);
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning(e, "There was an exception when retrieving file content. Serving 500 response");
+            return TypedResults.Problem(new ProblemDetails
+            {
+                Detail = e.Message,
+                Status = StatusCodes.Status500InternalServerError
+            });
+        }
     }
 }

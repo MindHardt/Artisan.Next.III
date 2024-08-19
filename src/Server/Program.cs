@@ -108,9 +108,13 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
+app.Use(async (http, next) => await next.Invoke(http));
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
+
+app.Use(async (http, next) => await next.Invoke(http));
 
 app.MapServerEndpoints();
 app.MapRazorComponents<App>()   

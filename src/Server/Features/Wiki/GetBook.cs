@@ -29,12 +29,16 @@ public partial class GetBook
             return TypedResults.NotFound();
         }
 
-        var canView = book.IsPublic || await CheckCanView(request, dataContext, principal, ct);
+        var userId = principal.GetUserId();
+        var isOwner = userId.HasValue && userId == book.OwnerId;
+        
+        var canView = book.IsPublic || isOwner || await CheckCanView(request, dataContext, principal, ct);
         if (canView is false)
         {
             return TypedResults.Forbid();
         }
 
+        var editable = isOwner || principal.IsInRole(RoleNames.Admin);
         return TypedResults.Ok(new Contracts.GetBook.Response(
             book.UrlName,
             book.Name,
@@ -42,7 +46,8 @@ public partial class GetBook
             book.Author,
             book.Text,
             book.ImageUrl,
-            book.IsPublic));
+            book.IsPublic,
+            editable));
     }
 
     private static async ValueTask<bool> CheckCanView(
