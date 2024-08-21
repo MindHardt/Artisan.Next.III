@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Barbarian : Class
+public record Barbarian : Class, ISingleton<Barbarian>
 {
     public override string Emoji => "😡";
     public override string Name => "Варвар";
+    public override int SkillPoints => 2;
 
     public override IReadOnlyCollection<Alignment> AllowedAlignments { get; } =
         [..Alignment.AllValues.Where(x => x.Lawfulness is not Lawfulness.Lawful)];
@@ -16,6 +17,5 @@ public record Barbarian : Class
         ClassSkills.KnowledgeDungeons |
         ClassSkills.HorseRiding;
 
-    public Barbarian([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    public static Barbarian Instance { get; } = new();
 }

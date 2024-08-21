@@ -25,8 +25,14 @@ partial interface IAlidEntity
 
     private static IReadOnlyCollection<IAlidEntity> GetAllValues() => 
     [
-{string.Join("\n", types.Select(x => $"\t\t..{x.ContainingNamespace.ToDisplayString()}.{x.Name}.AllValues,"))}
+{string.Join("\n", types.Select(GetPropertyText))}
         ..AdditionalEntities
     ];
 }}", Encoding.UTF8);
+
+    private static string GetPropertyText(ITypeSymbol type) => $"\t\t{GetProperty(type)},";
+    private static string GetProperty(ITypeSymbol type) =>
+        type.Interfaces.Any(i => i.Name == "ISingleton")
+            ? $"{type.ContainingNamespace.ToDisplayString()}.{type.Name}.Instance"
+            : $"..{type.ContainingNamespace.ToDisplayString()}.{type.Name}.AllValues";
 }

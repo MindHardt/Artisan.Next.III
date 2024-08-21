@@ -12,17 +12,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Skills\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Compile Update="Classes\Barbarian.cs">
         <DependentUpon>Class.cs</DependentUpon>
       </Compile>
       <Compile Update="Classes\Bard.cs">
         <DependentUpon>Class.cs</DependentUpon>
       </Compile>
-      <Compile Update="Classes\Warrior.cs">
+      <Compile Update="Classes\Fighter.cs">
         <DependentUpon>Class.cs</DependentUpon>
       </Compile>
       <Compile Update="Classes\Wizard.cs">
@@ -63,6 +59,9 @@
       </Compile>
       <Compile Update="Classes\DruidCircle.cs">
         <DependentUpon>Druid.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Alids\AlidNameCollection.Linq.cs">
+        <DependentUpon>AlidNameCollection.cs</DependentUpon>
       </Compile>
     </ItemGroup>
 

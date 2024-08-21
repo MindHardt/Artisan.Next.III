@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Bookworm : Class
+public record Bookworm : Class, ISingleton<Bookworm>
 {
     public override string Emoji => "🎓";
     public override string Name => "Книгочей";
+    public override int SkillPoints => 6;
 
     public override ClassSkills ClassSkills =>
         ClassSkills.KnowledgeReligion |
@@ -17,6 +18,5 @@ public record Bookworm : Class
         ClassSkills.Mechanics |
         ClassSkills.FirstAid;
 
-    public Bookworm([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    public static Bookworm Instance { get; } = new();
 }

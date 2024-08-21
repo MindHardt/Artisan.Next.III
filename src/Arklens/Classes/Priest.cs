@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Priest : Class
+public record Priest : Class, ISingleton<Priest>
 {
     public override string Emoji => "📜";
     public override string Name => "Жрец";
+    public override int SkillPoints => 3;
 
     public override IReadOnlyCollection<Subclass> Subclasses => PriestFaith.AllValues;
 
@@ -16,6 +17,5 @@ public record Priest : Class
         ClassSkills.Diplomacy |
         ClassSkills.KnowledgeDungeons;
 
-    public Priest([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    public static Priest Instance { get; } = new();
 }

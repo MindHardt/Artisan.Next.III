@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Crusader : Class
+public record Crusader : Class, ISingleton<Crusader>
 {
     public override string Emoji => "✡️";
     public override string Name => "Крестоносец";
+    public override int SkillPoints => 2;
 
     public override IReadOnlyCollection<Subclass> Subclasses => CrusaderFaith.AllValues;
 
@@ -14,6 +15,5 @@ public record Crusader : Class
         ClassSkills.KnowledgeDungeons |
         ClassSkills.Diplomacy;
 
-    public Crusader([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    public static Crusader Instance { get; } = new();
 }

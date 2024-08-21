@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Wizard : Class
+public record Wizard : Class, ISingleton<Wizard>
 {
     public override string Emoji => "📚";
     public override string Name => "Волшебник";
+    public override int SkillPoints => 5;
 
     public override ClassSkills ClassSkills =>
         ClassSkills.KnowledgeMagic |
@@ -15,7 +16,6 @@ public record Wizard : Class
         ClassSkills.KnowledgeNature;
 
     public override IReadOnlyCollection<Subclass> Subclasses => WizardSchool.AllValues;
-
-    public Wizard([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    
+    public static Wizard Instance { get; } = new();
 }

@@ -31,7 +31,7 @@ public class AlidSearchGenerator : IIncrementalGenerator
         }
 
         var isIEnumeration =
-            typeSymbol.Interfaces.Any(x => x.Name == "IEnumeration") ||
+            typeSymbol.Interfaces.Any(x => x.Name is "IEnumeration" or "ISingleton") ||
             typeSymbol.GetAttributes().Any(x => x.AttributeClass?.Name == "GenerateEnumerationAttribute");
         if (isIEnumeration is false)
         {

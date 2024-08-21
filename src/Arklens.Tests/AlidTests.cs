@@ -45,7 +45,17 @@ public class AlidTests(ITestOutputHelper output)
     [InlineData("monster:dragon:dova+ancient")]
     public void AlidParseTests(string value)
     {
-        _ = Alid.Create(value);
+        _ = Alid.Parse(value);
+    }
+
+    [Theory]
+    [InlineData("weapon:#monk")]
+    [InlineData("spell:wizard:#cantrips")]
+    public void AlidGroupTests(string value)
+    {
+        var alid = Alid.Parse(value);
+        Assert.True(alid.IsGroup);
+        Assert.Equal(alid.Value, value);
     }
 
     [Theory]
@@ -56,7 +66,7 @@ public class AlidTests(ITestOutputHelper output)
     [InlineData("alid:which_is_too_long_to_be_parsed_and_will_throw_because_max_length_of_alid_is_128_characters_but_this_alid_is_132_characters_long")]
     public void AlidParseExceptionTests(string value)
     {
-        Assert.ThrowsAny<ArgumentException>(() => Alid.Create(value));
+        Assert.Throws<FormatException>(() => Alid.Parse(value));
     }
 
     [Fact]

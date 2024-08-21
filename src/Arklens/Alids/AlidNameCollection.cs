@@ -43,6 +43,7 @@ public readonly struct AlidNameCollection : IEquatable<AlidNameCollection>, IRea
 
     #region IReadOnlyList
 
+    // ReSharper disable once NotDisposedResourceIsReturned
     public IEnumerator<AlidName> GetEnumerator() => (Values ?? []).GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

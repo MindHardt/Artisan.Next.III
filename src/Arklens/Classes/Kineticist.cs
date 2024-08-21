@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Kineticist : Class
+public record Kineticist : Class, ISingleton<Kineticist>
 {
     public override string Emoji => "☄️";
     public override string Name => "Кинетик";
+    public override int SkillPoints => 3;
 
     public override ClassSkills ClassSkills =>
         ClassSkills.KnowledgeMagic |
@@ -13,6 +14,5 @@ public record Kineticist : Class
         ClassSkills.FirstAid |
         ClassSkills.KnowledgeWorld;
 
-    public Kineticist([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    public static Kineticist Instance { get; } = new();
 }

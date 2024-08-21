@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using NickBuhro.Translit;
 using Server.Data;
-using Vogen;
 
 namespace Server.Features.Wiki;
 

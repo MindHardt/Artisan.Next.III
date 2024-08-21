@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Monk : Class
+public record Monk : Class, ISingleton<Monk>
 {
     public override string Emoji => "🧘";
     public override string Name => "Монах";
+    public override int SkillPoints => 2;
 
     public override IReadOnlyCollection<Alignment> AllowedAlignments =>
         [..Alignment.AllValues.Where(x => x.Lawfulness is Lawfulness.Lawful)];
@@ -18,6 +19,5 @@ public record Monk : Class
         ClassSkills.Acrobatics |
         ClassSkills.Stealth;
 
-    public Monk([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    public static Monk Instance { get; } = new();
 } 

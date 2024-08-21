@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Druid : Class
+public record Druid : Class, ISingleton<Druid>
 {
     public override string Emoji => "🍀";
     public override string Name => "Друид";
+    public override int SkillPoints => 4;
 
     public override IReadOnlyCollection<Alignment> AllowedAlignments { get; } =
         Alignment.OneStepFrom(Alignment.Neutral);
@@ -19,6 +20,5 @@ public record Druid : Class
         ClassSkills.FirstAid |
         ClassSkills.HorseRiding;
 
-    public Druid([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    public static Druid Instance { get; } = new();
 }

@@ -17,7 +17,7 @@ public class AlidJsonConverter<TEntity> : JsonConverter<TEntity>
     where TEntity: IAlidEntity
 {
     public override TEntity Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => IAlidEntity.Get<TEntity>(Alid.Create(reader.GetString()!));
+        => IAlidEntity.Get<TEntity>(Alid.Parse(reader.GetString()!));
 
     public override void Write(Utf8JsonWriter writer, TEntity value, JsonSerializerOptions options)
         => writer.WriteStringValue(value.Alid.ToString());

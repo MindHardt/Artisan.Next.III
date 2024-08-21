@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Warrior : Class
+public record Fighter : Class, ISingleton<Fighter>
 {
     public override string Emoji => "⚔️";
     public override string Name => "Воин";
+    public override int SkillPoints => 3;
 
     public override ClassSkills ClassSkills =>
         ClassSkills.KnowledgeDungeons |
@@ -13,6 +14,5 @@ public record Warrior : Class
         ClassSkills.Climbing |
         ClassSkills.Swimming;
 
-    public Warrior([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    public static Fighter Instance { get; } = new();
 }

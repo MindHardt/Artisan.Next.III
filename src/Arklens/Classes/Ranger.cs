@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Ranger : Class
+public record Ranger : Class, ISingleton<Ranger>
 {
     public override string Emoji => "🦅";
     public override string Name => "Рейнджер";
+    public override int SkillPoints => 4;
 
     public override ClassSkills ClassSkills =>
         ClassSkills.Survival |
@@ -16,6 +17,5 @@ public record Ranger : Class
         ClassSkills.HorseRiding |
         ClassSkills.FirstAid;
 
-    public Ranger([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    public static Ranger Instance { get; } = new();
 }

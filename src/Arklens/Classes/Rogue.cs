@@ -1,11 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Arklens.Core;
 
 namespace Arklens.Classes;
 
-public record Rogue : Class
+public record Rogue : Class, ISingleton<Rogue>
 {
     public override string Emoji => "🗡️";
     public override string Name => "Плут";
+    public override int SkillPoints => 6;
 
     public override ClassSkills ClassSkills =>
         ClassSkills.Mechanics |
@@ -15,6 +16,5 @@ public record Rogue : Class
         ClassSkills.Stealth |
         ClassSkills.Climbing;
 
-    public Rogue([CallerMemberName] string ownName = "") : base(ownName)
-    { }
+    public static Rogue Instance { get; } = new();
 }

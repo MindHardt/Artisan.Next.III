@@ -7,9 +7,10 @@ namespace Arklens.Alids;
 public readonly partial struct AlidName([NotNull] string? value) : IEquatable<AlidName>
 {
     [StringSyntax(StringSyntaxAttribute.Regex)]
-    public const string SourceRegexString = "^[A-Za-z0-9_]+$";
-    [GeneratedRegex(SourceRegexString)]
-    public static partial Regex SourceValidationRegex();
+    public const string Regex = "[A-Za-z0-9_]+";
+    
+    [GeneratedRegex($"^{Regex}$")]
+    public static partial Regex ValidationRegex();
 
     public string Value { get; } = TryNormalize(value, out var result)
         ? result
@@ -29,7 +30,7 @@ public readonly partial struct AlidName([NotNull] string? value) : IEquatable<Al
 
     private static bool TryNormalize(string? value, [NotNullWhen(true)] out string? result)
     {
-        if (string.IsNullOrEmpty(value) || SourceValidationRegex().IsMatch(value) is false)
+        if (string.IsNullOrEmpty(value) || ValidationRegex().IsMatch(value) is false)
         {
             result = null;
             return false;
