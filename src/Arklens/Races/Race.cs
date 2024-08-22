@@ -14,7 +14,7 @@ public partial record Race(
     RaceImpacts? Impacts,
     [CallerMemberName] string OwnName = "") : IAlidEntity, IArklensEntity
 {
-    public Alid Alid { get; } = Alid.OfType<Race>(OwnName);
+    public Alid Alid { get; } = Alid.CreateOwnFor<Race>(OwnName);
 
     public static Race Human { get; } = new(
         "Человек",
@@ -60,4 +60,14 @@ public partial record Race(
             Con: RaceImpact.Increased,
             Int: RaceImpact.Increased,
             Wis: RaceImpact.Decreased));
+
+    public class GrayFolk() : AlidGroup<Race>(
+    [
+        Human, Elf, Dwarf
+    ]);
+    
+    public class Transmutants() : AlidGroup<Race>(
+    [
+        Kitsune, Minas, Serpent
+    ]);
 }

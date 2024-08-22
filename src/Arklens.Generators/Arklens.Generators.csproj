@@ -32,6 +32,9 @@
       <Compile Update="SourceOf.AlidLookup.cs">
         <DependentUpon>SourceOf.cs</DependentUpon>
       </Compile>
+      <Compile Update="SourceOf.AlidGroups.cs">
+        <DependentUpon>SourceOf.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 

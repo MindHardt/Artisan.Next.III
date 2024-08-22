@@ -11,7 +11,7 @@ public partial record Deity(string Emoji, string Name, Alignment Alignment, [Cal
     IAlidEntity,
     IArklensEntity
 {
-    public Alid Alid { get; } = Alid.OfType<Deity>(OwnName);
+    public Alid Alid { get; } = Alid.CreateOwnFor<Deity>(OwnName);
 
     public static Deity Neras { get; } = new("⚒️", "Нерас", Alignment.LawfulGood);
     public static Deity Sol { get; } = new("☀️", "Сол", Alignment.NeutralGood);

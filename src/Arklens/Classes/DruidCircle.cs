@@ -16,7 +16,7 @@ public partial record DruidCircle : Subclass
     {
         Emoji = emoji;
         Name = name;
-        Alid = Alid.OfType<DruidCircle>(ownName);
+        Alid = Alid.CreateOwnFor<DruidCircle>(ownName);
     }
 
     public static DruidCircle Plants { get; } = new("🌿", "Растения");

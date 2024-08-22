@@ -22,12 +22,28 @@ public partial record Alid(
         ? Domains
         : throw new ArgumentException($"{nameof(Domains)} cannot be empty");
 
-    public string Value { get; } =
-        string.Concat(Domains.Select(x => $"{x}:")) +
-        (IsGroup ? "#" : string.Empty) +
-        Name +
-        string.Concat(Modifiers.Select(x => $"+{x}"));
+    public AlidName Name { get; } = Name.Value.Length > 0 || IsGroup
+        ? Name
+        : throw new ArgumentException($"Non-group {nameof(Alid)}s cannot have empty name");
 
+    public string Value { get; } = new(
+    [
+        ..Domains.SelectMany(x => $"{x}:"),
+        ..IsGroup ? "#" : string.Empty,
+        ..Name.Value,
+        ..Modifiers.SelectMany(x => $"+{x}")
+    ]);
+
+    public static Alid CreateOwn(AlidNameCollection domains, AlidName name, AlidNameCollection modifiers = default) =>
+        new(domains, name, modifiers, IsGroup: false);
+    public static Alid CreateOwnFor<T>(AlidName name, AlidNameCollection modifiers = default) =>
+        CreateOwn(Alids.Domains.Of<T>(), name, modifiers);
+
+    public static Alid CreateGroup(AlidNameCollection domains, AlidName name, AlidNameCollection modifiers = default) =>
+        new(domains, name, modifiers, IsGroup: true);
+    public static Alid CreateGroupOf<T>(AlidName name, AlidNameCollection modifiers = default) =>
+        CreateGroup(Alids.Domains.Of<T>(), name, modifiers);
+    
     #region Overrides
 
     public virtual bool Equals(Alid? other) => Value == other?.Value;
@@ -36,8 +52,8 @@ public partial record Alid(
 
     #endregion
 
-    public static Alid OfType<T>(string name) => OfType<T>(new AlidName(name));
-    public static Alid OfType<T>(AlidName name) => new(Alids.Domains.Of<T>(), name);
+    #region Parse
+
     public static Alid Parse(string s, IFormatProvider? provider = null)
     {
         ArgumentNullException.ThrowIfNull(s);
@@ -87,4 +103,6 @@ public partial record Alid(
 
         return new Alid(domains, name, modifiers, isGroup);
     }
+
+    #endregion
 }

@@ -18,5 +18,5 @@ public abstract partial record Class : IAlidEntity, IArklensEntity
     public abstract int SkillPoints { get; }
 
     protected Class()
-        => Alid = Alid.OfType<Class>(GetType().Name);
+        => Alid = Alid.CreateOwnFor<Class>(GetType().Name);
 }

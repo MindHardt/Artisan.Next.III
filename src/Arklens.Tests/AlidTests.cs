@@ -72,7 +72,16 @@ public class AlidTests(ITestOutputHelper output)
     [Fact]
     public void ListAlidValues()
     {
-        foreach (var entity in IAlidEntity.AllValues.OrderBy(x => x.Alid.Value))
+        foreach (var entity in IAlidEntity.All.OrderBy(x => x.Alid.Value))
+        {
+            output.WriteLine(entity.Alid.ToString());
+        }
+    }
+    
+    [Fact]
+    public void ListAlidGroups()
+    {
+        foreach (var entity in AlidGroups.All.OrderBy(x => x.Alid.Value))
         {
             output.WriteLine(entity.Alid.ToString());
         }
@@ -85,7 +94,7 @@ public class AlidTests(ITestOutputHelper output)
         {
             Converters = { new AlidJsonConverterFactory() }
         };
-        foreach (var entity in IAlidEntity.AllValues)
+        foreach (var entity in IAlidEntity.All)
         {
             var json = JsonSerializer.Serialize(entity, jsonOptions);
             var deserialized = JsonSerializer.Deserialize<IAlidEntity>(json, jsonOptions);

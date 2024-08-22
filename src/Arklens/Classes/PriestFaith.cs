@@ -6,7 +6,7 @@ namespace Arklens.Classes;
 [AlidDomain]
 public record PriestFaith(Deity Deity) : Subclass, IEnumeration<PriestFaith>
 {
-    public override Alid Alid { get; } = Alid.OfType<PriestFaith>(Deity.Alid.Name);
+    public override Alid Alid { get; } = Alid.CreateOwnFor<PriestFaith>(Deity.Alid.Name);
     public override string Emoji => Deity.Emoji;
     public override string Name => Deity.Name;
 

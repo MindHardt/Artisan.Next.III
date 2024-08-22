@@ -10,7 +10,7 @@ public partial record WizardSchool : Subclass
 {
     private WizardSchool(string emoji, string name, [CallerMemberName] string ownName = "")
     {
-        Alid = Alid.OfType<WizardSchool>(ownName);
+        Alid = Alid.CreateOwnFor<WizardSchool>(ownName);
         Emoji = emoji;
         Name = name;
     }

@@ -30,6 +30,6 @@ builder.Services.Configure<JsonSerializerOptions>(options => options.SetDefaults
 var app = builder.Build();
 
 app.Services.GetRequiredService<ILogger<IAlidEntity>>().LogInformation("Loaded {Count} alid entities: {Entities}",
-    IAlidEntity.AllValues.Count, IAlidEntity.AllValues.Select(x => $"\n{x.Alid.Value}").Order());
+    IAlidEntity.All.Count, IAlidEntity.All.Select(x => $"\n{x.Alid.Value}").Order());
 
 await app.RunAsync();

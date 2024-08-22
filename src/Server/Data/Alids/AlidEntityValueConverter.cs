@@ -9,7 +9,7 @@ internal class AlidEntityValueConverter<TEntity> : ValueConverter<TEntity, strin
 {
     public AlidEntityValueConverter() : base(
         entity => entity.Alid.Value,
-        alid => IAlidEntity.Get<TEntity>(Alid.Parse(alid, null)))
+        alid => IAlidEntity.GetSingle<TEntity>(Alid.Parse(alid, null)))
     { }
 }
 

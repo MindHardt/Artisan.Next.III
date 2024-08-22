@@ -28,6 +28,8 @@ public readonly partial struct AlidName([NotNull] string? value) : IEquatable<Al
 
     #endregion
 
+    public static implicit operator AlidName(string s) => new(s);
+
     private static bool TryNormalize(string? value, [NotNullWhen(true)] out string? result)
     {
         if (string.IsNullOrEmpty(value) || ValidationRegex().IsMatch(value) is false)

@@ -8,7 +8,7 @@ namespace Arklens;
 [GenerateEnumeration]
 public partial record Alignment(Lawfulness Lawfulness, Goodness Goodness) : IAlidEntity
 {
-    public Alid Alid { get; } = Alid.OfType<Alignment>($"{Lawfulness}{Goodness}");
+    public Alid Alid { get; } = Alid.CreateOwnFor<Alignment>($"{Lawfulness}{Goodness}");
 
     public int DistanceTo(Alignment other) =>
         int.Abs(Goodness - other.Goodness) +
