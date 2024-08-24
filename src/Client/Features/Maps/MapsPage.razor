@@ -12,20 +12,6 @@
         <div class="col-lg-6 col-12 mb-3">
             <div class="input-group mb-2">
                 <span class="input-group-text bi bi-pin-map"></span>
-                @{
-                    void SetRandomSeed(ChangeEventArgs e)
-                    {
-                        var hex = (string)e.Value!;
-                        if (hex.Length <= 8 && hex.All(char.IsAsciiHexDigit))
-                        {
-                            RandomSeed = Convert.ToInt32(hex, 16);
-                        }
-                        else
-                        {
-                            ResetRandomSeed();
-                        }
-                    }
-                }
                 <input type="text" class="form-control" value="@($"{RandomSeed:X}")" @onchange="@SetRandomSeed"/>
                 <button class="btn btn-primary" @onclick="@ResetRandomSeed">
                     <i class="bi bi-dice-@(RandomSeed % 6 + 1)"></i>
@@ -107,6 +93,19 @@
         set
         {
             _currentArea = value;
+            RandomSeed = _randomSeed;
+        }
+    }
+    
+    private void SetRandomSeed(ChangeEventArgs e)
+    {
+        var hex = (string)e.Value!;
+        if (hex.Length <= 8 && hex.All(char.IsAsciiHexDigit))
+        {
+            RandomSeed = Convert.ToInt32(hex, 16);
+        }
+        else
+        {
             ResetRandomSeed();
         }
     }
@@ -114,11 +113,11 @@
     private void ResetRandomSeed()
         => RandomSeed = Random.Shared.Next();
 
-    protected override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         _areas = DefaultAreas.ToDictionary(x => x.Id);
         CurrentArea = _areas.First().Value;
-        return base.OnInitializedAsync();
+        ResetRandomSeed();
     }
 
     private static readonly NamedArea[] DefaultAreas =
@@ -131,7 +130,12 @@
         new NamedArea(
             Id: Guid.NewGuid(),
             Name: "Москва+",
-            Area: new EllipsoidArea((37.625f, 55.75f), 1.25f, 0.8f))
+            Area: new EllipsoidArea((37.625f, 55.75f), 1.25f, 0.8f)),
+        
+        new NamedArea(
+            Id: Guid.NewGuid(),
+            Name: "Челябинск",
+            Area: new EllipsoidArea((61.402603f, 55.160133f), 0.25f, 0.2f))
     ];
 
 }
