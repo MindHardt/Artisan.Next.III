@@ -1,0 +1,17 @@
+@using Arklens.Alids
+@using Arklens.StatusEffects
+<div class="card" @attributes="@AdditionalProperties">
+    @switch (Entity)
+    {
+        case StatusEffect statusEffect: <StatusEffectCard Effect="@statusEffect"/> break;
+    }
+</div>
+
+@code {
+    
+    [Parameter, EditorRequired]
+    public IAlidEntity Entity { get; set; } = null!;
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object?> AdditionalProperties { get; set; } = [];
+}

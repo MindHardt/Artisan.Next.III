@@ -26,6 +26,7 @@ public class AlidGroupGenerator : IIncrementalGenerator
         {
             IsStatic: false,
             IsAbstract: false,
+            DeclaredAccessibility: Accessibility.Public,
             BaseType.Name: "AlidGroup"
         } type ? type : null;
 }

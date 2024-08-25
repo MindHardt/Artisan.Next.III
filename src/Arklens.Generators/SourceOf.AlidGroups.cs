@@ -21,8 +21,11 @@ public static partial class AlidGroups
 {{
     private static partial IEnumerable<AlidGroup> GetGroups() =>
     [
-{string.Join(",\n", types.Select(x => $"\t\tnew {x.ContainingType.ToDisplayString()}.{x.Name}()"))}
+{string.Join(",\n", types.Select(x => $"\t\tnew {GetTypeName(x)}()"))}
     ];
 }}
 ", Encoding.UTF8);
+
+    private static string GetTypeName(ITypeSymbol type) =>
+        $"{(type.ContainingType as ISymbol ?? type.ContainingNamespace).ToDisplayString()}.{type.Name}";
 }

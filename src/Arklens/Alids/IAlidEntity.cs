@@ -58,3 +58,8 @@ public partial interface IAlidEntity
 
     #endregion
 }
+
+public interface IAlidEntity<TSelf> : IAlidEntity where TSelf : IAlidEntity
+{
+    Alid IAlidEntity.Alid => new(Domains.Of<TSelf>(), typeof(TSelf).Name);
+}

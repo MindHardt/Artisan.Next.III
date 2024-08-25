@@ -19,9 +19,9 @@ public abstract class AlidGroup<TEntity> : AlidGroup, IReadOnlyCollection<TEntit
     public override Alid Alid { get; }
     public IReadOnlyCollection<TEntity> Values { get; }
 
-    public AlidGroup(IEnumerable<TEntity> values)
+    public AlidGroup(IEnumerable<TEntity> values, string? name = null)
     {
-        Alid = Alid.CreateGroupOf<TEntity>(GetType().Name);
+        Alid = Alid.CreateGroupOf<TEntity>(name ?? GetType().Name);
         Values = [..values];
     }
     
@@ -32,11 +32,25 @@ public abstract class AlidGroup<TEntity> : AlidGroup, IReadOnlyCollection<TEntit
     public int Count => Values.Count;
 }
 
+file class DomainAlidGroup<TEntity>(IEnumerable<IAlidEntity> rawValues) : 
+    AlidGroup<TEntity>(rawValues.Cast<TEntity>(), "all")
+    where TEntity : IAlidEntity;
+
 public static partial class AlidGroups
 {
     private static readonly FrozenDictionary<Alid, AlidGroup> Dictionary = GetGroups()
+        .Concat(GetDomainGroups())
         .ToFrozenDictionary(x => x.Alid);
     private static partial IEnumerable<AlidGroup> GetGroups();
+    private static IEnumerable<AlidGroup> GetDomainGroups() => IAlidEntity.All
+        .GroupBy(x => x.Alid.Domains)
+        .Select(x => x.ToArray())
+        .Select(entities =>
+        {
+            var entityType = entities.Select(AlidExtensions.GetDomainType).Distinct().Single();
+            var groupType = typeof(DomainAlidGroup<>).MakeGenericType(entityType);
+            return (AlidGroup)Activator.CreateInstance(groupType, args: [entities])!;
+        });
 
     public static IReadOnlyCollection<AlidGroup> All => Dictionary.Values;
     

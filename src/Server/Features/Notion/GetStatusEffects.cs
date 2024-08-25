@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using Arklens.Alids;
+using Contracts;
 using Immediate.Apis.Shared;
 using Immediate.Handlers.Shared;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,18 +23,13 @@ public partial class GetStatusEffects
         CancellationToken ct)
     {
         var statusEffects = configuration.Value.StatusEffects;
-        var filter = request.PartialName is not null
-            ? new TitleFilter(statusEffects.Title, contains: request.PartialName)
-            : null;
 
-        var pages = await notion.Databases.QueryAsync(statusEffects.DatabaseId,
-            new DatabasesQueryParameters
-            {
-                Filter = filter
-            }, ct);
+        var pages = await notion.Databases.QueryAsync(
+            statusEffects.DatabaseId, new DatabasesQueryParameters(), ct);
 
         return TypedResults.Ok(pages.Results
             .Select(x => new Contracts.GetStatusEffects.Model(
+                Alid.Parse(((RichTextPropertyValue)x.Properties[nameof(Alid)]).RichText.ToPlainText()),
                 (x.Cover as ExternalFile)?.External.Url,
                 x.GetTitle().Title.ToPlainText(),
                 ((EmojiObject)x.Icon).Emoji,

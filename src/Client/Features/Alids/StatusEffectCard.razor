@@ -1,0 +1,42 @@
+@using Arklens.StatusEffects
+@using Contracts
+@using Client.Features.Shared.Components
+
+@if (_model is null)
+{
+    <div class="card-body">
+        <h5 class="card-title"></h5>
+        <p class="card-text">
+            <PlaceholderText/>
+        </p>
+    </div>
+}
+else
+{
+    <div class="card-body">
+        <h5 class="card-title">
+            <RenderedMd Markdown="@_model.Icon" />
+            @_model.Name
+        </h5>
+        <p class="card-text">
+            @_model.Description
+        </p>
+    </div>
+    @if (_model.PageUrl is not null)
+    {
+        <div class="card-footer">
+            <a href="@_model.PageUrl" class="text-decoration-none text-link">
+                <i class="bi bi-box-arrow-up-right"></i>
+                <span></span>
+            </a>
+        </div>
+    }
+}
+
+@code {
+
+    private GetStatusEffects.Model? _model;
+    
+    [Parameter, EditorRequired]
+    public StatusEffect Effect { get; set; } = null!;
+}
