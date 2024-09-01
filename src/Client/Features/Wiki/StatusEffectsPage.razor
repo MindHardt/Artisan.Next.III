@@ -22,14 +22,14 @@
             <input type="text" class="form-control" value="@_query" placeholder="Поиск" @onchange="@Search"/>
         </div>
     </div>
-    <div class="row">
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 gx-2 gy-3">
         @if (_effects is null)
         {
             <Spinner/>
         }
         else foreach (var effect in _effects.OrderBy(x => x.Name))
         {
-            <div class="col-12 col-md-4 col-lg-3 mb-3">
+            <div class="col">
                 <div class="card shadow h-100">
                     @if (effect.CoverUrl is not null)
                     {
