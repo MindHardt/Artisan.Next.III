@@ -5,7 +5,7 @@ namespace Contracts;
 
 public interface IAuthClient
 {
-    public Task<ErrorOr<LoginSchemeModel[]>> GetLoginSchemes(CancellationToken ct = default);
+    public Task<ErrorOr<IReadOnlyCollection<LoginSchemeModel>>> GetLoginSchemes(CancellationToken ct = default);
 
     public Task<Error?> UpdateProfile(UpdateProfile.Request request, CancellationToken ct = default);
 

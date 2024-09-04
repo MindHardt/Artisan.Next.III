@@ -14,7 +14,7 @@ public partial class GetLoginSchemes
     internal static void CustomizeEndpoint(IEndpointConventionBuilder endpoint) =>
         endpoint.WithTags(nameof(AuthEndpoints));
 
-    private static async ValueTask<Ok<LoginSchemeModel[]>> HandleAsync(
+    private static async ValueTask<Ok<IReadOnlyCollection<LoginSchemeModel>>> HandleAsync(
         EmptyRequest _,
         SignInManager<User> signInManager,
         CancellationToken ct)
@@ -23,6 +23,6 @@ public partial class GetLoginSchemes
 
         return TypedResults.Ok(authSchemes
             .Select(x => new LoginSchemeModel(x.Name, x.DisplayName))
-            .ToArray());
+            .ToArray() as IReadOnlyCollection<LoginSchemeModel>);
     }
 }

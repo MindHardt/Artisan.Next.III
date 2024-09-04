@@ -1,8 +1,10 @@
 ﻿@using Client.Features.Shared
 @using Contracts
+@using ErrorOr
 @using Microsoft.Extensions.Caching.Memory
+@using AppContext = Client.Features.Shared.AppContext
 @inject BackendClient Backend
-@inject PersistentComponentState Persistence
+@inject AppContext App
 @inject NavigationManager Navigation
 @inject IServiceProvider Services
 
@@ -100,22 +102,10 @@ else
 }
 
 @code {
-    private LoginSchemeModel[]? _schemes;
+    private IReadOnlyCollection<LoginSchemeModel>? _schemes;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (Persistence.TryTakeFromJson(nameof(GetLoginSchemes), out _schemes))
-        {
-            Services.GetRequiredService<IMemoryCache>().Set(nameof(LoginSchemeModel), _schemes);
-            return;
-        }
-
-        _schemes = (await Backend.Auth.GetLoginSchemes()).Else([]).Value;
-        Persistence.RegisterOnPersisting(() =>
-        {
-            Persistence.PersistAsJson(nameof(GetLoginSchemes), _schemes);
-            return Task.CompletedTask;
-        });
-    }
+    protected override async Task OnInitializedAsync() => await App.GetLoginSchemes().SwitchFirst(
+        value => _schemes = value,
+        error => throw new Exception(error.Description));
 
 }

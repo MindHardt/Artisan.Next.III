@@ -11,6 +11,7 @@ using Server.Features.Auth;
 using Server.Features.Files;
 using Server.Features.Notion;
 using Server.Features.Shared;
+using AppContext = Client.Features.Shared.AppContext;
 using UserOptions = Server.Features.Auth.UserOptions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,6 +61,7 @@ builder.Services.AddOptions<UserOptions>()
     .ValidateOnStart();
 
 builder.Services
+    .AddScoped<AppContext>()
     .AddScoped<BackendClient>()
     .AutoRegisterFromServer();
 

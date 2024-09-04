@@ -6,6 +6,7 @@ using Client.Features.Shared;
 using Contracts;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using AppContext = Client.Features.Shared.AppContext;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -16,8 +17,10 @@ builder.Services.AddHttpClient(string.Empty, http =>
     .AddHttpMessageHandler<HttpErrorHandler>();
 builder.Services.AddScoped<HttpErrorHandler>();
 
-builder.Services.AddScoped<BackendClient>();
-builder.Services.AutoRegisterFromClient();
+builder.Services
+    .AddScoped<AppContext>()
+    .AddScoped<BackendClient>()
+    .AutoRegisterFromClient();
 
 builder.Services.AddScoped<AuthenticationStateProvider, ClientAuthStateProvider>();
 builder.Services.AddAuthorizationCore();

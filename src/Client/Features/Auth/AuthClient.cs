@@ -10,10 +10,10 @@ namespace Client.Features.Auth;
 [RegisterScoped]
 public class AuthClient(HttpClient http, IOptions<JsonSerializerOptions> jsonOptions) : IAuthClient
 {
-    public async Task<ErrorOr<LoginSchemeModel[]>> GetLoginSchemes(CancellationToken ct = default)
+    public async Task<ErrorOr<IReadOnlyCollection<LoginSchemeModel>>> GetLoginSchemes(CancellationToken ct = default)
     {
         return await http.GetAsync(Contracts.GetLoginSchemes.FullPath, ct)
-            .AsErrorOr<LoginSchemeModel[]>(jsonOptions.Value, ct);
+            .AsErrorOr<IReadOnlyCollection<LoginSchemeModel>>(jsonOptions.Value, ct);
     }
 
     public Task<Error?> UpdateProfile(UpdateProfile.Request request, CancellationToken ct = default)
