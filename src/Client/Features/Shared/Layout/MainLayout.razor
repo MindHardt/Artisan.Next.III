@@ -40,10 +40,10 @@
                 @{
                     List<NavLinkInfo> navLinks =
                     [
-                        new NavLinkInfo("Главная", "", "bi-house-door-fill", NavLinkMatch.All),
-                        new NavLinkInfo("Wiki", "wiki", "bi-database-fill"),
-                        new NavLinkInfo("Персонажи", "charsheet", "bi-file-person-fill"),
-                        new NavLinkInfo("Панорамы","maps", "bi-signpost-2-fill"),
+                        new("Главная", "", "bi-house-door-fill", NavLinkMatch.All),
+                        new("Wiki", "wiki", "bi-database-fill"),
+                        new("Персонажи", "charsheet", "bi-file-person-fill"),
+                        new("Панорамы","maps", "bi-signpost-2-fill"),
                     ];
                     if (BlazorEnv.IsDebug)
                     {
@@ -68,6 +68,9 @@
                 <button class="btn" onclick="changeTheme()">
                     <i id="themeIcon"></i>
                 </button>
+                <a href="https://github.com/MindHardt/Artisan.Next.III">
+                    <i class="bi bi-github"></i>
+                </a>
                 <script>
                     fixThemeIcon();
                 </script>
