@@ -96,7 +96,10 @@
                 });
                 async function execute() {
                     const svg = document.querySelector('#charSheetContainer > svg');
-                    svg.class = "text-dark";
+                    const attr = document.createAttribute('class');
+                    attr.value = 'text-dark';
+                    svg.attributes.setNamedItem(attr);
+                    
                     const options = {
                         margin: 0,
                         filename: fileName,
