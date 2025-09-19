@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json;
 using Client.Features.Shared;
 using Contracts;
@@ -93,7 +94,8 @@ if (app.Configuration["ExternalHost"] is { Length: > 0 } host)
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost,
+    KnownProxies = { new IPAddress([10, 0, 1, 180]) }
 });
 
 // Configure the HTTP request pipeline.
