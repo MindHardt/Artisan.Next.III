@@ -1,4 +1,3 @@
-using System.Net;
 using System.Text.Json;
 using Client.Features.Shared;
 using Contracts;
@@ -12,7 +11,6 @@ using Server.Features.Auth;
 using Server.Features.Files;
 using Server.Features.Notion;
 using Server.Features.Shared;
-using UserOptions = Server.Features.Auth.UserOptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,7 +93,7 @@ if (app.Configuration["ExternalHost"] is { Length: > 0 } host)
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost,
-    KnownProxies = { new IPAddress([10, 0, 1, 180]) }
+    KnownNetworks = { IPNetwork.Parse("10.0.1.0/24") }
 });
 
 // Configure the HTTP request pipeline.
@@ -110,13 +108,9 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
-app.Use(async (http, next) => await next.Invoke(http));
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
-
-app.Use(async (http, next) => await next.Invoke(http));
 
 app.MapServerEndpoints();
 app.MapRazorComponents<App>()   
