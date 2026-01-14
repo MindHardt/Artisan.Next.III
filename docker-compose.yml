@@ -49,7 +49,7 @@
   server:
     image: un1ver5e/artisan.next.iii:latest-arm
     environment:
-      Serilog__WriteTo__3__Args__serverUrl: http://seq:5341
+      Serilog__WriteTo__1__Args__serverUrl: http://seq:5341
       ConnectionStrings__Postgres: Host=postgres;User Id=artisan_next_iii;Password=artisan_next_iii;Database=artisan_next_iii;
       S3__ServiceUrl: http://minio:9000
       
