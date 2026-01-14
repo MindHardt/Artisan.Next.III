@@ -1,4 +1,7 @@
 @page "/admin/users"
+@layout AdminLayout
+@rendermode @(new InteractiveServerRenderMode())
+@attribute [Authorize(Roles = RoleNames.Admin)]
 @inject IServiceScopeFactory ScopeFactory
 <h3>Управление пользователями</h3>
 <PageTitle>Управление пользователями</PageTitle>

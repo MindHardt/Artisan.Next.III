@@ -485,3 +485,5 @@ $RECYCLE.BIN/
 
 # Server file storage
 /Server/FileStorage/
+
+.docker-volumes/

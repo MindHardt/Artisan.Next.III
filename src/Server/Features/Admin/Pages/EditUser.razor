@@ -1,4 +1,7 @@
 @page "/admin/users/{UserId:int}"
+@layout AdminLayout
+@rendermode @(new InteractiveServerRenderMode())
+@attribute [Authorize(Roles = RoleNames.Admin)]
 @using Microsoft.Extensions.Options
 @using UserOptions = Server.Features.Auth.UserOptions
 @inject IServiceScopeFactory ScopeFactory
