@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Client.Features.Maps;
 using Client.Features.Shared;
 using Contracts;
 using Microsoft.AspNetCore.DataProtection;
@@ -58,6 +59,7 @@ builder.Services.AddOptions<UserOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+builder.Services.AddYandexFrames();
 builder.Services
     .AddScoped<BackendClient>()
     .AutoRegisterFromServer();
