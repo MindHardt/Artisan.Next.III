@@ -68,7 +68,7 @@
 
     private const int HexLength = sizeof(int) * 2;
 
-    public NamedArea GetArea() => Areas[Area!.Value];
+    public NamedArea GetArea() => Areas[Area ?? Areas.Keys.First()];
     public int GetSeed() => Seed is null ? 0 : BitConverter.ToInt32(Convert.FromHexString(Seed));
     public Point GetPoint() => GetArea().Area.GetRandomPoint(new Random(GetSeed()));
 
